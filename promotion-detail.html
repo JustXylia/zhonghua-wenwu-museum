@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>推广 · 文创与活动 | 中华文物</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #c9a962;
+            --color-primary-dark: #8b7355;
+            --color-bg-dark: #0a0a0f;
+            --color-bg-medium: #12121a;
+            --color-bg-light: #1a1a25;
+            --glass-bg: rgba(20, 20, 30, 0.7);
+            --glass-border: rgba(201, 169, 98, 0.15);
+            --color-text: #f5f0e8;
+            --color-text-muted: #8a8578;
+            --font-display: 'Ma Shan Zheng', cursive;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-sans);
+            background: var(--color-bg-dark);
+            color: var(--color-text);
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* 导航栏 */
+        .nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 1.5rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10,10,15,0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.4s ease;
+        }
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-links a {
+            color: var(--color-text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: color 0.3s ease;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 1px;
+            background: var(--color-primary);
+            transition: width 0.3s ease;
+        }
+        .nav-links a:hover { color: var(--color-primary); }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-links a.active { color: var(--color-primary); }
+        .nav-links a.active::after { width: 100%; }
+
+        /* ===== 首页 Hero 穿越效果 ===== */
+        .hero-section {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #0a0a0f;
+        }
+        #hero-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 900px;
+            padding: 2rem;
+            pointer-events: none;
+        }
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border: 1px solid #c9a962;
+            color: #c9a962;
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 2rem;
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(10px);
+            pointer-events: auto;
+        }
+        .hero-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: clamp(3rem, 8vw, 5rem);
+            color: #c9a962;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.8);
+        }
+        .hero-subtitle {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            font-weight: 300;
+            color: #f5f0e8;
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+        }
+        .hero-description {
+            font-size: 1rem;
+            color: #8a8578;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+        .scroll-hint {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: #8a8578;
+            font-size: 0.85rem;
+            z-index: 10;
+            pointer-events: auto;
+        }
+        .scroll-hint::after {
+            content: '';
+            width: 1px; height: 40px;
+            background: linear-gradient(to bottom, #c9a962, transparent);
+            animation: scrollPulse 2s infinite;
+        }
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; transform: scaleY(1); }
+            50% { opacity: 1; transform: scaleY(1.2); }
+        }
+
+        /* 页面头部 */
+        .page-hero {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: var(--color-bg-dark);
+            padding-top: 80px;
+        }
+        #hero-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+        }
+        .page-hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 900px;
+            padding: 2rem;
+        }
+        .page-hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 2rem;
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(10px);
+        }
+        .page-hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            color: var(--color-primary);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.8);
+        }
+        .page-hero-subtitle {
+            font-family: var(--font-serif);
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            font-weight: 300;
+            color: var(--color-text);
+            letter-spacing: 0.3em;
+            margin-bottom: 1.5rem;
+        }
+        .page-hero-desc {
+            font-size: 1rem;
+            color: var(--color-text-muted);
+            line-height: 1.8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* 面包屑导航 */
+        .breadcrumb {
+            padding: 1.5rem 4rem;
+            background: var(--color-bg-medium);
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+        .breadcrumb a {
+            color: var(--color-text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .breadcrumb a:hover { color: var(--color-primary); }
+        .breadcrumb span { color: var(--color-primary); margin: 0 0.5rem; }
+
+        /* 内容区域 */
+        .content-section {
+            padding: 6rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .section-intro {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+        .section-intro h2 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+        }
+        .section-intro p {
+            font-size: 1.1rem;
+            color: var(--color-text-muted);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 2;
+        }
+
+        /* 详情卡片网格 */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+        .detail-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        .detail-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            border-color: rgba(201,169,98,0.3);
+        }
+        .detail-card-image {
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+        }
+        .detail-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .detail-card:hover .detail-card-image img {
+            transform: scale(1.08);
+        }
+        .detail-card-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(10,10,15,0.9), transparent);
+        }
+        .detail-card-tag {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(201,169,98,0.2);
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+        }
+        .detail-card-content {
+            padding: 2rem;
+        }
+        .detail-card-content h3 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+        .detail-card-content .era {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(201,169,98,0.15);
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .detail-card-content p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        .detail-card-content .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        .detail-card-content .features span {
+            padding: 0.3rem 0.8rem;
+            background: rgba(201,169,98,0.1);
+            border: 1px solid rgba(201,169,98,0.2);
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+            border-radius: 20px;
+        }
+
+        /* 时间线样式 */
+        .timeline-section {
+            padding: 4rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .timeline-section-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .timeline-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--color-primary);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 3rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -3.4rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            border: 3px solid var(--color-bg-medium);
+        }
+        .timeline-item h4 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+        .timeline-item .time {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        .timeline-item p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        /* 返回按钮 */
+        .back-section {
+            padding: 4rem;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-family: var(--font-sans);
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background: var(--color-primary);
+            color: var(--color-bg-dark);
+        }
+
+        /* 页脚 */
+        .footer {
+            padding: 3rem;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+            background: var(--color-bg-dark);
+        }
+        .footer p {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .detail-grid { grid-template-columns: 1fr; }
+            .nav { padding: 1rem 2rem; }
+            .content-section { padding: 4rem 2rem; }
+            .breadcrumb { padding: 1rem 2rem; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .page-hero { min-height: 50vh; }
+            .detail-card-image { height: 220px; }
+            .timeline { padding-left: 2rem; }
+            .timeline-item::before { left: -2.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <a href="dazu-rock-carvings-canvas.html" class="nav-logo">中华文物</a>
+        <ul class="nav-links">
+            <li><a href="dazu-rock-carvings-canvas.html">首页</a></li>
+            <li><a href="vessels-cover.html">器之灵</a></li>
+            <li><a href="stone-cover.html">石之韵</a></li>
+            <li><a href="history-cover.html">史之痕</a></li>
+            <li><a href="restoration-cover.html">文物修复</a></li>
+            <li><a href="promotion-cover.html">推广</a></li>
+        </ul>
+    </nav>
+
+    <!-- ===== 首页 Hero - Canvas穿越效果 ===== -->
+    <section class="hero-section" id="hero">
+        <canvas id="hero-canvas"></canvas>
+        <div class="hero-content">
+            <div class="hero-badge">守护千年文明</div>
+            <h1 class="hero-title">中华文物</h1>
+            <p class="hero-subtitle">从古迹到博物馆 · 穿越时空的对话</p>
+            <p class="hero-description">移动鼠标探索从千年古迹到现代博物馆的奇妙旅程<br>感受文物在时光流转中的永恒魅力</p>
+        </div>
+        <div class="scroll-hint">向下滚动</div>
+    </section>
+
+    <!-- 详情卡片 -->
+        <div class="detail-grid">
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">生活美学</span>
+                    <img src="images/cultural-creative.jpg" alt="文创产品" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">当代 · 21世纪</span>
+                    <h3>文创产品</h3>
+                    <p>
+                        将文物元素融入现代生活用品，让传统文化走进日常生活。
+                        丝巾上印有敦煌飞天的飘逸，书签上刻着青铜器的纹饰，
+                        茶具上绘着山水画的意境。每一件文创产品都是一次文化的传递，
+                        让使用者在日常生活中感受中华美学的魅力。
+                        故宫文创、敦煌文创等品牌已成为文化传播的成功典范。
+                    </p>
+                    <div class="features">
+                        <span>丝巾</span>
+                        <span>书签</span>
+                        <span>茶具</span>
+                        <span>文具</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">数字收藏</span>
+                    <img src="images/nft-digital.jpg" alt="数字藏品" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">区块链技术 · 21世纪</span>
+                    <h3>数字藏品NFT</h3>
+                    <p>
+                        利用区块链技术为文物创建独一无二的数字藏品，
+                        每件数字藏品都有唯一的身份标识和所有权证明。
+                        用户可以在数字世界中收藏、展示和交易这些文物数字资产。
+                        数字藏品不仅降低了文物收藏的门槛，
+                        更为文物保护和博物馆运营开辟了新的资金来源。
+                    </p>
+                    <div class="features">
+                        <span>区块链</span>
+                        <span>唯一标识</span>
+                        <span>数字所有权</span>
+                        <span>限量发行</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">沉浸体验</span>
+                    <img src="images/museum-exhibition.jpg" alt="博物馆展览" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">全年策划 · 21世纪</span>
+                    <h3>主题展览</h3>
+                    <p>
+                        策划特色文物主题展，通过场景复原、多媒体互动、沉浸式体验等方式，
+                        让观众身临其境地感受历史。从"千里江山"到"盛世华彩"，
+                        从"丝路瑰宝"到"宫廷遗珍"，每一场展览都是一次穿越时空的文化之旅。
+                        配合专家讲座、手工体验等互动活动，让展览更加生动有趣。
+                    </p>
+                    <div class="features">
+                        <span>场景复原</span>
+                        <span>多媒体互动</span>
+                        <span>专家讲座</span>
+                        <span>手工体验</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">教育传承</span>
+                    <img src="images/museum-education.jpg" alt="研学教育" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">青少年教育 · 21世纪</span>
+                    <h3>研学教育</h3>
+                    <p>
+                        面向青少年群体设计文物探索课程，通过"看、听、做、思"四维体验，
+                        培养孩子们对传统文化的兴趣。课程内容包括博物馆参观、
+                        文物修复体验、传统工艺制作、考古模拟发掘等。
+                        让孩子们在动手实践中感受文明的魅力，
+                        培养文化自信和民族认同感。
+                    </p>
+                    <div class="features">
+                        <span>博物馆参观</span>
+                        <span>修复体验</span>
+                        <span>工艺制作</span>
+                        <span>模拟考古</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">云端展览</span>
+                    <img src="images/promo-cloud.jpg" alt="云展览" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">互联网技术 · 21世纪</span>
+                    <h3>线上云展览</h3>
+                    <p>
+                        突破时空限制的线上展览平台，让全球观众随时随地欣赏珍贵文物。
+                        高清影像、3D模型、VR全景等技术让线上观展体验媲美实地参观。
+                        配合多语言讲解、智能导览、在线互动等功能，
+                        让文物传播跨越国界，向世界讲述中国故事。
+                    </p>
+                    <div class="features">
+                        <span>高清影像</span>
+                        <span>3D模型</span>
+                        <span>VR全景</span>
+                        <span>多语言</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">文明互鉴</span>
+                    <img src="images/promo-international.jpg" alt="国际交流" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">全球合作 · 21世纪</span>
+                    <h3>国际交流展</h3>
+                    <p>
+                        促进中外文明互鉴与交流，将中华文物带到世界各地，
+                        同时引进国外优秀展览。通过文物对话，增进不同文明之间的理解与尊重。
+                        丝绸之路文物展、故宫文物世界巡展等项目已成为中外文化交流的重要品牌，
+                        展现了中华文明的开放包容与自信。
+                    </p>
+                    <div class="features">
+                        <span>世界巡展</span>
+                        <span>文明对话</span>
+                        <span>学术交流</span>
+                        <span>合作研究</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- 发展时间线 -->
+    <section class="timeline-section">
+        <div class="timeline-section-inner">
+            <h2 class="timeline-title">文物推广发展历程</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>传统展示</h4>
+                    <div class="time">古代-20世纪初</div>
+                    <p>文物主要通过宫廷收藏、私人赏玩等方式传播。博物馆概念传入中国后，开始面向公众开放。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>博物馆时代</h4>
+                    <div class="time">20世纪中期</div>
+                    <p>故宫博物院、国家博物馆等大型博物馆建立，文物开始系统性地向公众展示。出版物、纪录片成为重要传播媒介。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>文创兴起</h4>
+                    <div class="time">2010年代</div>
+                    <p>故宫文创引发全国博物馆文创热潮。文物元素被广泛应用于日用品、服饰、数码产品等领域，深受年轻人喜爱。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>数字化传播</h4>
+                    <div class="time">2020年代</div>
+                    <p>云展览、直播带货、短视频等新媒体形式让文物传播更加多元。数字藏品、元宇宙展览等新业态不断涌现。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>全球化推广</h4>
+                    <div class="time">未来展望</div>
+                    <p>文物推广将更加注重国际传播，通过多语言内容、跨国合作项目，让中华文明在世界舞台上绽放光彩。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 返回按钮 -->
+    <section class="back-section">
+        <a href="dazu-rock-carvings-canvas.html" class="back-btn">← 返回首页</a>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>中华文物 · 守护千年文明 | 从古迹到博物馆，穿越时空的对话</p>
+    </footer>
+
+    <script>
+    // Canvas 首页Hero穿越效果
+    function resizeCanvas(canvas) {
+        canvas.width = canvas.parentElement.offsetWidth;
+        canvas.height = canvas.parentElement.offsetHeight;
+    }
+
+    class HeroTransitionEffect {
+        constructor(canvasId) {
+            this.canvas = document.getElementById(canvasId);
+            this.ctx = this.canvas.getContext('2d');
+            this.mouse = { x: 0.5, y: 0.5 };
+            this.targetMouse = { x: 0.5, y: 0.5 };
+            this.transition = 0;
+            this.targetTransition = 0;
+            this.particles = [];
+            this.dustParticles = [];
+            this.images = {};
+            this.loaded = false;
+            this.init();
+        }
+
+        init() {
+            resizeCanvas(this.canvas);
+            this.loadImages();
+            this.createParticles();
+            this.bindEvents();
+            this.animate();
+        }
+
+        loadImages() {
+            const imageUrls = {
+                ancient: 'images/hero-ancient.jpg',
+                museum: 'images/hero-museum.jpg'
+            };
+            let loadedCount = 0;
+            const total = Object.keys(imageUrls).length;
+
+            for (const [key, url] of Object.entries(imageUrls)) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    loadedCount++;
+                    if (loadedCount === total) this.loaded = true;
+                };
+                img.src = url;
+                this.images[key] = img;
+            }
+        }
+
+        createParticles() {
+            for (let i = 0; i < 80; i++) {
+                this.dustParticles.push({
+                    x: Math.random(),
+                    y: Math.random(),
+                    size: Math.random() * 2 + 0.5,
+                    speedX: (Math.random() - 0.5) * 0.0005,
+                    speedY: (Math.random() - 0.5) * 0.0003,
+                    opacity: Math.random() * 0.6 + 0.2,
+                    phase: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        bindEvents() {
+            this.canvas.addEventListener('mousemove', (e) => {
+                const rect = this.canvas.getBoundingClientRect();
+                this.targetMouse.x = (e.clientX - rect.left) / rect.width;
+                this.targetMouse.y = (e.clientY - rect.top) / rect.height;
+            });
+            this.canvas.addEventListener('mouseenter', () => { this.targetTransition = 1; });
+            this.canvas.addEventListener('mouseleave', () => { this.targetTransition = 0; });
+            window.addEventListener('resize', () => resizeCanvas(this.canvas));
+        }
+
+        animate() {
+            requestAnimationFrame(() => this.animate());
+            const { width, height } = this.canvas;
+            this.ctx.clearRect(0, 0, width, height);
+            this.mouse.x += (this.targetMouse.x - this.mouse.x) * 0.05;
+            this.mouse.y += (this.targetMouse.y - this.mouse.y) * 0.05;
+            this.transition += (this.targetTransition - this.transition) * 0.03;
+            if (!this.loaded) { this.drawLoading(); return; }
+            this.drawBackgrounds(width, height);
+            this.drawVignette(width, height);
+            this.drawDustParticles(width, height);
+            this.drawLightRays(width, height);
+        }
+
+        drawBackgrounds(width, height) {
+            const mouseInfluence = this.mouse.x;
+            const effectiveTransition = this.transition * (0.5 + mouseInfluence * 0.5);
+            this.drawImageWithParallax(this.images.ancient, width, height, this.mouse, 0.03, 1 - effectiveTransition);
+            this.ctx.save();
+            this.ctx.globalAlpha = effectiveTransition;
+            this.drawImageWithParallax(this.images.museum, width, height, this.mouse, 0.05, 1);
+            this.ctx.restore();
+            this.drawTimeDust(width, height, effectiveTransition);
+        }
+
+        drawImageWithParallax(img, width, height, mouse, parallaxStrength, alpha) {
+            if (!img.complete) return;
+            const scale = Math.max(width / img.width, height / img.height);
+            const scaledWidth = img.width * scale;
+            const scaledHeight = img.height * scale;
+            const offsetX = (mouse.x - 0.5) * parallaxStrength * width;
+            const offsetY = (mouse.y - 0.5) * parallaxStrength * height;
+            const x = (width - scaledWidth) / 2 + offsetX;
+            const y = (height - scaledHeight) / 2 + offsetY;
+            this.ctx.save();
+            this.ctx.globalAlpha = alpha;
+            this.ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+            this.ctx.restore();
+        }
+
+        drawTimeDust(width, height, transition) {
+            const dustCount = Math.floor(transition * 100);
+            this.ctx.save();
+            for (let i = 0; i < dustCount; i++) {
+                const x = (Math.sin(i * 0.1 + Date.now() * 0.001) * 0.5 + 0.5) * width;
+                const y = (Math.cos(i * 0.15 + Date.now() * 0.0008) * 0.5 + 0.5) * height;
+                const size = Math.sin(i * 0.3 + Date.now() * 0.002) * 2 + 2;
+                const alpha = Math.sin(i * 0.2 + Date.now() * 0.001) * 0.3 + 0.3;
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, size, 0, Math.PI * 2);
+                this.ctx.fillStyle = `rgba(201, 169, 98, ${alpha * transition})`;
+                this.ctx.fill();
+            }
+            this.ctx.restore();
+        }
+
+        drawVignette(width, height) {
+            const gradient = this.ctx.createRadialGradient(width / 2, height / 2, height * 0.3, width / 2, height / 2, height * 0.8);
+            gradient.addColorStop(0, 'rgba(10, 10, 15, 0)');
+            gradient.addColorStop(1, 'rgba(10, 10, 15, 0.6)');
+            this.ctx.fillStyle = gradient;
+            this.ctx.fillRect(0, 0, width, height);
+        }
+
+        drawDustParticles(width, height) {
+            const time = Date.now() * 0.001;
+            this.ctx.save();
+            for (const p of this.dustParticles) {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.phase += 0.01;
+                if (p.x < 0) p.x = 1;
+                if (p.x > 1) p.x = 0;
+                if (p.y < 0) p.y = 1;
+                if (p.y > 1) p.y = 0;
+                const x = p.x * width;
+                const y = p.y * height;
+                const flicker = Math.sin(p.phase) * 0.3 + 0.7;
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, p.size, 0, Math.PI * 2);
+                this.ctx.fillStyle = `rgba(201, 169, 98, ${p.opacity * flicker})`;
+                this.ctx.fill();
+            }
+            this.ctx.restore();
+        }
+
+        drawLightRays(width, height) {
+            const time = Date.now() * 0.0005;
+            this.ctx.save();
+            this.ctx.globalCompositeOperation = 'screen';
+            for (let i = 0; i < 3; i++) {
+                const angle = time + (i * Math.PI * 2 / 3);
+                const rayWidth = 100 + Math.sin(time + i) * 50;
+                const startX = width * 0.5 + Math.cos(angle) * width * 0.3;
+                const startY = height * 0.3 + Math.sin(angle * 0.5) * height * 0.2;
+                const gradient = this.ctx.createLinearGradient(startX, startY, startX + Math.cos(angle) * width, startY + Math.sin(angle) * height);
+                gradient.addColorStop(0, 'rgba(201, 169, 98, 0.1)');
+                gradient.addColorStop(0.5, 'rgba(201, 169, 98, 0.05)');
+                gradient.addColorStop(1, 'rgba(201, 169, 98, 0)');
+                this.ctx.beginPath();
+                this.ctx.moveTo(startX - rayWidth / 2, startY);
+                this.ctx.lineTo(startX + rayWidth / 2, startY);
+                this.ctx.lineTo(startX + rayWidth * 2 + Math.cos(angle) * width, startY + Math.sin(angle) * height);
+                this.ctx.lineTo(startX - rayWidth * 2 + Math.cos(angle) * width, startY + Math.sin(angle) * height);
+                this.ctx.closePath();
+                this.ctx.fillStyle = gradient;
+                this.ctx.fill();
+            }
+            this.ctx.restore();
+        }
+
+        drawLoading() {
+            const { width, height } = this.canvas;
+            this.ctx.fillStyle = '#0a0a0f';
+            this.ctx.fillRect(0, 0, width, height);
+            this.ctx.fillStyle = '#c9a962';
+            this.ctx.font = '20px "Noto Sans SC", sans-serif';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('加载中...', width / 2, height / 2);
+        }
+    }
+
+    // 初始化Hero效果
+    const heroCanvas = document.getElementById('hero-canvas');
+    if (heroCanvas) {
+        new HeroTransitionEffect('hero-canvas');
+    }
+    </script>
+</body>
+</html>

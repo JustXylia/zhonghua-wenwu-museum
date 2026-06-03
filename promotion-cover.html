@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>推广 - 中华文物</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #c9a962;
+            --color-primary-dark: #8b7355;
+            --color-bg-dark: #0a0a0f;
+            --color-bg-medium: #12121a;
+            --color-bg-light: #1a1a25;
+            --glass-bg: rgba(20, 20, 30, 0.7);
+            --glass-border: rgba(201, 169, 98, 0.15);
+            --color-text: #f5f0e8;
+            --color-text-muted: #8a8578;
+            --font-display: 'Ma Shan Zheng', cursive;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text);
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* ========== Navigation ========== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 3rem;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            text-decoration: none;
+            letter-spacing: 0.1em;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--color-text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 400;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--color-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--color-primary);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* ========== Hero Section ========== */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 600px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            padding: 0 2rem;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.4rem 1.5rem;
+            border: 1px solid var(--color-primary);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--color-primary);
+            letter-spacing: 0.2em;
+            margin-bottom: 1.5rem;
+            background: rgba(201, 169, 98, 0.08);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            color: var(--color-text);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.15em;
+        }
+
+        .hero-subtitle {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.3em;
+            font-weight: 400;
+        }
+
+        .hero-description {
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            line-height: 1.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .scroll-hint-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        /* ========== Cover Introduction Section ========== */
+        .cover-intro {
+            width: 100%;
+            padding: 5rem 2rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: center;
+        }
+
+        .cover-intro-card {
+            max-width: 900px;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-intro-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+        }
+
+        .cover-intro-card h2 {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            color: var(--color-primary);
+            margin-bottom: 2rem;
+            letter-spacing: 0.15em;
+        }
+
+        .cover-intro-card p {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            line-height: 2;
+            margin-bottom: 2.5rem;
+        }
+
+        .btn-detail {
+            display: inline-block;
+            padding: 1rem 3rem;
+            border: 2px solid var(--color-primary);
+            color: var(--color-primary);
+            text-decoration: none;
+            font-family: var(--font-sans);
+            font-size: 1.05rem;
+            letter-spacing: 0.15em;
+            border-radius: 8px;
+            transition: all 0.4s ease;
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-detail::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(201, 169, 98, 0.15), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-detail:hover {
+            background: rgba(201, 169, 98, 0.12);
+            box-shadow: 0 0 30px rgba(201, 169, 98, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-detail:hover::before {
+            left: 100%;
+        }
+
+        /* ========== Preview Cards Section ========== */
+        .preview-section {
+            width: 100%;
+            padding: 5rem 2rem;
+            background: var(--color-bg-dark);
+        }
+
+        .preview-section-title {
+            text-align: center;
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            color: var(--color-primary);
+            margin-bottom: 3rem;
+            letter-spacing: 0.15em;
+        }
+
+        .preview-cards {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .preview-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            min-width: auto;
+            flex: none;
+            scroll-snap-align: none;
+            width: 360px;
+            height: 260px;
+        }
+
+        .preview-card:hover {
+            transform: scale(1.03);
+            border-color: var(--color-primary);
+            box-shadow: 0 10px 40px rgba(201, 169, 98, 0.15);
+        }
+
+        .preview-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #0d0d14;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+
+        .preview-card:hover .preview-card-img {
+            transform: scale(1.05);
+        }
+
+        .preview-card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            background: linear-gradient(to top, rgba(10, 10, 15, 0.95), transparent);
+        }
+
+        .preview-card-title {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            color: var(--color-text);
+            font-weight: 600;
+        }
+
+        .preview-card-desc {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-top: 0.3rem;
+        }
+
+        /* ========== Footer ========== */
+        .footer {
+            width: 100%;
+            padding: 2.5rem 2rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .footer p {
+            font-family: var(--font-serif);
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+            letter-spacing: 0.2em;
+        }
+
+        .footer .footer-dot {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            margin: 0 0.8rem;
+            vertical-align: middle;
+        }
+
+
+        /* ========== Detail Grid & Cards ========== */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            align-items: start;
+        }
+        .detail-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        .detail-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            border-color: rgba(201,169,98,0.3);
+        }
+        .detail-card-image {
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+        }
+        .detail-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #0d0d14;
+            transition: transform 0.6s ease;
+            display: block;
+        }
+        .detail-card:hover .detail-card-image img {
+            transform: scale(1.05);
+        }
+        .detail-card-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(10,10,15,0.9), transparent);
+        }
+        .detail-card-tag {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(201,169,98,0.2);
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+        }
+        .detail-card-content {
+            padding: 2rem;
+        }
+        .detail-card-content h3 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+        .detail-card-content .era {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(201,169,98,0.15);
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .detail-card-content p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        .detail-card-content .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        .detail-card-content .features span {
+            padding: 0.3rem 0.8rem;
+            background: rgba(201,169,98,0.1);
+            border: 1px solid rgba(201,169,98,0.2);
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+            border-radius: 20px;
+        }
+
+        /* ========== Timeline Section ========== */
+        .timeline-section {
+            padding: 4rem 2rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .timeline-section-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .timeline-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--color-primary);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 3rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -3.4rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            border: 3px solid var(--color-bg-medium);
+        }
+        .timeline-item h4 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+        .timeline-item .time {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        .timeline-item p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        /* ========== Back Section ========== */
+        .back-section {
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-family: var(--font-sans);
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background: var(--color-primary);
+            color: var(--color-bg-dark);
+        }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 3.8rem;
+            }
+
+            .preview-cards {
+                justify-content: center;
+                gap: 1rem;
+            }
+            .preview-card {
+                width: 240px;
+                height: 190px;
+            }
+
+            .cover-intro-card {
+                padding: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 0.8rem 1.5rem;
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links a {
+                font-size: 0.85rem;
+            }
+
+            .hero-title {
+                font-size: 2.8rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+                letter-spacing: 0.15em;
+            }
+
+            .hero-description {
+                font-size: 0.95rem;
+            }
+
+            .cover-intro {
+                padding: 3rem 1rem;
+            }
+
+            .cover-intro-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .cover-intro-card h2 {
+                font-size: 2rem;
+            }
+
+            .preview-cards {
+                justify-content: center;
+            }
+            .preview-card {
+                width: 100%;
+                max-width: 400px;
+                height: 240px;
+            }
+            .preview-card-img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                background: #0d0d14;
+                display: block;
+                transition: transform 0.6s ease;
+            }
+
+            .btn-detail {
+                padding: 0.8rem 2rem;
+                font-size: 0.95rem;
+            }
+        }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            .detail-card-image { height: 220px; }
+            .timeline { padding-left: 2rem; }
+            .timeline-item::before { left: -2.4rem; }
+
+    
+        /* ========== Detail Section ========== */
+        .detail-section {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #0a0a0f 0%, #120e0a 50%, #0a0a0f 100%);
+            position: relative;
+        }
+        .detail-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+        .detail-section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+        .detail-section-header h2 {
+            font-family: var(--font-display);
+            font-size: 2.4rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            letter-spacing: 0.15em;
+        }
+        .detail-section-header p {
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            color: var(--color-text-muted);
+            line-height: 1.8;
+        }
+
+
+
+        /* ========== Diamond Divider ========== */
+        .diamond-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .diamond-divider::before,
+        .diamond-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+        }
+        .diamond-divider span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--color-primary);
+            transform: rotate(45deg);
+            opacity: 0.6;
+        }
+
+        /* ========== Decorative Corner Elements ========== */
+        .cover-intro-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border-right: 2px solid rgba(201, 169, 98, 0.2);
+            border-bottom: 2px solid rgba(201, 169, 98, 0.2);
+            border-radius: 0 0 16px 0;
+        }
+
+        /* ========== Preview Section Themed Background ========== */
+        .preview-section {
+            width: 100%;
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #0a0a0f 0%, #120e0a 50%, #0a0a0f 100%);
+            position: relative;
+        }
+        .preview-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+
+        /* ========== Scrollbar Styling ========== */
+        .preview-cards::-webkit-scrollbar {
+            height: 6px;
+        }
+        .preview-cards::-webkit-scrollbar-track {
+            background: rgba(20, 20, 30, 0.5);
+            border-radius: 3px;
+        }
+        .preview-cards::-webkit-scrollbar-thumb {
+            background: rgba(201, 169, 98, 0.3);
+            border-radius: 3px;
+        }
+        .preview-cards::-webkit-scrollbar-thumb:hover {
+            background: rgba(201, 169, 98, 0.5);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="nav" id="mainNav">
+        <a href="dazu-rock-carvings-canvas.html" class="nav-logo">中华文物</a>
+        <ul class="nav-links">
+            <li><a href="dazu-rock-carvings-canvas.html">首页</a></li>
+            <li><a href="vessels-cover.html">器之灵</a></li>
+            <li><a href="stone-cover.html">石之韵</a></li>
+            <li><a href="history-cover.html">史之痕</a></li>
+            <li><a href="restoration-cover.html">文物修复</a></li>
+            <li><a href="promotion-cover.html" class="active">推广</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <canvas class="hero-canvas" id="hero-canvas"></canvas>
+        <div class="hero-content">
+            <span class="hero-badge">文化传播</span>
+            <h1 class="hero-title">推广</h1>
+            <p class="hero-subtitle">文创产品 · 数字藏品 · 主题展览</p>
+            <p class="hero-description">让沉睡在博物馆中的文物焕发新的生命力，搭建文物与公众之间的桥梁</p>
+        </div>
+        <div class="scroll-hint">
+            <span>向下滚动</span>
+            <div class="scroll-hint-line"></div>
+        </div>
+    </section>
+
+    <!-- Cover Introduction Section -->
+    <section class="cover-intro">
+        <div class="cover-intro-card">
+            <h2>文化传播</h2>
+            <p>文物不仅是历史的见证，更是当代文化创新的源泉。通过文创产品、数字藏品、主题展览、研学教育等多元化方式，让沉睡在博物馆中的文物焕发新的生命力。我们致力于搭建文物与公众之间的桥梁，让每个人都能感受到中华文明的博大精深。</p>
+        </div>
+    </section>
+
+    <!-- Preview Cards Section -->
+    <section class="preview-section">
+        <h2 class="preview-section-title">推广方式</h2>
+        <div class="preview-cards">
+            <a href="promotion-detail.html" class="preview-card">
+                <img src="images/cultural-creative.jpg" alt="文创产品" class="preview-card-img">
+                <div class="preview-card-overlay">
+                    <div class="preview-card-title">文创产品</div>
+                    <div class="preview-card-desc">让文物走进日常生活</div>
+                </div>
+            </a>
+            <a href="promotion-detail.html" class="preview-card">
+                <img src="images/nft-digital.jpg" alt="数字藏品" class="preview-card-img">
+                <div class="preview-card-overlay">
+                    <div class="preview-card-title">数字藏品</div>
+                    <div class="preview-card-desc">区块链技术赋能文物传播</div>
+                </div>
+            </a>
+            <a href="promotion-detail.html" class="preview-card">
+                <img src="images/museum-exhibition.jpg" alt="主题展览" class="preview-card-img">
+                <div class="preview-card-overlay">
+                    <div class="preview-card-title">主题展览</div>
+                    <div class="preview-card-desc">沉浸式文化体验空间</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+<!-- Diamond Divider -->
+    <div class="diamond-divider"><span></span></div>
+
+    <!-- Detail Section -->
+    <section class="detail-section">
+        <div class="detail-section-header">
+            <h2>深入了解推广</h2>
+            <p>探索文物推广与文化传播的多元方式</p>
+        </div>
+        <div class="detail-grid">
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">生活美学</span>
+                    <img src="images/cultural-creative.jpg" alt="文创产品" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">当代 · 21世纪</span>
+                    <h3>文创产品</h3>
+                    <p>
+                        将文物元素融入现代生活用品，让传统文化走进日常生活。
+                        丝巾上印有敦煌飞天的飘逸，书签上刻着青铜器的纹饰，
+                        茶具上绘着山水画的意境。每一件文创产品都是一次文化的传递，
+                        让使用者在日常生活中感受中华美学的魅力。
+                        故宫文创、敦煌文创等品牌已成为文化传播的成功典范。
+                    </p>
+                    <div class="features">
+                        <span>丝巾</span>
+                        <span>书签</span>
+                        <span>茶具</span>
+                        <span>文具</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">数字收藏</span>
+                    <img src="images/nft-digital.jpg" alt="数字藏品" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">区块链技术 · 21世纪</span>
+                    <h3>数字藏品NFT</h3>
+                    <p>
+                        利用区块链技术为文物创建独一无二的数字藏品，
+                        每件数字藏品都有唯一的身份标识和所有权证明。
+                        用户可以在数字世界中收藏、展示和交易这些文物数字资产。
+                        数字藏品不仅降低了文物收藏的门槛，
+                        更为文物保护和博物馆运营开辟了新的资金来源。
+                    </p>
+                    <div class="features">
+                        <span>区块链</span>
+                        <span>唯一标识</span>
+                        <span>数字所有权</span>
+                        <span>限量发行</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">沉浸体验</span>
+                    <img src="images/museum-exhibition.jpg" alt="博物馆展览" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">全年策划 · 21世纪</span>
+                    <h3>主题展览</h3>
+                    <p>
+                        策划特色文物主题展，通过场景复原、多媒体互动、沉浸式体验等方式，
+                        让观众身临其境地感受历史。从"千里江山"到"盛世华彩"，
+                        从"丝路瑰宝"到"宫廷遗珍"，每一场展览都是一次穿越时空的文化之旅。
+                        配合专家讲座、手工体验等互动活动，让展览更加生动有趣。
+                    </p>
+                    <div class="features">
+                        <span>场景复原</span>
+                        <span>多媒体互动</span>
+                        <span>专家讲座</span>
+                        <span>手工体验</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">教育传承</span>
+                    <img src="images/museum-education.jpg" alt="研学教育" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">青少年教育 · 21世纪</span>
+                    <h3>研学教育</h3>
+                    <p>
+                        面向青少年群体设计文物探索课程，通过"看、听、做、思"四维体验，
+                        培养孩子们对传统文化的兴趣。课程内容包括博物馆参观、
+                        文物修复体验、传统工艺制作、考古模拟发掘等。
+                        让孩子们在动手实践中感受文明的魅力，
+                        培养文化自信和民族认同感。
+                    </p>
+                    <div class="features">
+                        <span>博物馆参观</span>
+                        <span>修复体验</span>
+                        <span>工艺制作</span>
+                        <span>模拟考古</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">云端展览</span>
+                    <img src="images/promo-cloud.jpg" alt="云展览" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">互联网技术 · 21世纪</span>
+                    <h3>线上云展览</h3>
+                    <p>
+                        突破时空限制的线上展览平台，让全球观众随时随地欣赏珍贵文物。
+                        高清影像、3D模型、VR全景等技术让线上观展体验媲美实地参观。
+                        配合多语言讲解、智能导览、在线互动等功能，
+                        让文物传播跨越国界，向世界讲述中国故事。
+                    </p>
+                    <div class="features">
+                        <span>高清影像</span>
+                        <span>3D模型</span>
+                        <span>VR全景</span>
+                        <span>多语言</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">文明互鉴</span>
+                    <img src="images/promo-international.jpg" alt="国际交流" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">全球合作 · 21世纪</span>
+                    <h3>国际交流展</h3>
+                    <p>
+                        促进中外文明互鉴与交流，将中华文物带到世界各地，
+                        同时引进国外优秀展览。通过文物对话，增进不同文明之间的理解与尊重。
+                        丝绸之路文物展、故宫文物世界巡展等项目已成为中外文化交流的重要品牌，
+                        展现了中华文明的开放包容与自信。
+                    </p>
+                    <div class="features">
+                        <span>世界巡展</span>
+                        <span>文明对话</span>
+                        <span>学术交流</span>
+                        <span>合作研究</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="diamond-divider"><span></span></div>
+
+    <!-- 发展时间线 -->
+    <section class="timeline-section">
+        <div class="timeline-section-inner">
+            <h2 class="timeline-title">文物推广发展历程</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>传统展示</h4>
+                    <div class="time">古代-20世纪初</div>
+                    <p>文物主要通过宫廷收藏、私人赏玩等方式传播。博物馆概念传入中国后，开始面向公众开放。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>博物馆时代</h4>
+                    <div class="time">20世纪中期</div>
+                    <p>故宫博物院、国家博物馆等大型博物馆建立，文物开始系统性地向公众展示。出版物、纪录片成为重要传播媒介。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>文创兴起</h4>
+                    <div class="time">2010年代</div>
+                    <p>故宫文创引发全国博物馆文创热潮。文物元素被广泛应用于日用品、服饰、数码产品等领域，深受年轻人喜爱。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>数字化传播</h4>
+                    <div class="time">2020年代</div>
+                    <p>云展览、直播带货、短视频等新媒体形式让文物传播更加多元。数字藏品、元宇宙展览等新业态不断涌现。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>全球化推广</h4>
+                    <div class="time">未来展望</div>
+                    <p>文物推广将更加注重国际传播，通过多语言内容、跨国合作项目，让中华文明在世界舞台上绽放光彩。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 返回按钮 -->
+    <section class="back-section">
+        <a href="dazu-rock-carvings-canvas.html" class="back-btn">← 返回首页</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>中华文物 <span class="footer-dot"></span> 守护千年文明</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        class LanternFestivalEffect {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.mouseX = 0.5;
+                this.mouseY = 0.5;
+                this.lanterns = [];
+                this.petals = [];
+                this.fireflies = [];
+                this.time = 0;
+                this.bgImage = new Image();
+                this.bgImage.src = 'images/hero-promotion.jpg';
+                this.bgImageLoaded = false;
+                this.bgImage.onload = () => { this.bgImageLoaded = true; };
+                this.init();
+            }
+            init() {
+                this.resizeCanvas();
+                this.createLanterns();
+                this.createPetals();
+                this.createFireflies();
+                this.bindEvents();
+                this.animate();
+            }
+            resizeCanvas() {
+                this.canvas.width = this.canvas.parentElement.offsetWidth;
+                this.canvas.height = this.canvas.parentElement.offsetHeight;
+            }
+            createLanterns() {
+                for (let i = 0; i < 12; i++) {
+                    this.lanterns.push({
+                        x: 0.1 + Math.random() * 0.8,
+                        y: 0.6 + Math.random() * 0.4,
+                        size: 12 + Math.random() * 18,
+                        speedY: -0.0008 - Math.random() * 0.0015,
+                        swaySpeed: 0.5 + Math.random() * 1,
+                        swayAmp: 10 + Math.random() * 20,
+                        phase: Math.random() * Math.PI * 2,
+                        hue: 15 + Math.random() * 25,
+                        glowRadius: 40 + Math.random() * 30
+                    });
+                }
+            }
+            createPetals() {
+                for (let i = 0; i < 50; i++) {
+                    this.petals.push({
+                        x: Math.random(),
+                        y: Math.random(),
+                        size: 3 + Math.random() * 6,
+                        speedY: 0.0005 + Math.random() * 0.001,
+                        speedX: (Math.random() - 0.5) * 0.001,
+                        rotation: Math.random() * Math.PI * 2,
+                        rotSpeed: (Math.random() - 0.5) * 0.03,
+                        opacity: 0.3 + Math.random() * 0.4,
+                        hue: 320 + Math.random() * 40
+                    });
+                }
+            }
+            createFireflies() {
+                for (let i = 0; i < 30; i++) {
+                    this.fireflies.push({
+                        x: Math.random(),
+                        y: Math.random(),
+                        size: 1.5 + Math.random() * 2.5,
+                        speedX: (Math.random() - 0.5) * 0.001,
+                        speedY: (Math.random() - 0.5) * 0.001,
+                        opacity: 0.4 + Math.random() * 0.4,
+                        pulseSpeed: 1 + Math.random() * 2,
+                        phase: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+            bindEvents() {
+                window.addEventListener('resize', () => this.resizeCanvas());
+                document.addEventListener('mousemove', (e) => {
+                    this.mouseX = e.clientX / window.innerWidth;
+                    this.mouseY = e.clientY / window.innerHeight;
+                });
+            }
+            animate() {
+                this.time += 0.016;
+                this.draw();
+                requestAnimationFrame(() => this.animate());
+            }
+            draw() {
+                const ctx = this.ctx;
+                const w = this.canvas.width;
+                const h = this.canvas.height;
+                ctx.fillStyle = '#0d0808';
+                ctx.fillRect(0, 0, w, h);
+                // Draw hero background image
+                if (this.bgImageLoaded) {
+                    const img = this.bgImage;
+                    const imgRatio = img.width / img.height;
+                    const canvasRatio = w / h;
+                    let drawW, drawH, drawX, drawY;
+                    if (imgRatio > canvasRatio) {
+                        drawH = h;
+                        drawW = h * imgRatio;
+                        drawX = (w - drawW) / 2;
+                        drawY = 0;
+                    } else {
+                        drawW = w;
+                        drawH = w / imgRatio;
+                        drawX = 0;
+                        drawY = (h - drawH) / 2;
+                    }
+                    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                    // Apply dark overlay
+                    ctx.fillStyle = 'rgba(10, 10, 15, 0.6)';
+                    ctx.fillRect(0, 0, w, h);
+                }
+                this.drawWarmGlow(ctx, w, h);
+                this.drawLanterns(ctx, w, h);
+                this.drawPetals(ctx, w, h);
+                this.drawFireflies(ctx, w, h);
+                this.drawVignette(ctx, w, h);
+            }
+            drawWarmGlow(ctx, w, h) {
+                const centerX = w * 0.5 + (this.mouseX - 0.5) * 60;
+                const centerY = h * 0.5 + (this.mouseY - 0.5) * 30;
+                const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, w * 0.6);
+                gradient.addColorStop(0, 'rgba(200, 120, 40, 0.06)');
+                gradient.addColorStop(0.4, 'rgba(180, 90, 30, 0.025)');
+                gradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, w, h);
+            }
+            drawLanterns(ctx, w, h) {
+                this.lanterns.forEach(l => {
+                    l.y += l.speedY;
+                    const sway = Math.sin(this.time * l.swaySpeed + l.phase) * l.swayAmp;
+                    if (l.y < -0.1) {
+                        l.y = 1.1;
+                        l.x = 0.1 + Math.random() * 0.8;
+                    }
+                    const x = l.x * w + sway + (this.mouseX - 0.5) * 20;
+                    const y = l.y * h + (this.mouseY - 0.5) * 15;
+                    const glow = ctx.createRadialGradient(x, y, 0, x, y, l.glowRadius);
+                    glow.addColorStop(0, `hsla(${l.hue}, 80%, 55%, 0.25)`);
+                    glow.addColorStop(0.5, `hsla(${l.hue}, 70%, 45%, 0.08)`);
+                    glow.addColorStop(1, 'transparent');
+                    ctx.fillStyle = glow;
+                    ctx.fillRect(x - l.glowRadius, y - l.glowRadius, l.glowRadius * 2, l.glowRadius * 2);
+                    ctx.fillStyle = `hsla(${l.hue}, 85%, 60%, 0.9)`;
+                    ctx.beginPath();
+                    ctx.ellipse(x, y, l.size * 0.7, l.size, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = `hsla(${l.hue + 10}, 70%, 75%, 0.6)`;
+                    ctx.beginPath();
+                    ctx.ellipse(x - l.size * 0.15, y - l.size * 0.15, l.size * 0.3, l.size * 0.4, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = `hsla(${l.hue}, 60%, 40%, 0.5)`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y + l.size);
+                    ctx.lineTo(x, y + l.size + 15);
+                    ctx.stroke();
+                });
+            }
+            drawPetals(ctx, w, h) {
+                this.petals.forEach(p => {
+                    p.y += p.speedY;
+                    p.x += p.speedX + Math.sin(this.time + p.rotation) * 0.0003;
+                    p.rotation += p.rotSpeed;
+                    if (p.y > 1.05) {
+                        p.y = -0.05;
+                        p.x = Math.random();
+                    }
+                    const px = p.x * w;
+                    const py = p.y * h;
+                    ctx.save();
+                    ctx.translate(px, py);
+                    ctx.rotate(p.rotation);
+                    ctx.globalAlpha = p.opacity;
+                    ctx.fillStyle = `hsla(${p.hue}, 60%, 65%, 0.7)`;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, p.size, p.size * 0.5, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                });
+            }
+            drawFireflies(ctx, w, h) {
+                this.fireflies.forEach(f => {
+                    f.x += f.speedX;
+                    f.y += f.speedY;
+                    const pulse = Math.sin(this.time * f.pulseSpeed + f.phase) * 0.5 + 0.5;
+                    if (f.x < 0 || f.x > 1) f.speedX *= -1;
+                    if (f.y < 0 || f.y > 1) f.speedY *= -1;
+                    const fx = f.x * w;
+                    const fy = f.y * h;
+                    ctx.globalAlpha = f.opacity * pulse;
+                    ctx.fillStyle = '#ffd700';
+                    ctx.beginPath();
+                    ctx.arc(fx, fy, f.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(fx, fy, f.size * 3, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 200, 50, ${f.opacity * pulse * 0.3})`;
+                    ctx.fill();
+                });
+                ctx.globalAlpha = 1;
+            }
+            drawVignette(ctx, w, h) {
+                const gradient = ctx.createRadialGradient(w/2, h/2, w*0.3, w/2, h/2, w*0.8);
+                gradient.addColorStop(0, 'rgba(13, 8, 8, 0)');
+                gradient.addColorStop(1, 'rgba(13, 8, 8, 0.7)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, w, h);
+            }
+        }
+
+        const heroCanvas = document.getElementById('hero-canvas');
+        if (heroCanvas) {
+            new LanternFestivalEffect('hero-canvas');
+        }
+    </script>
+
+</body>
+</html>

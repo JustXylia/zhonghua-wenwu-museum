@@ -1,0 +1,1232 @@
+/**
+ * ============================================
+ * 中华文物网站 - Canvas 动态效果系统
+ * ============================================
+ * 1. 首页: 古迹→博物馆鼠标交互穿越效果
+ * 2. 器之灵: 金色粒子消散重组效果
+ * 3. 石之韵: 石屑剥落显真容效果
+ * 4. 史之痕: 光影卷轴金色线条效果
+ * 5. 文物修复: 科技网格数字雨效果
+ * 6. 推广: 灯笼飘动粒子效果
+ * ============================================
+ */
+
+// ============================================
+// 工具函数
+// ============================================
+function resizeCanvas(canvas) {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    return { width: rect.width, height: rect.height };
+}
+
+function isInViewport(element) {
+    const rect = element.getBoundingClientRect();
+    return rect.top < window.innerHeight && rect.bottom > 0;
+}
+
+// ============================================
+// 1. 首页 - 古迹→博物馆鼠标交互穿越效果
+// ============================================
+class HeroTransitionEffect {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.mouse = { x: 0.5, y: 0.5 };
+        this.targetMouse = { x: 0.5, y: 0.5 };
+        this.transition = 0;
+        this.targetTransition = 0;
+        this.particles = [];
+        this.dustParticles = [];
+        this.images = {};
+        this.loaded = false;
+        this.init();
+    }
+
+    init() {
+        resizeCanvas(this.canvas);
+        this.loadImages();
+        this.createParticles();
+        this.bindEvents();
+        this.animate();
+    }
+
+    loadImages() {
+        const imageUrls = {
+            ancient: 'images/hero-ancient.jpg',
+            museum: 'images/hero-museum.jpg'
+        };
+        let loadedCount = 0;
+        const total = Object.keys(imageUrls).length;
+
+        for (const [key, url] of Object.entries(imageUrls)) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                loadedCount++;
+                if (loadedCount === total) this.loaded = true;
+            };
+            img.src = url;
+            this.images[key] = img;
+        }
+    }
+
+    createParticles() {
+        // 创建漂浮的尘埃/光点粒子
+        for (let i = 0; i < 80; i++) {
+            this.dustParticles.push({
+                x: Math.random(),
+                y: Math.random(),
+                size: Math.random() * 2 + 0.5,
+                speedX: (Math.random() - 0.5) * 0.0005,
+                speedY: (Math.random() - 0.5) * 0.0003,
+                opacity: Math.random() * 0.6 + 0.2,
+                phase: Math.random() * Math.PI * 2
+            });
+        }
+    }
+
+    bindEvents() {
+        this.canvas.addEventListener('mousemove', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            this.targetMouse.x = (e.clientX - rect.left) / rect.width;
+            this.targetMouse.y = (e.clientY - rect.top) / rect.height;
+        });
+
+        this.canvas.addEventListener('mouseenter', () => {
+            this.targetTransition = 1;
+        });
+
+        this.canvas.addEventListener('mouseleave', () => {
+            this.targetTransition = 0;
+        });
+
+        window.addEventListener('resize', () => resizeCanvas(this.canvas));
+    }
+
+    animate() {
+        requestAnimationFrame(() => this.animate());
+
+        const { width, height } = this.canvas;
+        this.ctx.clearRect(0, 0, width, height);
+
+        // 平滑插值
+        this.mouse.x += (this.targetMouse.x - this.mouse.x) * 0.05;
+        this.mouse.y += (this.targetMouse.y - this.mouse.y) * 0.05;
+        this.transition += (this.targetTransition - this.transition) * 0.03;
+
+        if (!this.loaded) {
+            this.drawLoading();
+            return;
+        }
+
+        this.drawBackgrounds(width, height);
+        this.drawVignette(width, height);
+        this.drawDustParticles(width, height);
+        this.drawLightRays(width, height);
+    }
+
+    drawBackgrounds(width, height) {
+        // 鼠标位置影响过渡程度 - 左侧更偏向古迹，右侧更偏向博物馆
+        const mouseInfluence = this.mouse.x;
+        const effectiveTransition = this.transition * (0.5 + mouseInfluence * 0.5);
+
+        // 绘制古迹背景（底层）
+        this.drawImageWithParallax(this.images.ancient, width, height, this.mouse, 0.03, 1 - effectiveTransition);
+
+        // 绘制博物馆背景（上层，带过渡）
+        this.ctx.save();
+        this.ctx.globalAlpha = effectiveTransition;
+        this.drawImageWithParallax(this.images.museum, width, height, this.mouse, 0.05, 1);
+        this.ctx.restore();
+
+        // 绘制过渡效果 - 时间尘埃
+        this.drawTimeDust(width, height, effectiveTransition);
+    }
+
+    drawImageWithParallax(img, width, height, mouse, parallaxStrength, alpha) {
+        if (!img.complete) return;
+
+        const scale = Math.max(width / img.width, height / img.height);
+        const scaledWidth = img.width * scale;
+        const scaledHeight = img.height * scale;
+
+        // 视差偏移
+        const offsetX = (mouse.x - 0.5) * parallaxStrength * width;
+        const offsetY = (mouse.y - 0.5) * parallaxStrength * height;
+
+        const x = (width - scaledWidth) / 2 + offsetX;
+        const y = (height - scaledHeight) / 2 + offsetY;
+
+        this.ctx.save();
+        this.ctx.globalAlpha = alpha;
+        this.ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+        this.ctx.restore();
+    }
+
+    drawTimeDust(width, height, transition) {
+        // 在过渡区域绘制金色时间尘埃
+        const dustCount = Math.floor(transition * 100);
+        this.ctx.save();
+        for (let i = 0; i < dustCount; i++) {
+            const x = (Math.sin(i * 0.1 + Date.now() * 0.001) * 0.5 + 0.5) * width;
+            const y = (Math.cos(i * 0.15 + Date.now() * 0.0008) * 0.5 + 0.5) * height;
+            const size = Math.sin(i * 0.3 + Date.now() * 0.002) * 2 + 2;
+            const alpha = Math.sin(i * 0.2 + Date.now() * 0.001) * 0.3 + 0.3;
+
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, size, 0, Math.PI * 2);
+            this.ctx.fillStyle = `rgba(201, 169, 98, ${alpha * transition})`;
+            this.ctx.fill();
+        }
+        this.ctx.restore();
+    }
+
+    drawVignette(width, height) {
+        const gradient = this.ctx.createRadialGradient(
+            width / 2, height / 2, height * 0.3,
+            width / 2, height / 2, height * 0.8
+        );
+        gradient.addColorStop(0, 'rgba(10, 10, 15, 0)');
+        gradient.addColorStop(1, 'rgba(10, 10, 15, 0.6)');
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(0, 0, width, height);
+    }
+
+    drawDustParticles(width, height) {
+        const time = Date.now() * 0.001;
+        this.ctx.save();
+        for (const p of this.dustParticles) {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            p.phase += 0.01;
+
+            // 边界循环
+            if (p.x < 0) p.x = 1;
+            if (p.x > 1) p.x = 0;
+            if (p.y < 0) p.y = 1;
+            if (p.y > 1) p.y = 0;
+
+            const x = p.x * width;
+            const y = p.y * height;
+            const flicker = Math.sin(p.phase) * 0.3 + 0.7;
+
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, p.size, 0, Math.PI * 2);
+            this.ctx.fillStyle = `rgba(201, 169, 98, ${p.opacity * flicker})`;
+            this.ctx.fill();
+        }
+        this.ctx.restore();
+    }
+
+    drawLightRays(width, height) {
+        const time = Date.now() * 0.0005;
+        this.ctx.save();
+        this.ctx.globalCompositeOperation = 'screen';
+
+        for (let i = 0; i < 3; i++) {
+            const angle = time + (i * Math.PI * 2 / 3);
+            const rayWidth = 100 + Math.sin(time + i) * 50;
+            const startX = width * 0.5 + Math.cos(angle) * width * 0.3;
+            const startY = height * 0.3 + Math.sin(angle * 0.5) * height * 0.2;
+
+            const gradient = this.ctx.createLinearGradient(startX, startY, startX + Math.cos(angle) * width, startY + Math.sin(angle) * height);
+            gradient.addColorStop(0, 'rgba(201, 169, 98, 0.1)');
+            gradient.addColorStop(0.5, 'rgba(201, 169, 98, 0.05)');
+            gradient.addColorStop(1, 'rgba(201, 169, 98, 0)');
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(startX - rayWidth / 2, startY);
+            this.ctx.lineTo(startX + rayWidth / 2, startY);
+            this.ctx.lineTo(startX + rayWidth * 2 + Math.cos(angle) * width, startY + Math.sin(angle) * height);
+            this.ctx.lineTo(startX - rayWidth * 2 + Math.cos(angle) * width, startY + Math.sin(angle) * height);
+            this.ctx.closePath();
+            this.ctx.fillStyle = gradient;
+            this.ctx.fill();
+        }
+        this.ctx.restore();
+    }
+
+    drawLoading() {
+        const { width, height } = this.canvas;
+        this.ctx.fillStyle = '#0a0a0f';
+        this.ctx.fillRect(0, 0, width, height);
+        this.ctx.fillStyle = '#c9a962';
+        this.ctx.font = '20px "Noto Sans SC", sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('加载中...', width / 2, height / 2);
+    }
+}
+
+// ============================================
+// 2. 器之灵 - 金色粒子消散重组效果
+// ============================================
+class VesselParticleEffect {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.mouse = { x: -1000, y: -1000 };
+        this.isActive = false;
+        this.init();
+    }
+
+    init() {
+        resizeCanvas(this.canvas);
+        this.createParticles();
+        this.bindEvents();
+        this.animate();
+    }
+
+    createParticles() {
+        const { width, height } = this.canvas;
+        this.particles = [];
+        for (let i = 0; i < 150; i++) {
+            this.particles.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                baseX: Math.random() * width,
+                baseY: Math.random() * height,
+                size: Math.random() * 3 + 1,
+                color: this.getRandomGoldColor(),
+                speed: Math.random() * 0.5 + 0.2,
+                angle: Math.random() * Math.PI * 2,
+                disperse: false,
+                disperseX: 0,
+                disperseY: 0,
+                opacity: Math.random() * 0.6 + 0.4
+            });
+        }
+    }
+
+    getRandomGoldColor() {
+        const colors = [
+            'rgba(201, 169, 98,',
+            'rgba(180, 150, 80,',
+            'rgba(220, 190, 120,',
+            'rgba(160, 130, 60,'
+        ];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    bindEvents() {
+        this.canvas.addEventListener('mousemove', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            this.mouse.x = e.clientX - rect.left;
+            this.mouse.y = e.clientY - rect.top;
+        });
+
+        this.canvas.addEventListener('mouseleave', () => {
+            this.mouse.x = -1000;
+            this.mouse.y = -1000;
+        });
+
+        window.addEventListener('resize', () => {
+            resizeCanvas(this.canvas);
+            this.createParticles();
+        });
+    }
+
+    animate() {
+        requestAnimationFrame(() => this.animate());
+
+        if (!isInViewport(this.canvas)) return;
+
+        const { width, height } = this.canvas;
+        this.ctx.clearRect(0, 0, width, height);
+
+        const time = Date.now() * 0.001;
+
+        for (const p of this.particles) {
+            // 计算与鼠标的距离
+            const dx = this.mouse.x - p.x;
+            const dy = this.mouse.y - p.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const interactRadius = 150;
+
+            if (dist < interactRadius) {
+                // 鼠标靠近时粒子散开
+                const force = (interactRadius - dist) / interactRadius;
+                p.disperse = true;
+                p.disperseX -= (dx / dist) * force * 3;
+                p.disperseY -= (dy / dist) * force * 3;
+            } else {
+                // 缓慢回到原位
+                p.disperseX *= 0.95;
+                p.disperseY *= 0.95;
+                if (Math.abs(p.disperseX) < 0.1) p.disperse = false;
+            }
+
+            // 基础浮动动画
+            p.angle += p.speed * 0.02;
+            const floatX = Math.sin(p.angle + time) * 20;
+            const floatY = Math.cos(p.angle * 0.7 + time) * 15;
+
+            p.x = p.baseX + floatX + p.disperseX;
+            p.y = p.baseY + floatY + p.disperseY;
+
+            // 绘制粒子
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+
+            // 发光效果
+            const glowSize = p.size * 3;
+            const gradient = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowSize);
+            gradient.addColorStop(0, p.color + ' ' + p.opacity + ')');
+            gradient.addColorStop(0.5, p.color + ' ' + (p.opacity * 0.3) + ')');
+            gradient.addColorStop(1, p.color + ' 0)');
+
+            this.ctx.fillStyle = gradient;
+            this.ctx.fill();
+        }
+
+        // 绘制连接线
+        this.drawConnections();
+    }
+
+    drawConnections() {
+        const maxDist = 100;
+        for (let i = 0; i < this.particles.length; i++) {
+            for (let j = i + 1; j < this.particles.length; j++) {
+                const p1 = this.particles[i];
+                const p2 = this.particles[j];
+                const dx = p1.x - p2.x;
+                const dy = p1.y - p2.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < maxDist) {
+                    const alpha = (1 - dist / maxDist) * 0.2;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(p1.x, p1.y);
+                    this.ctx.lineTo(p2.x, p2.y);
+                    this.ctx.strokeStyle = `rgba(201, 169, 98, ${alpha})`;
+                    this.ctx.lineWidth = 0.5;
+                    this.ctx.stroke();
+                }
+            }
+        }
+    }
+}
+
+// ============================================
+// 3. 石之韵 - 石屑剥落显真容效果
+// ============================================
+class StonePeelEffect {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.mouse = { x: 0, y: 0 };
+        this.peelRadius = 120;
+        this.images = {};
+        this.loaded = false;
+        this.peelMask = null;
+        this.init();
+    }
+
+    init() {
+        resizeCanvas(this.canvas);
+        this.loadImages();
+        this.bindEvents();
+        this.animate();
+    }
+
+    loadImages() {
+        const imageUrls = {
+            raw: 'images/stone-raw.jpg',
+            carved: 'images/stone-carved.jpg'
+        };
+        let loadedCount = 0;
+        const total = Object.keys(imageUrls).length;
+
+        for (const [key, url] of Object.entries(imageUrls)) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                loadedCount++;
+                if (loadedCount === total) {
+                    this.loaded = true;
+                    this.createPeelMask();
+                }
+            };
+            img.src = url;
+            this.images[key] = img;
+        }
+    }
+
+    createPeelMask() {
+        // 创建石屑纹理遮罩
+        const { width, height } = this.canvas;
+        this.peelMask = document.createElement('canvas');
+        this.peelMask.width = width;
+        this.peelMask.height = height;
+        const maskCtx = this.peelMask.getContext('2d');
+
+        // 填充石屑纹理
+        for (let i = 0; i < 5000; i++) {
+            const x = Math.random() * width;
+            const y = Math.random() * height;
+            const size = Math.random() * 4 + 1;
+            const gray = Math.random() * 50 + 150;
+            maskCtx.fillStyle = `rgb(${gray}, ${gray}, ${gray})`;
+            maskCtx.fillRect(x, y, size, size);
+        }
+    }
+
+    bindEvents() {
+        this.canvas.addEventListener('mousemove', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            this.mouse.x = e.clientX - rect.left;
+            this.mouse.y = e.clientY - rect.top;
+        });
+
+        this.canvas.addEventListener('mouseleave', () => {
+            this.mouse.x = -1000;
+            this.mouse.y = -1000;
+        });
+
+        window.addEventListener('resize', () => {
+            resizeCanvas(this.canvas);
+            if (this.loaded) this.createPeelMask();
+        });
+    }
+
+    animate() {
+        requestAnimationFrame(() => this.animate());
+
+        if (!isInViewport(this.canvas)) return;
+
+        const { width, height } = this.canvas;
+        this.ctx.clearRect(0, 0, width, height);
+
+        if (!this.loaded) {
+            this.drawLoading();
+            return;
+        }
+
+        this.drawStoneEffect(width, height);
+    }
+
+    drawStoneEffect(width, height) {
+        // 绘制底层 - 精美石刻
+        this.drawCoverImage(this.images.carved, width, height);
+
+        // 绘制顶层 - 粗糙石面（带剥落效果）
+        this.ctx.save();
+
+        // 创建剥落遮罩
+        const maskCanvas = document.createElement('canvas');
+        maskCanvas.width = width;
+        maskCanvas.height = height;
+        const maskCtx = maskCanvas.getContext('2d');
+
+        // 填充白色（显示粗糙石面）
+        maskCtx.fillStyle = 'white';
+        maskCtx.fillRect(0, 0, width, height);
+
+        // 在鼠标位置绘制透明圆形（显示底层石刻）
+        maskCtx.globalCompositeOperation = 'destination-out';
+
+        // 主圆形
+        const gradient = maskCtx.createRadialGradient(
+            this.mouse.x, this.mouse.y, 0,
+            this.mouse.x, this.mouse.y, this.peelRadius
+        );
+        gradient.addColorStop(0, 'rgba(0,0,0,1)');
+        gradient.addColorStop(0.7, 'rgba(0,0,0,0.8)');
+        gradient.addColorStop(1, 'rgba(0,0,0,0)');
+        maskCtx.fillStyle = gradient;
+        maskCtx.beginPath();
+        maskCtx.arc(this.mouse.x, this.mouse.y, this.peelRadius, 0, Math.PI * 2);
+        maskCtx.fill();
+
+        // 添加不规则边缘 - 石屑散落效果
+        for (let i = 0; i < 30; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const dist = this.peelRadius + Math.random() * 40;
+            const x = this.mouse.x + Math.cos(angle) * dist;
+            const y = this.mouse.y + Math.sin(angle) * dist;
+            const size = Math.random() * 8 + 3;
+            maskCtx.beginPath();
+            maskCtx.arc(x, y, size, 0, Math.PI * 2);
+            maskCtx.fill();
+        }
+
+        // 将遮罩应用到粗糙石面
+        this.ctx.globalCompositeOperation = 'source-over';
+        this.drawCoverImage(this.images.raw, width, height);
+        this.ctx.globalCompositeOperation = 'destination-in';
+        this.ctx.drawImage(maskCanvas, 0, 0);
+
+        this.ctx.restore();
+
+        // 绘制石屑粒子
+        this.drawStoneDebris(width, height);
+    }
+
+    drawCoverImage(img, width, height) {
+        if (!img.complete) return;
+        const scale = Math.max(width / img.width, height / img.height);
+        const scaledWidth = img.width * scale;
+        const scaledHeight = img.height * scale;
+        const x = (width - scaledWidth) / 2;
+        const y = (height - scaledHeight) / 2;
+        this.ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+    }
+
+    drawStoneDebris(width, height) {
+        const time = Date.now() * 0.001;
+        const dx = this.mouse.x - width / 2;
+        const dy = this.mouse.y - height / 2;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < this.peelRadius + 50) {
+            this.ctx.save();
+            for (let i = 0; i < 20; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const r = this.peelRadius + Math.random() * 30;
+                const x = this.mouse.x + Math.cos(angle + time) * r;
+                const y = this.mouse.y + Math.sin(angle + time * 0.7) * r;
+                const size = Math.random() * 3 + 1;
+                const alpha = Math.sin(time * 2 + i) * 0.3 + 0.5;
+
+                this.ctx.fillStyle = `rgba(180, 170, 160, ${alpha})`;
+                this.ctx.fillRect(x, y, size, size);
+            }
+            this.ctx.restore();
+        }
+    }
+
+    drawLoading() {
+        const { width, height } = this.canvas;
+        this.ctx.fillStyle = '#12121a';
+        this.ctx.fillRect(0, 0, width, height);
+    }
+}
+
+// ============================================
+// 4. 史之痕 - 光影卷轴金色线条效果
+// ============================================
+class HistoryScrollEffect {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.mouse = { x: 0, y: 0 };
+        this.goldenLines = [];
+        this.scrollImages = [];
+        this.loaded = false;
+        this.init();
+    }
+
+    init() {
+        resizeCanvas(this.canvas);
+        this.loadImages();
+        this.createGoldenLines();
+        this.bindEvents();
+        this.animate();
+    }
+
+    loadImages() {
+        const imageUrls = [
+            'images/scroll-calligraphy.jpg',
+            'images/landscape-painting.jpg'
+        ];
+        let loadedCount = 0;
+
+        for (const url of imageUrls) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                loadedCount++;
+                if (loadedCount === imageUrls.length) this.loaded = true;
+            };
+            img.src = url;
+            this.scrollImages.push(img);
+        }
+    }
+
+    createGoldenLines() {
+        const { width, height } = this.canvas;
+        this.goldenLines = [];
+
+        // 创建流动的金色线条 - 模拟书法笔触
+        for (let i = 0; i < 15; i++) {
+            this.goldenLines.push({
+                points: this.generateCalligraphyPath(width, height),
+                progress: 0,
+                speed: Math.random() * 0.005 + 0.002,
+                width: Math.random() * 2 + 0.5,
+                opacity: Math.random() * 0.5 + 0.3,
+                active: false,
+                delay: Math.random() * 200
+            });
+        }
+    }
+
+    generateCalligraphyPath(width, height) {
+        const points = [];
+        const startX = Math.random() * width;
+        const startY = Math.random() * height;
+        let x = startX;
+        let y = startY;
+
+        for (let i = 0; i < 20; i++) {
+            points.push({ x, y });
+            x += (Math.random() - 0.5) * 100;
+            y += (Math.random() - 0.5) * 80 + 20;
+        }
+        return points;
+    }
+
+    bindEvents() {
+        this.canvas.addEventListener('mousemove', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            this.mouse.x = e.clientX - rect.left;
+            this.mouse.y = e.clientY - rect.top;
+
+            // 激活附近的线条
+            for (const line of this.goldenLines) {
+                if (!line.active && line.delay <= 0) {
+                    const dist = this.distanceToLine(line.points, this.mouse);
+                    if (dist < 100) {
+                        line.active = true;
+                    }
+                }
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            resizeCanvas(this.canvas);
+            this.createGoldenLines();
+        });
+    }
+
+    distanceToLine(points, mouse) {
+        let minDist = Infinity;
+        for (const p of points) {
+            const dist = Math.sqrt((p.x - mouse.x) ** 2 + (p.y - mouse.y) ** 2);
+            if (dist < minDist) minDist = dist;
+        }
+        return minDist;
+    }
+
+    animate() {
+        requestAnimationFrame(() => this.animate());
+
+        if (!isInViewport(this.canvas)) return;
+
+        const { width, height } = this.canvas;
+        this.ctx.clearRect(0, 0, width, height);
+
+        // 绘制背景卷轴图片（淡化）
+        if (this.loaded) {
+            this.drawBackgroundScrolls(width, height);
+        }
+
+        // 绘制金色书法线条
+        this.drawGoldenLines();
+
+        // 绘制鼠标光晕
+        this.drawMouseGlow(width, height);
+    }
+
+    drawBackgroundScrolls(width, height) {
+        this.ctx.save();
+        this.ctx.globalAlpha = 0.15;
+        for (let i = 0; i < this.scrollImages.length; i++) {
+            const img = this.scrollImages[i];
+            if (!img.complete) continue;
+            const scale = 0.3;
+            const w = img.width * scale;
+            const h = img.height * scale;
+            const x = width * 0.1 + i * width * 0.4;
+            const y = height * 0.2 + i * height * 0.1;
+            this.ctx.drawImage(img, x, y, w, h);
+        }
+        this.ctx.restore();
+    }
+
+    drawGoldenLines() {
+        const time = Date.now() * 0.001;
+
+        for (const line of this.goldenLines) {
+            if (line.delay > 0) {
+                line.delay--;
+                continue;
+            }
+
+            // 自动激活
+            if (!line.active && Math.random() < 0.001) {
+                line.active = true;
+            }
+
+            if (line.active) {
+                line.progress += line.speed;
+                if (line.progress > 1) {
+                    line.progress = 0;
+                    line.active = false;
+                    line.points = this.generateCalligraphyPath(this.canvas.width, this.canvas.height);
+                }
+            }
+
+            // 绘制线条
+            if (line.progress > 0) {
+                this.drawCalligraphyStroke(line, time);
+            }
+        }
+    }
+
+    drawCalligraphyStroke(line, time) {
+        const points = line.points;
+        const progress = line.progress;
+        const maxIndex = Math.floor(progress * (points.length - 1));
+
+        if (maxIndex < 2) return;
+
+        this.ctx.save();
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+
+        for (let i = 1; i < maxIndex; i++) {
+            const p1 = points[i - 1];
+            const p2 = points[i];
+            const segmentProgress = i / maxIndex;
+            const fadeIn = Math.min(segmentProgress * 3, 1);
+            const fadeOut = Math.max(1 - (segmentProgress - 0.7) * 3, 0);
+            const alpha = fadeIn * fadeOut * line.opacity;
+
+            // 金色渐变
+            const gradient = this.ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+            gradient.addColorStop(0, `rgba(201, 169, 98, ${alpha})`);
+            gradient.addColorStop(0.5, `rgba(220, 190, 120, ${alpha * 1.2})`);
+            gradient.addColorStop(1, `rgba(201, 169, 98, ${alpha})`);
+
+            this.ctx.strokeStyle = gradient;
+            this.ctx.lineWidth = line.width * (1 + Math.sin(time * 2 + i) * 0.3);
+            this.ctx.beginPath();
+            this.ctx.moveTo(p1.x, p1.y);
+            this.ctx.lineTo(p2.x, p2.y);
+            this.ctx.stroke();
+
+            // 添加发光效果
+            this.ctx.shadowColor = 'rgba(201, 169, 98, 0.5)';
+            this.ctx.shadowBlur = 10;
+            this.ctx.stroke();
+            this.ctx.shadowBlur = 0;
+        }
+
+        this.ctx.restore();
+    }
+
+    drawMouseGlow(width, height) {
+        const gradient = this.ctx.createRadialGradient(
+            this.mouse.x, this.mouse.y, 0,
+            this.mouse.x, this.mouse.y, 150
+        );
+        gradient.addColorStop(0, 'rgba(201, 169, 98, 0.1)');
+        gradient.addColorStop(1, 'rgba(201, 169, 98, 0)');
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(0, 0, width, height);
+    }
+}
+
+// ============================================
+// 5. 文物修复 - 科技网格数字雨效果
+// ============================================
+class RestorationTechEffect {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.gridPoints = [];
+        this.dataStreams = [];
+        this.scanLines = [];
+        this.init();
+    }
+
+    init() {
+        resizeCanvas(this.canvas);
+        this.createGrid();
+        this.createDataStreams();
+        this.bindEvents();
+        this.animate();
+    }
+
+    createGrid() {
+        const { width, height } = this.canvas;
+        const spacing = 60;
+        this.gridPoints = [];
+
+        for (let x = 0; x < width + spacing; x += spacing) {
+            for (let y = 0; y < height + spacing; y += spacing) {
+                this.gridPoints.push({
+                    x, y,
+                    baseX: x,
+                    baseY: y,
+                    offsetX: 0,
+                    offsetY: 0
+                });
+            }
+        }
+    }
+
+    createDataStreams() {
+        const { width } = this.canvas;
+        this.dataStreams = [];
+        const chars = '01アイウエオカキクケコサシスセソタチツテト0123456789';
+
+        for (let i = 0; i < 15; i++) {
+            this.dataStreams.push({
+                x: Math.random() * width,
+                y: Math.random() * -500,
+                speed: Math.random() * 2 + 1,
+                chars: Array.from({ length: 15 }, () => chars[Math.floor(Math.random() * chars.length)]),
+                opacity: Math.random() * 0.5 + 0.3
+            });
+        }
+    }
+
+    bindEvents() {
+        window.addEventListener('resize', () => {
+            resizeCanvas(this.canvas);
+            this.createGrid();
+        });
+    }
+
+    animate() {
+        requestAnimationFrame(() => this.animate());
+
+        if (!isInViewport(this.canvas)) return;
+
+        const { width, height } = this.canvas;
+        this.ctx.clearRect(0, 0, width, height);
+
+        const time = Date.now() * 0.001;
+
+        this.drawGrid(time);
+        this.drawDataStreams();
+        this.drawScanLines(time);
+        this.drawHologramEffect(width, height, time);
+    }
+
+    drawGrid(time) {
+        this.ctx.save();
+        this.ctx.strokeStyle = 'rgba(0, 200, 255, 0.15)';
+        this.ctx.lineWidth = 0.5;
+
+        // 绘制动态网格
+        for (let i = 0; i < this.gridPoints.length; i++) {
+            const p = this.gridPoints[i];
+            const wave = Math.sin(time * 2 + p.baseX * 0.01 + p.baseY * 0.01) * 3;
+            p.offsetX = wave;
+            p.offsetY = Math.cos(time * 1.5 + p.baseX * 0.008) * 2;
+
+            // 绘制点
+            this.ctx.fillStyle = `rgba(0, 200, 255, ${0.3 + Math.sin(time + i) * 0.2})`;
+            this.ctx.beginPath();
+            this.ctx.arc(p.x + p.offsetX, p.y + p.offsetY, 1.5, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+
+        // 绘制连接线
+        const spacing = 60;
+        for (let i = 0; i < this.gridPoints.length; i++) {
+            const p1 = this.gridPoints[i];
+            // 连接右侧点
+            const rightIndex = i + 1;
+            if (rightIndex < this.gridPoints.length && this.gridPoints[rightIndex].x > p1.x) {
+                const p2 = this.gridPoints[rightIndex];
+                this.ctx.beginPath();
+                this.ctx.moveTo(p1.x + p1.offsetX, p1.y + p1.offsetY);
+                this.ctx.lineTo(p2.x + p2.offsetX, p2.y + p2.offsetY);
+                this.ctx.stroke();
+            }
+            // 连接下方点
+            const bottomIndex = i + Math.floor(width / spacing) + 2;
+            if (bottomIndex < this.gridPoints.length) {
+                const p2 = this.gridPoints[bottomIndex];
+                this.ctx.beginPath();
+                this.ctx.moveTo(p1.x + p1.offsetX, p1.y + p1.offsetY);
+                this.ctx.lineTo(p2.x + p2.offsetX, p2.y + p2.offsetY);
+                this.ctx.stroke();
+            }
+        }
+
+        this.ctx.restore();
+    }
+
+    drawDataStreams() {
+        const { height } = this.canvas;
+        this.ctx.save();
+        this.ctx.font = '14px monospace';
+
+        for (const stream of this.dataStreams) {
+            stream.y += stream.speed;
+            if (stream.y > height + 200) {
+                stream.y = -200;
+                stream.x = Math.random() * this.canvas.width;
+            }
+
+            for (let i = 0; i < stream.chars.length; i++) {
+                const charY = stream.y - i * 20;
+                if (charY < -20 || charY > height + 20) continue;
+
+                const alpha = stream.opacity * (1 - i / stream.chars.length);
+                const isHead = i === 0;
+                this.ctx.fillStyle = isHead
+                    ? `rgba(200, 255, 255, ${alpha})`
+                    : `rgba(0, 200, 255, ${alpha * 0.7})`;
+                this.ctx.fillText(stream.chars[i], stream.x, charY);
+            }
+        }
+
+        this.ctx.restore();
+    }
+
+    drawScanLines(time) {
+        const { width, height } = this.canvas;
+        this.ctx.save();
+
+        // 水平扫描线
+        const scanY = (time * 100) % (height + 100) - 50;
+        this.ctx.strokeStyle = 'rgba(0, 200, 255, 0.3)';
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, scanY);
+        this.ctx.lineTo(width, scanY);
+        this.ctx.stroke();
+
+        // 扫描线光晕
+        const gradient = this.ctx.createLinearGradient(0, scanY - 20, 0, scanY + 20);
+        gradient.addColorStop(0, 'rgba(0, 200, 255, 0)');
+        gradient.addColorStop(0.5, 'rgba(0, 200, 255, 0.1)');
+        gradient.addColorStop(1, 'rgba(0, 200, 255, 0)');
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(0, scanY - 20, width, 40);
+
+        this.ctx.restore();
+    }
+
+    drawHologramEffect(width, height, time) {
+        // 中心全息投影效果
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const radius = 100 + Math.sin(time) * 20;
+
+        this.ctx.save();
+        this.ctx.strokeStyle = 'rgba(0, 200, 255, 0.2)';
+        this.ctx.lineWidth = 1;
+
+        // 旋转圆环
+        for (let i = 0; i < 3; i++) {
+            this.ctx.beginPath();
+            this.ctx.ellipse(
+                centerX, centerY,
+                radius + i * 30,
+                radius * 0.6 + i * 20,
+                time * 0.5 + i * Math.PI / 3,
+                0, Math.PI * 2
+            );
+            this.ctx.stroke();
+        }
+
+        this.ctx.restore();
+    }
+}
+
+// ============================================
+// 6. 推广 - 灯笼飘动粒子效果
+// ============================================
+class PromotionLanternEffect {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.lanterns = [];
+        this.petals = [];
+        this.init();
+    }
+
+    init() {
+        resizeCanvas(this.canvas);
+        this.createLanterns();
+        this.createPetals();
+        this.bindEvents();
+        this.animate();
+    }
+
+    createLanterns() {
+        const { width, height } = this.canvas;
+        this.lanterns = [];
+
+        for (let i = 0; i < 8; i++) {
+            this.lanterns.push({
+                x: Math.random() * width,
+                y: Math.random() * height * 0.5,
+                size: Math.random() * 20 + 15,
+                swingPhase: Math.random() * Math.PI * 2,
+                swingSpeed: Math.random() * 0.5 + 0.3,
+                color: Math.random() > 0.5 ? '#c9a962' : '#c44',
+                glowIntensity: Math.random() * 0.5 + 0.5
+            });
+        }
+    }
+
+    createPetals() {
+        const { width, height } = this.canvas;
+        this.petals = [];
+
+        for (let i = 0; i < 50; i++) {
+            this.petals.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                size: Math.random() * 4 + 2,
+                speedX: Math.random() * 1 - 0.5,
+                speedY: Math.random() * 0.5 + 0.2,
+                rotation: Math.random() * Math.PI * 2,
+                rotationSpeed: (Math.random() - 0.5) * 0.02,
+                color: Math.random() > 0.7 ? '#c9a962' : '#d4a5a5'
+            });
+        }
+    }
+
+    bindEvents() {
+        window.addEventListener('resize', () => {
+            resizeCanvas(this.canvas);
+            this.createLanterns();
+            this.createPetals();
+        });
+    }
+
+    animate() {
+        requestAnimationFrame(() => this.animate());
+
+        if (!isInViewport(this.canvas)) return;
+
+        const { width, height } = this.canvas;
+        this.ctx.clearRect(0, 0, width, height);
+
+        const time = Date.now() * 0.001;
+
+        this.drawLanterns(time);
+        this.drawPetals(time);
+    }
+
+    drawLanterns(time) {
+        for (const lantern of this.lanterns) {
+            const swing = Math.sin(time * lantern.swingSpeed + lantern.swingPhase) * 15;
+            const x = lantern.x + swing;
+            const y = lantern.y + Math.sin(time * 0.5 + lantern.swingPhase) * 5;
+
+            // 绘制灯笼光晕
+            const glowRadius = lantern.size * 3;
+            const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, glowRadius);
+            gradient.addColorStop(0, lantern.color + Math.floor(lantern.glowIntensity * 40).toString(16).padStart(2, '0'));
+            gradient.addColorStop(0.5, lantern.color + '20');
+            gradient.addColorStop(1, lantern.color + '00');
+
+            this.ctx.fillStyle = gradient;
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, glowRadius, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // 绘制灯笼主体
+            this.ctx.fillStyle = lantern.color;
+            this.ctx.beginPath();
+            this.ctx.ellipse(x, y, lantern.size * 0.8, lantern.size, 0, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // 绘制灯笼顶部和底部
+            this.ctx.fillStyle = '#8b4513';
+            this.ctx.fillRect(x - lantern.size * 0.3, y - lantern.size - 3, lantern.size * 0.6, 6);
+            this.ctx.fillRect(x - lantern.size * 0.3, y + lantern.size - 3, lantern.size * 0.6, 6);
+        }
+    }
+
+    drawPetals(time) {
+        const { width, height } = this.canvas;
+
+        for (const petal of this.petals) {
+            petal.x += petal.speedX + Math.sin(time + petal.y * 0.01) * 0.5;
+            petal.y += petal.speedY;
+            petal.rotation += petal.rotationSpeed;
+
+            if (petal.y > height + 20) {
+                petal.y = -20;
+                petal.x = Math.random() * width;
+            }
+            if (petal.x < -20) petal.x = width + 20;
+            if (petal.x > width + 20) petal.x = -20;
+
+            this.ctx.save();
+            this.ctx.translate(petal.x, petal.y);
+            this.ctx.rotate(petal.rotation);
+            this.ctx.fillStyle = petal.color;
+            this.ctx.globalAlpha = 0.6;
+            this.ctx.beginPath();
+            this.ctx.ellipse(0, 0, petal.size, petal.size * 0.6, 0, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.restore();
+        }
+    }
+}
+
+// ============================================
+// 初始化所有Canvas效果
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    // 首页穿越效果
+    const heroCanvas = document.getElementById('hero-canvas');
+    if (heroCanvas) {
+        new HeroTransitionEffect('hero-canvas');
+    }
+
+    // 器之灵粒子效果
+    const vesselsCanvas = document.getElementById('vessels-canvas');
+    if (vesselsCanvas) {
+        new VesselParticleEffect('vessels-canvas');
+    }
+
+    // 石之韵石屑剥落效果
+    const stoneCanvas = document.getElementById('stone-canvas');
+    if (stoneCanvas) {
+        new StonePeelEffect('stone-canvas');
+    }
+
+    // 史之痕光影卷轴效果
+    const historyCanvas = document.getElementById('history-canvas');
+    if (historyCanvas) {
+        new HistoryScrollEffect('history-canvas');
+    }
+
+    // 文物修复科技效果
+    const restorationCanvas = document.getElementById('restoration-canvas');
+    if (restorationCanvas) {
+        new RestorationTechEffect('restoration-canvas');
+    }
+
+    // 推广灯笼效果
+    const promotionCanvas = document.getElementById('promotion-canvas');
+    if (promotionCanvas) {
+        new PromotionLanternEffect('promotion-canvas');
+    }
+
+    // 导航栏滚动效果
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 100) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    });
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+});

@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文物修复 - 中华文物</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #c9a962;
+            --color-primary-dark: #8b7355;
+            --color-bg-dark: #0a0a0f;
+            --color-bg-medium: #12121a;
+            --color-bg-light: #1a1a25;
+            --glass-bg: rgba(20, 20, 30, 0.7);
+            --glass-border: rgba(201, 169, 98, 0.15);
+            --color-text: #f5f0e8;
+            --color-text-muted: #8a8578;
+            --font-display: 'Ma Shan Zheng', cursive;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text);
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* ========== Navigation ========== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 3rem;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            text-decoration: none;
+            letter-spacing: 0.1em;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--color-text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 400;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--color-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--color-primary);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* ========== Hero Section ========== */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 600px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            padding: 0 2rem;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.4rem 1.5rem;
+            border: 1px solid var(--color-primary);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--color-primary);
+            letter-spacing: 0.2em;
+            margin-bottom: 1.5rem;
+            background: rgba(201, 169, 98, 0.08);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            color: var(--color-text);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.15em;
+        }
+
+        .hero-subtitle {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.3em;
+            font-weight: 400;
+        }
+
+        .hero-description {
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            line-height: 1.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .scroll-hint-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        /* ========== Cover Introduction Section ========== */
+        .cover-intro {
+            width: 100%;
+            padding: 5rem 2rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: center;
+        }
+
+        .cover-intro-card {
+            max-width: 900px;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-intro-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+        }
+
+        .cover-intro-card h2 {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            color: var(--color-primary);
+            margin-bottom: 2rem;
+            letter-spacing: 0.15em;
+        }
+
+        .cover-intro-card p {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            line-height: 2;
+            margin-bottom: 2.5rem;
+        }
+
+        .btn-detail {
+            display: inline-block;
+            padding: 1rem 3rem;
+            border: 2px solid var(--color-primary);
+            color: var(--color-primary);
+            text-decoration: none;
+            font-family: var(--font-sans);
+            font-size: 1.05rem;
+            letter-spacing: 0.15em;
+            border-radius: 8px;
+            transition: all 0.4s ease;
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-detail::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(201, 169, 98, 0.15), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-detail:hover {
+            background: rgba(201, 169, 98, 0.12);
+            box-shadow: 0 0 30px rgba(201, 169, 98, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-detail:hover::before {
+            left: 100%;
+        }
+
+        /* ========== Preview Cards Section ========== */
+        .preview-section {
+            width: 100%;
+            padding: 5rem 2rem;
+            background: var(--color-bg-dark);
+        }
+
+        .preview-section-title {
+            text-align: center;
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            color: var(--color-primary);
+            margin-bottom: 3rem;
+            letter-spacing: 0.15em;
+        }
+
+        .preview-cards {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .preview-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            min-width: auto;
+            flex: none;
+            scroll-snap-align: none;
+            width: 360px;
+            height: 260px;
+        }
+
+        .preview-card:hover {
+            transform: scale(1.03);
+            border-color: var(--color-primary);
+            box-shadow: 0 10px 40px rgba(201, 169, 98, 0.15);
+        }
+
+        .preview-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #0d0d14;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+
+        .preview-card:hover .preview-card-img {
+            transform: scale(1.05);
+        }
+
+        .preview-card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            background: linear-gradient(to top, rgba(10, 10, 15, 0.95), transparent);
+        }
+
+        .preview-card-title {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            color: var(--color-text);
+            font-weight: 600;
+        }
+
+        .preview-card-desc {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-top: 0.3rem;
+        }
+
+        /* ========== Footer ========== */
+        .footer {
+            width: 100%;
+            padding: 2.5rem 2rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .footer p {
+            font-family: var(--font-serif);
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+            letter-spacing: 0.2em;
+        }
+
+        .footer .footer-dot {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            margin: 0 0.8rem;
+            vertical-align: middle;
+        }
+
+
+        /* ========== Detail Grid & Cards ========== */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            align-items: start;
+        }
+        .detail-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        .detail-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            border-color: rgba(201,169,98,0.3);
+        }
+        .detail-card-image {
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+        }
+        .detail-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #0d0d14;
+            transition: transform 0.6s ease;
+            display: block;
+        }
+        .detail-card:hover .detail-card-image img {
+            transform: scale(1.05);
+        }
+        .detail-card-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(10,10,15,0.9), transparent);
+        }
+        .detail-card-tag {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(201,169,98,0.2);
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+        }
+        .detail-card-content {
+            padding: 2rem;
+        }
+        .detail-card-content h3 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+        .detail-card-content .era {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(201,169,98,0.15);
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .detail-card-content p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        .detail-card-content .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        .detail-card-content .features span {
+            padding: 0.3rem 0.8rem;
+            background: rgba(201,169,98,0.1);
+            border: 1px solid rgba(201,169,98,0.2);
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+            border-radius: 20px;
+        }
+
+        /* ========== Timeline Section ========== */
+        .timeline-section {
+            padding: 4rem 2rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .timeline-section-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .timeline-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--color-primary);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 3rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -3.4rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            border: 3px solid var(--color-bg-medium);
+        }
+        .timeline-item h4 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+        .timeline-item .time {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        .timeline-item p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        /* ========== Back Section ========== */
+        .back-section {
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-family: var(--font-sans);
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background: var(--color-primary);
+            color: var(--color-bg-dark);
+        }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 3.8rem;
+            }
+
+            .preview-cards {
+                justify-content: center;
+                gap: 1rem;
+            }
+            .preview-card {
+                width: 240px;
+                height: 190px;
+            }
+
+            .cover-intro-card {
+                padding: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 0.8rem 1.5rem;
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links a {
+                font-size: 0.85rem;
+            }
+
+            .hero-title {
+                font-size: 2.8rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+                letter-spacing: 0.15em;
+            }
+
+            .hero-description {
+                font-size: 0.95rem;
+            }
+
+            .cover-intro {
+                padding: 3rem 1rem;
+            }
+
+            .cover-intro-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .cover-intro-card h2 {
+                font-size: 2rem;
+            }
+
+            .preview-cards {
+                justify-content: center;
+            }
+            .preview-card {
+                width: 100%;
+                max-width: 400px;
+                height: 240px;
+            }
+            .preview-card-img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                background: #0d0d14;
+                display: block;
+                transition: transform 0.6s ease;
+            }
+
+            .btn-detail {
+                padding: 0.8rem 2rem;
+                font-size: 0.95rem;
+            }
+        }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            .detail-card-image { height: 220px; }
+            .timeline { padding-left: 2rem; }
+            .timeline-item::before { left: -2.4rem; }
+
+    
+        /* ========== Detail Section ========== */
+        .detail-section {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #0a0a0f 0%, #0a100f 50%, #0a0a0f 100%);
+            position: relative;
+        }
+        .detail-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+        .detail-section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+        .detail-section-header h2 {
+            font-family: var(--font-display);
+            font-size: 2.4rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            letter-spacing: 0.15em;
+        }
+        .detail-section-header p {
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            color: var(--color-text-muted);
+            line-height: 1.8;
+        }
+
+
+
+        /* ========== Diamond Divider ========== */
+        .diamond-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .diamond-divider::before,
+        .diamond-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+        }
+        .diamond-divider span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--color-primary);
+            transform: rotate(45deg);
+            opacity: 0.6;
+        }
+
+        /* ========== Decorative Corner Elements ========== */
+        .cover-intro-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border-right: 2px solid rgba(201, 169, 98, 0.2);
+            border-bottom: 2px solid rgba(201, 169, 98, 0.2);
+            border-radius: 0 0 16px 0;
+        }
+
+        /* ========== Preview Section Themed Background ========== */
+        .preview-section {
+            width: 100%;
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #0a0a0f 0%, #0a100f 50%, #0a0a0f 100%);
+            position: relative;
+        }
+        .preview-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+
+        /* ========== Scrollbar Styling ========== */
+        .preview-cards::-webkit-scrollbar {
+            height: 6px;
+        }
+        .preview-cards::-webkit-scrollbar-track {
+            background: rgba(20, 20, 30, 0.5);
+            border-radius: 3px;
+        }
+        .preview-cards::-webkit-scrollbar-thumb {
+            background: rgba(201, 169, 98, 0.3);
+            border-radius: 3px;
+        }
+        .preview-cards::-webkit-scrollbar-thumb:hover {
+            background: rgba(201, 169, 98, 0.5);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="nav" id="mainNav">
+        <a href="dazu-rock-carvings-canvas.html" class="nav-logo">中华文物</a>
+        <ul class="nav-links">
+            <li><a href="dazu-rock-carvings-canvas.html">首页</a></li>
+            <li><a href="vessels-cover.html">器之灵</a></li>
+            <li><a href="stone-cover.html">石之韵</a></li>
+            <li><a href="history-cover.html">史之痕</a></li>
+            <li><a href="restoration-cover.html" class="active">文物修复</a></li>
+            <li><a href="promotion-cover.html">推广</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <canvas class="hero-canvas" id="hero-canvas"></canvas>
+        <div class="hero-content">
+            <span class="hero-badge">科技守护</span>
+            <h1 class="hero-title">文物修复</h1>
+            <p class="hero-subtitle">数字孪生 · AI还原 · VR沉浸</p>
+            <p class="hero-description">传统工艺与现代科技融合，为千年文物注入新的生命力</p>
+        </div>
+        <div class="scroll-hint">
+            <span>向下滚动</span>
+            <div class="scroll-hint-line"></div>
+        </div>
+    </section>
+
+    <!-- Cover Introduction Section -->
+    <section class="cover-intro">
+        <div class="cover-intro-card">
+            <h2>科技守护文明</h2>
+            <p>文物修复是一门融合传统工艺与现代科技的综合性学科。从传统的清洗、加固、补全到如今的数字化保护、人工智能辅助修复，科技正在以前所未有的方式改变文物保护的面貌。数字化技术不仅为文物建立了永久性的数字档案，更让文物研究、展示和传播突破了时空的限制。</p>
+        </div>
+    </section>
+
+    <!-- Preview Cards Section -->
+    <section class="preview-section">
+        <h2 class="preview-section-title">修复技术</h2>
+        <div class="preview-cards">
+            <a href="restoration-detail.html" class="preview-card">
+                <img src="images/tech-restoration.jpg" alt="科技修复" class="preview-card-img">
+                <div class="preview-card-overlay">
+                    <div class="preview-card-title">科技修复</div>
+                    <div class="preview-card-desc">传统工艺与现代技术的融合</div>
+                </div>
+            </a>
+            <a href="restoration-detail.html" class="preview-card">
+                <img src="images/ai-color-restoration.jpg" alt="AI色彩还原" class="preview-card-img">
+                <div class="preview-card-overlay">
+                    <div class="preview-card-title">AI色彩还原</div>
+                    <div class="preview-card-desc">智能算法重现千年色彩</div>
+                </div>
+            </a>
+            <a href="restoration-detail.html" class="preview-card">
+                <img src="images/vr-museum.jpg" alt="VR博物馆" class="preview-card-img">
+                <div class="preview-card-overlay">
+                    <div class="preview-card-title">VR沉浸体验</div>
+                    <div class="preview-card-desc">虚拟现实重现历史场景</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+<!-- Diamond Divider -->
+    <div class="diamond-divider"><span></span></div>
+
+    <!-- Detail Section -->
+    <section class="detail-section">
+        <div class="detail-section-header">
+            <h2>深入了解修复技术</h2>
+            <p>探索传统工艺与现代科技融合的文物保护技术</p>
+        </div>
+        <div class="detail-grid">
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">永久保存</span>
+                    <img src="images/tech-restoration.jpg" alt="数字孪生" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">当代技术 · 21世纪</span>
+                    <h3>数字孪生</h3>
+                    <p>
+                        通过高精度3D扫描和摄影测量技术，为每件文物建立1:1的数字孪生体。
+                        数字孪生不仅记录了文物的外观形态，还包含了材质、纹理、色彩等多维度信息。
+                        即使原件因自然灾害或意外损毁，数字模型仍能永久保存文物的完整信息，
+                        为后续研究和复原提供可靠依据。
+                    </p>
+                    <div class="features">
+                        <span>3D扫描</span>
+                        <span>摄影测量</span>
+                        <span>材质分析</span>
+                        <span>永久存档</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">智能还原</span>
+                    <img src="images/ai-color-restoration.jpg" alt="AI色彩还原" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">深度学习 · 21世纪</span>
+                    <h3>AI色彩还原</h3>
+                    <p>
+                        利用深度学习算法分析文物的材质成分和褪色规律，
+                        智能还原文物原始的鲜艳色彩。通过对大量历史图像和文献的学习，
+                        AI可以推测出壁画、织物等文物的原始色调。
+                        这项技术已成功应用于敦煌壁画、兵马俑等著名文物的色彩复原工作，
+                        让褪色的历史重焕光彩。
+                    </p>
+                    <div class="features">
+                        <span>深度学习</span>
+                        <span>色彩分析</span>
+                        <span>材质识别</span>
+                        <span>虚拟复原</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">身临其境</span>
+                    <img src="images/vr-museum.jpg" alt="VR沉浸体验" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">虚拟现实 · 21世纪</span>
+                    <h3>VR沉浸体验</h3>
+                    <p>
+                        虚拟现实技术让观众可以身临其境地走进博物馆和考古现场，
+                        与文物进行零距离互动。通过VR头显，用户可以360度观察文物细节，
+                        甚至可以"进入"壁画中的场景，体验千年前的历史情境。
+                        这项技术极大地拓展了文物展示的可能性，
+                        让无法亲临现场的观众也能获得沉浸式文化体验。
+                    </p>
+                    <div class="features">
+                        <span>VR头显</span>
+                        <span>360度观察</span>
+                        <span>互动体验</span>
+                        <span>远程参观</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">可信溯源</span>
+                    <img src="images/blockchain-cert.jpg" alt="区块链存证" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">区块链技术 · 21世纪</span>
+                    <h3>区块链存证</h3>
+                    <p>
+                        利用区块链技术的不可篡改特性，对文物数字资产进行确权与溯源。
+                        每件文物的数字档案、修复记录、流转信息都被永久记录在区块链上，
+                        确保数据的真实性和可追溯性。这项技术为文物市场提供了可信的认证体系，
+                        有效防止赝品流通，保护文物所有者的合法权益。
+                    </p>
+                    <div class="features">
+                        <span>不可篡改</span>
+                        <span>数字确权</span>
+                        <span>溯源追踪</span>
+                        <span>防伪认证</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="diamond-divider"><span></span></div>
+
+    <!-- 发展时间线 -->
+    <section class="timeline-section">
+        <div class="timeline-section-inner">
+            <h2 class="timeline-title">文物修复技术发展历程</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>传统修复时代</h4>
+                    <div class="time">古代-20世纪初</div>
+                    <p>以手工技艺为主，依靠修复师的经验和技艺进行清洗、加固、补全。使用传统材料如天然树脂、矿物颜料等。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>科学修复兴起</h4>
+                    <div class="time">20世纪中期</div>
+                    <p>引入化学分析、X射线检测等科学手段，修复从经验走向科学。意大利布兰迪的修复理论影响深远。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>数字化保护</h4>
+                    <div class="time">20世纪末-21世纪初</div>
+                    <p>3D扫描、数字摄影等技术开始应用于文物记录。敦煌研究院等机构建立数字化档案，开启文物保护新纪元。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>智能化修复</h4>
+                    <div class="time">2010年代至今</div>
+                    <p>人工智能、机器学习技术应用于文物修复。AI辅助色彩还原、破损预测、自动拼接等成为研究热点。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>元宇宙展示</h4>
+                    <div class="time">2020年代</div>
+                    <p>VR/AR、区块链技术融合，文物进入元宇宙展示新阶段。数字藏品、虚拟展览成为文化传播新形式。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 返回按钮 -->
+    <section class="back-section">
+        <a href="dazu-rock-carvings-canvas.html" class="back-btn">← 返回首页</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>中华文物 <span class="footer-dot"></span> 守护千年文明</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        class DigitalTechEffect {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.mouseX = 0.5;
+                this.mouseY = 0.5;
+                this.gridLines = [];
+                this.digitalRain = [];
+                this.scanLines = [];
+                this.hexagons = [];
+                this.time = 0;
+                this.bgImage = new Image();
+                this.bgImage.src = 'images/hero-restoration.jpg';
+                this.bgImageLoaded = false;
+                this.bgImage.onload = () => { this.bgImageLoaded = true; };
+                this.init();
+            }
+            init() {
+                this.resizeCanvas();
+                this.createGrid();
+                this.createDigitalRain();
+                this.createScanLines();
+                this.createHexagons();
+                this.bindEvents();
+                this.animate();
+            }
+            resizeCanvas() {
+                this.canvas.width = this.canvas.parentElement.offsetWidth;
+                this.canvas.height = this.canvas.parentElement.offsetHeight;
+            }
+            createGrid() {
+                for (let i = 0; i < 20; i++) {
+                    this.gridLines.push({
+                        x: Math.random(),
+                        y: Math.random(),
+                        length: 0.1 + Math.random() * 0.3,
+                        direction: Math.random() > 0.5 ? 'h' : 'v',
+                        speed: 0.2 + Math.random() * 0.5,
+                        opacity: 0.03 + Math.random() * 0.05
+                    });
+                }
+            }
+            createDigitalRain() {
+                const cols = Math.floor(this.canvas.width / 20) || 50;
+                for (let i = 0; i < cols; i++) {
+                    this.digitalRain.push({
+                        x: i / cols,
+                        y: Math.random() * -1,
+                        speed: 0.005 + Math.random() * 0.01,
+                        chars: [],
+                        length: 5 + Math.random() * 15,
+                        opacity: 0.1 + Math.random() * 0.3
+                    });
+                    for (let j = 0; j < 20; j++) {
+                        this.digitalRain[i].chars.push(this.randomChar());
+                    }
+                }
+            }
+            randomChar() {
+                const chars = '0123456789ABCDEF';
+                return chars[Math.floor(Math.random() * chars.length)];
+            }
+            createScanLines() {
+                for (let i = 0; i < 3; i++) {
+                    this.scanLines.push({
+                        y: Math.random(),
+                        speed: 0.1 + Math.random() * 0.2,
+                        opacity: 0.04 + Math.random() * 0.06,
+                        width: 1 + Math.random() * 2
+                    });
+                }
+            }
+            createHexagons() {
+                for (let i = 0; i < 12; i++) {
+                    this.hexagons.push({
+                        x: Math.random(),
+                        y: Math.random(),
+                        size: 15 + Math.random() * 30,
+                        opacity: 0.02 + Math.random() * 0.04,
+                        pulseSpeed: 0.3 + Math.random() * 0.5,
+                        phase: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+            bindEvents() {
+                window.addEventListener('resize', () => this.resizeCanvas());
+                document.addEventListener('mousemove', (e) => {
+                    this.mouseX = e.clientX / window.innerWidth;
+                    this.mouseY = e.clientY / window.innerHeight;
+                });
+            }
+            animate() {
+                this.time += 0.016;
+                this.draw();
+                requestAnimationFrame(() => this.animate());
+            }
+            draw() {
+                const ctx = this.ctx;
+                const w = this.canvas.width;
+                const h = this.canvas.height;
+                ctx.fillStyle = '#08080e';
+                ctx.fillRect(0, 0, w, h);
+                // Draw hero background image
+                if (this.bgImageLoaded) {
+                    const img = this.bgImage;
+                    const imgRatio = img.width / img.height;
+                    const canvasRatio = w / h;
+                    let drawW, drawH, drawX, drawY;
+                    if (imgRatio > canvasRatio) {
+                        drawH = h;
+                        drawW = h * imgRatio;
+                        drawX = (w - drawW) / 2;
+                        drawY = 0;
+                    } else {
+                        drawW = w;
+                        drawH = w / imgRatio;
+                        drawX = 0;
+                        drawY = (h - drawH) / 2;
+                    }
+                    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                    // Apply dark overlay
+                    ctx.fillStyle = 'rgba(10, 10, 15, 0.6)';
+                    ctx.fillRect(0, 0, w, h);
+                }
+                this.drawGrid(ctx, w, h);
+                this.drawHexagons(ctx, w, h);
+                this.drawDigitalRain(ctx, w, h);
+                this.drawScanLines(ctx, w, h);
+                this.drawTechLight(ctx, w, h);
+                this.drawVignette(ctx, w, h);
+            }
+            drawGrid(ctx, w, h) {
+                ctx.globalAlpha = 0.03;
+                ctx.strokeStyle = '#2a8a8a';
+                ctx.lineWidth = 0.5;
+                const gridSize = 40;
+                for (let x = 0; x < w; x += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, h);
+                    ctx.stroke();
+                }
+                for (let y = 0; y < h; y += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(w, y);
+                    ctx.stroke();
+                }
+                ctx.globalAlpha = 1;
+            }
+            drawHexagons(ctx, w, h) {
+                this.hexagons.forEach(hex => {
+                    const pulse = Math.sin(this.time * hex.pulseSpeed + hex.phase) * 0.5 + 0.5;
+                    const x = hex.x * w;
+                    const y = hex.y * h;
+                    ctx.globalAlpha = hex.opacity * (0.3 + pulse * 0.7);
+                    ctx.strokeStyle = '#3aa3a3';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (Math.PI / 3) * i - Math.PI / 6;
+                        const px = x + hex.size * Math.cos(angle);
+                        const py = y + hex.size * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                });
+            }
+            drawDigitalRain(ctx, w, h) {
+                ctx.font = '12px monospace';
+                ctx.textAlign = 'center';
+                this.digitalRain.forEach(col => {
+                    col.y += col.speed;
+                    if (col.y > 1.2) col.y = -0.1;
+                    const x = col.x * w;
+                    for (let i = 0; i < col.length; i++) {
+                        const y = (col.y - i * 0.02) * h;
+                        if (y < 0 || y > h) continue;
+                        const alpha = col.opacity * (1 - i / col.length) * 0.6;
+                        ctx.fillStyle = `rgba(50, 200, 180, ${alpha})`;
+                        if (Math.random() < 0.05) col.chars[i] = this.randomChar();
+                        ctx.fillText(col.chars[i], x, y);
+                    }
+                });
+            }
+            drawScanLines(ctx, w, h) {
+                this.scanLines.forEach(s => {
+                    s.y += s.speed * 0.001;
+                    if (s.y > 1) s.y = 0;
+                    const y = s.y * h;
+                    ctx.globalAlpha = s.opacity;
+                    ctx.fillStyle = '#40c0a0';
+                    ctx.fillRect(0, y, w, s.width);
+                    ctx.globalAlpha = 1;
+                });
+            }
+            drawTechLight(ctx, w, h) {
+                const centerX = w * 0.5 + (this.mouseX - 0.5) * 80;
+                const centerY = h * 0.4 + (this.mouseY - 0.5) * 40;
+                const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, w * 0.5);
+                gradient.addColorStop(0, 'rgba(50, 200, 180, 0.05)');
+                gradient.addColorStop(0.5, 'rgba(40, 160, 150, 0.02)');
+                gradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, w, h);
+            }
+            drawVignette(ctx, w, h) {
+                const gradient = ctx.createRadialGradient(w/2, h/2, w*0.3, w/2, h/2, w*0.8);
+                gradient.addColorStop(0, 'rgba(8, 8, 14, 0)');
+                gradient.addColorStop(1, 'rgba(8, 8, 14, 0.7)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, w, h);
+            }
+        }
+
+        const heroCanvas = document.getElementById('hero-canvas');
+        if (heroCanvas) {
+            new DigitalTechEffect('hero-canvas');
+        }
+    </script>
+
+</body>
+</html>
