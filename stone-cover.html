@@ -1,1292 +1,404 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>石之韵 - 中华文物</title>
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>石之韵 · 中华文物</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --color-primary: #c9a962;
-            --color-primary-dark: #8b7355;
-            --color-bg-dark: #0a0a0f;
-            --color-bg-medium: #12121a;
-            --color-bg-light: #1a1a25;
-            --glass-bg: rgba(20, 20, 30, 0.7);
-            --glass-border: rgba(201, 169, 98, 0.15);
-            --color-text: #f5f0e8;
-            --color-text-muted: #8a8578;
-            --font-display: 'Ma Shan Zheng', cursive;
-            --font-serif: 'Noto Serif SC', serif;
-            --font-sans: 'Noto Sans SC', sans-serif;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: var(--font-sans);
-            background-color: var(--color-bg-dark);
-            color: var(--color-text);
-            overflow-x: hidden;
-            line-height: 1.8;
+            overflow: hidden;
+            background: #0c0c0e;
+            font-family: 'Noto Serif SC', serif;
+            color: #f5f0e8;
         }
-
-        /* ========== Navigation ========== */
+        canvas {
+            display: block;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+        }
+        .ui-layer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
         .nav {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
+            top: 0; left: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 1rem 3rem;
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            transition: all 0.3s ease;
+            align-items: center;
+            z-index: 20;
+            pointer-events: auto;
+            background: linear-gradient(180deg, rgba(12,12,14,0.9) 0%, rgba(12,12,14,0) 100%);
         }
-
         .nav-logo {
-            font-family: var(--font-display);
-            font-size: 1.8rem;
-            color: var(--color-primary);
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.6rem;
+            color: #c9a962;
             text-decoration: none;
             letter-spacing: 0.1em;
         }
-
         .nav-links {
             display: flex;
+            gap: 2.2rem;
             list-style: none;
-            gap: 2rem;
         }
-
         .nav-links a {
-            color: var(--color-text-muted);
+            color: rgba(245,240,232,0.55);
             text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 400;
-            transition: color 0.3s ease;
+            font-size: 0.88rem;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
             position: relative;
         }
-
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #c9a962;
+        }
         .nav-links a::after {
             content: '';
             position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--color-primary);
+            bottom: -4px; left: 0;
+            width: 0; height: 1px;
+            background: #c9a962;
             transition: width 0.3s ease;
         }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--color-primary);
-        }
-
         .nav-links a:hover::after,
         .nav-links a.active::after {
             width: 100%;
         }
-
-        /* ========== Hero Section ========== */
-        .hero-section {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            min-height: 600px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hero-canvas {
+        .hero-text {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
-            max-width: 900px;
-            padding: 3rem 4rem;
-            background: rgba(10, 10, 15, 0.35);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border-radius: 24px;
-            border: 1px solid rgba(201, 169, 98, 0.08);
+            pointer-events: none;
         }
-
         .hero-badge {
             display: inline-block;
-            padding: 0.4rem 1.5rem;
-            border: 1px solid var(--color-primary);
+            padding: 0.35rem 1.4rem;
+            border: 1px solid rgba(201,169,98,0.4);
             border-radius: 50px;
-            font-size: 0.85rem;
-            color: var(--color-primary);
+            font-size: 0.82rem;
+            color: #c9a962;
             letter-spacing: 0.2em;
             margin-bottom: 1.5rem;
-            background: rgba(201, 169, 98, 0.08);
-            backdrop-filter: blur(10px);
+            background: rgba(201,169,98,0.06);
+            backdrop-filter: blur(8px);
         }
-
         .hero-title {
-            font-family: var(--font-display);
+            font-family: 'Ma Shan Zheng', cursive;
             font-size: 7.5rem;
-            color: var(--color-text);
-            margin-bottom: 0.5rem;
-            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-            letter-spacing: 0.15em;
+            color: #f5f0e8;
+            text-shadow: 0 4px 40px rgba(0,0,0,0.7), 0 0 80px rgba(0,0,0,0.3);
+            letter-spacing: 0.18em;
+            line-height: 1.1;
         }
-
         .hero-subtitle {
-            font-family: var(--font-serif);
-            font-size: 1.5rem;
-            color: var(--color-primary);
-            margin-bottom: 1.5rem;
-            letter-spacing: 0.3em;
+            font-size: 1.35rem;
+            color: #c9a962;
+            margin-top: 1.2rem;
+            letter-spacing: 0.35em;
             font-weight: 400;
         }
-
-        .hero-description {
-            font-size: 1.05rem;
-            color: var(--color-text-muted);
-            line-height: 1.9;
-            max-width: 600px;
-            margin: 0 auto 2rem;
+        .hero-desc {
+            font-size: 1rem;
+            color: rgba(245,240,232,0.55);
+            margin-top: 1.5rem;
+            max-width: 520px;
+            line-height: 1.8;
         }
-
         .scroll-hint {
             position: absolute;
-            bottom: 2rem;
+            bottom: 2.5rem;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 0.5rem;
-            color: var(--color-text-muted);
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            animation: float 2s ease-in-out infinite;
+            color: rgba(245,240,232,0.35);
+            font-size: 0.78rem;
+            letter-spacing: 0.15em;
+            animation: floatHint 2.5s ease-in-out infinite;
         }
-
         .scroll-hint-line {
             width: 1px;
-            height: 40px;
-            background: linear-gradient(to bottom, var(--color-primary), transparent);
+            height: 36px;
+            background: linear-gradient(to bottom, rgba(201,169,98,0.5), transparent);
         }
-
-        @keyframes float {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-10px); }
+        @keyframes floatHint {
+            0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.4; }
+            50% { transform: translateX(-50%) translateY(-8px); opacity: 0.8; }
         }
-
-        /* ========== Cover Introduction Section ========== */
-        .cover-intro {
-            width: 100%;
-            padding: 3rem 2rem;
-            background: var(--color-bg-medium);
-            border-top: 1px solid var(--glass-border);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: center;
-        }
-
-        .cover-intro-card {
-            max-width: 900px;
-            width: 100%;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 4rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cover-intro-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
-        }
-
-        .cover-intro-card h2 {
-            font-family: var(--font-display);
-            font-size: 2.8rem;
-            color: var(--color-primary);
-            margin-bottom: 2rem;
-            letter-spacing: 0.15em;
-        }
-
-        .cover-intro-card p {
-            font-family: var(--font-serif);
-            font-size: 1.05rem;
-            color: var(--color-text-muted);
-            line-height: 2;
-            margin-bottom: 2.5rem;
-        }
-
-        .btn-detail {
-            display: inline-block;
-            padding: 1rem 3rem;
-            border: 2px solid var(--color-primary);
-            color: var(--color-primary);
-            text-decoration: none;
-            font-family: var(--font-sans);
-            font-size: 1.05rem;
-            letter-spacing: 0.15em;
-            border-radius: 8px;
-            transition: all 0.4s ease;
-            background: transparent;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-detail::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(201, 169, 98, 0.15), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn-detail:hover {
-            background: rgba(201, 169, 98, 0.12);
-            box-shadow: 0 0 30px rgba(201, 169, 98, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .btn-detail:hover::before {
-            left: 100%;
-        }
-
-        /* ========== Preview Cards Section ========== */
-        .preview-section {
-            width: 100%;
-            padding: 3rem 2rem;
-            background: var(--color-bg-dark);
-        }
-
-        .preview-section-title {
-            text-align: center;
-            font-family: var(--font-display);
-            font-size: 2.2rem;
-            color: var(--color-primary);
-            margin-bottom: 3rem;
-            letter-spacing: 0.15em;
-        }
-
-        .preview-cards {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .preview-card {
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            transition: all 0.4s ease;
-            cursor: pointer;
-            text-decoration: none;
-            display: block;
-            min-width: auto;
-            flex: none;
-            scroll-snap-align: none;
-            width: 360px;
-            height: 260px;
-        }
-
-        .preview-card:hover {
-            transform: scale(1.03);
-            border-color: var(--color-primary);
-            box-shadow: 0 10px 40px rgba(201, 169, 98, 0.15);
-        }
-
-        .preview-card-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #0d0d14;
-            display: block;
-            transition: transform 0.6s ease;
-        }
-
-        .preview-card:hover .preview-card-img {
-            transform: scale(1.05);
-        }
-
-        .preview-card-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 1.5rem;
-            background: linear-gradient(to top, rgba(10, 10, 15, 0.95), transparent);
-        }
-
-        .preview-card-title {
-            font-family: var(--font-serif);
-            font-size: 1.1rem;
-            color: var(--color-text);
-            font-weight: 600;
-        }
-
-        .preview-card-desc {
-            font-size: 0.85rem;
-            color: var(--color-text-muted);
-            margin-top: 0.3rem;
-        }
-
-        /* ========== Footer ========== */
-        .footer {
-            width: 100%;
-            padding: 2.5rem 2rem;
-            background: var(--color-bg-medium);
-            border-top: 1px solid var(--glass-border);
-            text-align: center;
-        }
-
-        .footer p {
-            font-family: var(--font-serif);
-            font-size: 0.95rem;
-            color: var(--color-text-muted);
-            letter-spacing: 0.2em;
-        }
-
-        .footer .footer-dot {
-            display: inline-block;
-            width: 4px;
-            height: 4px;
-            background: var(--color-primary);
-            border-radius: 50%;
-            margin: 0 0.8rem;
-            vertical-align: middle;
-        }
-
-
-        /* ========== Detail Grid & Cards ========== */
-        .detail-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 3rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            align-items: start;
-        }
-        .detail-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            overflow: hidden;
-            transition: all 0.4s ease;
-            position: relative;
-        }
-        .detail-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
-            border-color: rgba(201,169,98,0.3);
-        }
-        .detail-card-image {
-            width: 100%;
-            height: 260px;
-            overflow: hidden;
-            position: relative;
-        }
-        .detail-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            background: #0d0d14;
-            display: block;
-            transition: transform 0.6s ease;
-        }
-        .detail-card:hover .detail-card-image img {
-            transform: scale(1.05);
-        }
-        .detail-card-image::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 50%;
-            background: linear-gradient(to top, rgba(10,10,15,0.9), transparent);
-        }
-        .detail-card-tag {
-            position: absolute;
-            top: 1.5rem;
-            left: 1.5rem;
-            padding: 0.4rem 1rem;
-            background: rgba(201,169,98,0.2);
-            border: 1px solid var(--color-primary);
-            color: var(--color-primary);
-            font-size: 0.8rem;
-            border-radius: 4px;
-            z-index: 2;
-            backdrop-filter: blur(10px);
-        }
-        .detail-card-content {
-            padding: 2rem;
-            position: relative;
-            z-index: 2;
-        }
-        .detail-card-content h3 {
-            font-family: var(--font-display);
-            font-size: 1.8rem;
-            color: var(--color-primary);
-            margin-bottom: 1rem;
-        }
-        .detail-card-content .era {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: rgba(201,169,98,0.15);
-            color: var(--color-primary);
-            font-size: 0.8rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-        }
-        .detail-card-content p {
-            color: var(--color-text-muted);
-            font-size: 0.95rem;
-            line-height: 1.8;
-            margin-bottom: 1rem;
-        }
-        .detail-card-content .features {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
-        }
-        .detail-card-content .features span {
-            padding: 0.3rem 0.8rem;
-            background: rgba(201,169,98,0.1);
-            border: 1px solid rgba(201,169,98,0.2);
-            color: var(--color-text-muted);
-            font-size: 0.8rem;
-            border-radius: 20px;
-        }
-
-        /* ========== Timeline Section ========== */
-        .timeline-section {
-            padding: 3rem 2rem;
-            background: var(--color-bg-medium);
-            border-top: 1px solid var(--glass-border);
-            border-bottom: 1px solid var(--glass-border);
-        }
-        .timeline-section-inner {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        .timeline-title {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            color: var(--color-primary);
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-        .timeline {
-            position: relative;
-            padding-left: 3rem;
-        }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, var(--color-primary), transparent);
-        }
-        .timeline-item {
-            position: relative;
-            padding-bottom: 3rem;
-        }
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -3.4rem;
-            top: 0.5rem;
-            width: 12px;
-            height: 12px;
-            background: var(--color-primary);
-            border-radius: 50%;
-            border: 3px solid var(--color-bg-medium);
-        }
-        .timeline-item h4 {
-            font-family: var(--font-display);
-            font-size: 1.3rem;
-            color: var(--color-primary);
-            margin-bottom: 0.5rem;
-        }
-        .timeline-item .time {
-            color: var(--color-text-muted);
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-        }
-        .timeline-item p {
-            color: var(--color-text-muted);
-            font-size: 0.95rem;
-            line-height: 1.8;
-        }
-
-        /* ========== Back Section ========== */
-        .back-section {
-            padding: 3rem 2rem;
-            text-align: center;
-        }
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem 2.5rem;
-            background: transparent;
-            border: 1px solid var(--color-primary);
-            color: var(--color-primary);
-            font-size: 1rem;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-family: var(--font-sans);
-            cursor: pointer;
-        }
-        .back-btn:hover {
-            background: var(--color-primary);
-            color: var(--color-bg-dark);
-        }
-
-        /* ========== Responsive ========== */
-        @media (max-width: 1024px) {
-            .hero-title {
-                font-size: 5.5rem;
-            }
-
-            .preview-cards {
-                justify-content: center;
-                gap: 1rem;
-            }
-            .preview-card {
-                width: 240px;
-                height: 190px;
-            }
-
-            .cover-intro-card {
-                padding: 3rem;
-            }
-        }
-
         @media (max-width: 768px) {
-            .nav {
-                padding: 0.8rem 1.5rem;
-                flex-direction: column;
-                gap: 0.8rem;
-            }
-
-            .nav-links {
-                gap: 1rem;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .nav-links a {
-                font-size: 0.85rem;
-            }
-
-            .hero-title {
-                font-size: 4rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1rem;
-                letter-spacing: 0.15em;
-            }
-
-            .hero-description {
-                font-size: 0.95rem;
-            }
-
-            .cover-intro {
-                padding: 3rem 1rem;
-            }
-
-            .cover-intro-card {
-                padding: 2rem 1.5rem;
-            }
-
-            .cover-intro-card h2 {
-                font-size: 2rem;
-            }
-
-            .preview-cards {
-                justify-content: center;
-            }
-            .preview-card {
-                width: 100%;
-                max-width: 400px;
-                height: 240px;
-            }
-            .preview-card-img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                background: #0d0d14;
-                display: block;
-                transition: transform 0.6s ease;
-            }
-
-            .btn-detail {
-                padding: 0.8rem 2rem;
-                font-size: 0.95rem;
-            }
+            .hero-title { font-size: 4rem; }
+            .hero-subtitle { font-size: 1rem; }
+            .nav-links { display: none; }
+            .nav { justify-content: center; }
         }
-
-            .detail-grid {
-                grid-template-columns: 1fr;
-            }
-            .detail-card-image { height: 200px; }
-            .detail-card-content { padding: 1.5rem; }
-            .timeline { padding-left: 2rem; }
-            .timeline-item::before { left: -2.4rem; }
-
-    
-        /* ========== Detail Section ========== */
-        .detail-section {
-            padding: 5rem 2rem;
-            background: linear-gradient(135deg, #0a0a0f 0%, #12110e 50%, #0a0a0f 100%);
-            position: relative;
-        }
-        .detail-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 1px;
-            height: 60px;
-            background: linear-gradient(to bottom, var(--color-primary), transparent);
-        }
-        .detail-section-header {
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto 3rem;
-        }
-        .detail-section-header h2 {
-            font-family: var(--font-display);
-            font-size: 2.4rem;
-            color: var(--color-primary);
-            margin-bottom: 1rem;
-            letter-spacing: 0.15em;
-        }
-        .detail-section-header p {
-            font-family: var(--font-serif);
-            font-size: 1rem;
-            color: var(--color-text-muted);
-            line-height: 1.8;
-        }
-
-
-
-        /* ========== Diamond Divider ========== */
-        .diamond-divider {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            padding: 2rem 0;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .diamond-divider::before,
-        .diamond-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
-        }
-        .diamond-divider span {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--color-primary);
-            transform: rotate(45deg);
-            opacity: 0.6;
-        }
-
-        /* ========== Decorative Corner Elements ========== */
-        .cover-intro-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 40px;
-            height: 40px;
-            border-right: 2px solid rgba(201, 169, 98, 0.2);
-            border-bottom: 2px solid rgba(201, 169, 98, 0.2);
-            border-radius: 0 0 16px 0;
-        }
-
-        /* ========== Preview Section Themed Background ========== */
-        .preview-section {
-            width: 100%;
-            padding: 3rem 2rem;
-            background: linear-gradient(135deg, #0a0a0f 0%, #12110e 50%, #0a0a0f 100%);
-            position: relative;
-        }
-        .preview-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 1px;
-            height: 60px;
-            background: linear-gradient(to bottom, var(--color-primary), transparent);
-        }
-
-        /* ========== Scrollbar Styling ========== */
-        .preview-cards::-webkit-scrollbar {
-            height: 6px;
-        }
-        .preview-cards::-webkit-scrollbar-track {
-            background: rgba(20, 20, 30, 0.5);
-            border-radius: 3px;
-        }
-        .preview-cards::-webkit-scrollbar-thumb {
-            background: rgba(201, 169, 98, 0.3);
-            border-radius: 3px;
-        }
-        .preview-cards::-webkit-scrollbar-thumb:hover {
-            background: rgba(201, 169, 98, 0.5);
-        }
-
     </style>
 </head>
 <body>
-
-    <!-- Navigation -->
-    <nav class="nav" id="mainNav">
-        <a href="index.html" class="nav-logo">中华文物</a>
-        <ul class="nav-links">
-            <li><a href="index.html">首页</a></li>
-            <li><a href="vessels-cover.html">器之灵</a></li>
-            <li><a href="stone-cover.html" class="active">石之韵</a></li>
-            <li><a href="history-cover.html">史之痕</a></li>
-            <li><a href="restoration-cover.html">文物修复</a></li>
-            <li><a href="promotion-cover.html">推广</a></li>
-        </ul>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <canvas class="hero-canvas" id="hero-canvas"></canvas>
-        <div class="hero-content">
-            <span class="hero-badge">石刻千秋</span>
+    <canvas id="particleCanvas"></canvas>
+    <div class="ui-layer">
+        <nav class="nav">
+            <a href="index.html" class="nav-logo">中华文物</a>
+            <ul class="nav-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="vessels-cover.html">器之灵</a></li>
+                <li><a href="stone-cover.html" class="active">石之韵</a></li>
+                <li><a href="history-cover.html">史之痕</a></li>
+                <li><a href="restoration-cover.html">文物修复</a></li>
+                <li><a href="promotion-cover.html">推广</a></li>
+            </ul>
+        </nav>
+        <div class="hero-text">
+            <div class="hero-badge">石刻千秋</div>
             <h1 class="hero-title">石之韵</h1>
             <p class="hero-subtitle">石窟艺术 · 摩崖造像 · 石刻碑文</p>
-            <p class="hero-description">佛教传入中国后与本土文化融合，在崖壁上雕刻出千年不朽的艺术殿堂</p>
+            <p class="hero-desc">佛教传入中国后与本土文化融合，在崖壁上雕刻出千年不朽的艺术殿堂</p>
         </div>
         <div class="scroll-hint">
             <span>向下滚动</span>
             <div class="scroll-hint-line"></div>
         </div>
-    </section>
+    </div>
 
-    <!-- Cover Introduction Section -->
-    <section class="cover-intro">
-        <div class="cover-intro-card">
-            <h2>石窟艺术</h2>
-            <p>中国石窟艺术是佛教传入中国后与本土文化融合的产物，从公元3世纪开始，历经南北朝、隋唐、宋元等朝代，持续开凿近千年。这些石窟不仅是宗教艺术的殿堂，更是中国古代政治、经济、文化的综合体现，被誉为"刻在石头上的百科全书"。</p>
-        </div>
-    </section>
-
-    <!-- Preview Cards Section -->
-    <section class="preview-section">
-        <h2 class="preview-section-title">石窟精选</h2>
-        <div class="preview-cards">
-            <a href="stone-detail.html" class="preview-card">
-                <img src="images/three-buddhas.jpg" alt="三佛造像" class="preview-card-img">
-                <div class="preview-card-overlay">
-                    <div class="preview-card-title">三佛造像</div>
-                    <div class="preview-card-desc">石窟艺术的经典之作</div>
-                </div>
-            </a>
-            <a href="stone-detail.html" class="preview-card">
-                <img src="images/reclining-buddha.jpg" alt="卧佛" class="preview-card-img">
-                <div class="preview-card-overlay">
-                    <div class="preview-card-title">卧佛涅槃</div>
-                    <div class="preview-card-desc">庄严宏伟的石刻杰作</div>
-                </div>
-            </a>
-            <a href="stone-detail.html" class="preview-card">
-                <img src="images/guanyin.jpg" alt="观音" class="preview-card-img">
-                <div class="preview-card-overlay">
-                    <div class="preview-card-title">观音造像</div>
-                    <div class="preview-card-desc">慈悲与艺术的完美融合</div>
-                </div>
-            </a>
-        </div>
-    </section>
-
-<!-- Diamond Divider -->
-    <div class="diamond-divider"><span></span></div>
-
-    <!-- Detail Section -->
-    <section class="detail-section">
-        <div class="detail-section-header">
-            <h2>深入了解石窟</h2>
-            <p>探索中国石窟艺术的千年传承与精湛技艺</p>
-        </div>
-        <div class="detail-grid">
-            <div class="detail-card">
-                <div class="detail-card-image">
-                    <span class="detail-card-tag">世界文化遗产</span>
-                    <img src="images/detail-dazu.jpg" alt="大足石刻" loading="lazy">
-                </div>
-                <div class="detail-card-content">
-                    <span class="era">唐宋时期 · 公元7-13世纪</span>
-                    <h3>大足石刻</h3>
-                    <p>
-                        位于重庆市大足区，是中国晚期石窟艺术的代表作。以北山、宝顶山、南山、石门山、石篆山"五山"为代表，
-                        共有造像5万余尊。宝顶山的大佛湾是规模最大的造像群，其中的千手观音像有1007只手，
-                        是中国石刻艺术中最大的千手观音像。大足石刻以世俗化、生活化的特点著称，
-                        将佛教教义与民间生活场景完美融合。
-                    </p>
-                    <div class="features">
-                        <span>千手观音</span>
-                        <span>卧佛</span>
-                        <span>牧牛图</span>
-                        <span>六道轮回</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="detail-card">
-                <div class="detail-card-image">
-                    <span class="detail-card-tag">皇家石窟</span>
-                    <img src="images/detail-yungang.jpg" alt="云冈石窟" loading="lazy">
-                </div>
-                <div class="detail-card-content">
-                    <span class="era">北魏时期 · 公元5-6世纪</span>
-                    <h3>云冈石窟</h3>
-                    <p>
-                        位于山西省大同市，是中国第一座由皇家主持开凿的大型石窟。现存主要洞窟45个，
-                        造像5.9万余尊。云冈石窟的昙曜五窟（第16-20窟）是最早开凿的皇家洞窟，
-                        其中的第20窟露天大佛高13.7米，是云冈石窟的标志性造像。
-                        云冈石窟融合了印度犍陀罗艺术、波斯艺术与中国传统艺术，是中西文化交融的典范。
-                    </p>
-                    <div class="features">
-                        <span>昙曜五窟</span>
-                        <span>露天大佛</span>
-                        <span>犍陀罗风格</span>
-                        <span>飞天造像</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="detail-card">
-                <div class="detail-card-image">
-                    <span class="detail-card-tag">中国石刻巅峰</span>
-                    <img src="images/detail-longmen.jpg" alt="龙门石窟" loading="lazy">
-                </div>
-                <div class="detail-card-content">
-                    <span class="era">北魏-唐代 · 公元5-10世纪</span>
-                    <h3>龙门石窟</h3>
-                    <p>
-                        位于河南省洛阳市，是中国石刻艺术的最高峰。现存窟龛2345个，造像10万余尊，
-                        碑刻题记2800余品。奉先寺的卢舍那大佛高17.14米，是龙门石窟中最大的佛像，
-                        相传以武则天为原型雕刻。龙门石窟的造像风格从北魏的"秀骨清像"演变为唐代的丰满圆润，
-                        反映了中国审美观念的变迁。
-                    </p>
-                    <div class="features">
-                        <span>卢舍那大佛</span>
-                        <span>奉先寺</span>
-                        <span>宾阳三洞</span>
-                        <span>龙门二十品</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="detail-card">
-                <div class="detail-card-image">
-                    <span class="detail-card-tag">东方雕塑馆</span>
-                    <img src="images/detail-maijishan.jpg" alt="麦积山石窟" loading="lazy">
-                </div>
-                <div class="detail-card-content">
-                    <span class="era">后秦-清代 · 公元4-19世纪</span>
-                    <h3>麦积山石窟</h3>
-                    <p>
-                        位于甘肃省天水市，因山形酷似麦垛而得名。现存窟龛221个，造像1万余尊，
-                        以精美的泥塑艺术闻名于世，被誉为"东方雕塑馆"。麦积山石窟的造像以微笑表情著称，
-                        从北魏的含蓄微笑到宋代的明朗笑容，展现了不同时代的审美趣味。
-                        第133窟的释迦会子像被誉为"东方蒙娜丽莎"。
-                    </p>
-                    <div class="features">
-                        <span>泥塑艺术</span>
-                        <span>微笑造像</span>
-                        <span>栈道奇观</span>
-                        <span>壁画精品</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="detail-card">
-                <div class="detail-card-image">
-                    <span class="detail-card-tag">沙漠艺术殿堂</span>
-                    <img src="images/detail-dunhuang.jpg" alt="敦煌莫高窟" loading="lazy">
-                </div>
-                <div class="detail-card-content">
-                    <span class="era">前秦-元代 · 公元4-14世纪</span>
-                    <h3>敦煌莫高窟</h3>
-                    <p>
-                        位于甘肃省敦煌市，是世界上现存规模最大、内容最丰富的佛教艺术圣地。
-                        现存洞窟735个，壁画4.5万平方米，泥质彩塑2415尊。莫高窟的壁画内容涵盖佛经故事、
-                        山水风景、建筑服饰、乐舞百戏等，是研究中国古代社会的百科全书。
-                        藏经洞出土的5万余件文献更是20世纪最重要的考古发现之一。
-                    </p>
-                    <div class="features">
-                        <span>飞天壁画</span>
-                        <span>藏经洞</span>
-                        <span>反弹琵琶</span>
-                        <span>经变画</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="detail-card">
-                <div class="detail-card-image">
-                    <span class="detail-card-tag">世界最大石刻佛像</span>
-                    <img src="images/detail-leshan.jpg" alt="乐山大佛" loading="lazy">
-                </div>
-                <div class="detail-card-content">
-                    <span class="era">唐代 · 公元713-803年</span>
-                    <h3>乐山大佛</h3>
-                    <p>
-                        位于四川省乐山市，是世界上最大的石刻弥勒佛坐像，通高71米，
-                        头高14.7米，耳长7米，足宽8.5米。大佛开凿于唐玄宗开元元年，
-                        历时90年完成。佛像依凌云山栖鸾峰临江峭壁凿成，
-                        "山是一尊佛，佛是一座山"，与周围的凌云寺、乌尤寺等构成宏大的佛教文化景观。
-                        大佛的设计还巧妙地融入了排水系统，保护佛像免受雨水侵蚀。
-                    </p>
-                    <div class="features">
-                        <span>弥勒坐像</span>
-                        <span>排水系统</span>
-                        <span>凌云寺</span>
-                        <span>三江汇流</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <div class="diamond-divider"><span></span></div>
-
-    <!-- 发展时间线 -->
-    <section class="timeline-section">
-        <div class="timeline-section-inner">
-            <h2 class="timeline-title">中国石窟艺术发展脉络</h2>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <h4>早期传入</h4>
-                    <div class="time">公元3-4世纪</div>
-                    <p>佛教从印度经丝绸之路传入中国，西域地区的克孜尔石窟、库木吐拉石窟等最早开凿，保留了浓郁的印度风格。</p>
-                </div>
-                <div class="timeline-item">
-                    <h4>北魏鼎盛</h4>
-                    <div class="time">公元5-6世纪</div>
-                    <p>云冈石窟、龙门石窟相继开凿，皇家主导的大规模造像开始。造像风格从印度犍陀罗风格逐渐中国化。</p>
-                </div>
-                <div class="timeline-item">
-                    <h4>隋唐高峰</h4>
-                    <div class="time">公元7-10世纪</div>
-                    <p>石窟艺术达到巅峰，乐山大佛、敦煌莫高窟盛唐壁画、龙门奉先寺等代表了这一时期最高成就。造像丰满圆润，气势恢宏。</p>
-                </div>
-                <div class="timeline-item">
-                    <h4>宋代转型</h4>
-                    <div class="time">公元10-13世纪</div>
-                    <p>大足石刻等晚期石窟兴起，造像更加世俗化、生活化。佛教艺术从皇家走向民间，题材更加贴近百姓生活。</p>
-                </div>
-                <div class="timeline-item">
-                    <h4>保护与传承</h4>
-                    <div class="time">20世纪至今</div>
-                    <p>敦煌研究院等专业机构成立，运用现代科技对石窟进行保护和数字化记录。多处石窟被列入世界文化遗产名录。</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 返回按钮 -->
-    <section class="back-section">
-        <a href="index.html" class="back-btn">← 返回首页</a>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <p>中华文物 <span class="footer-dot"></span> 守护千年文明</p>
-    </footer>
-
-    <!-- JavaScript -->
     <script>
-        class StoneCarvingEffect {
-            constructor(canvasId) {
-                this.canvas = document.getElementById(canvasId);
-                this.ctx = this.canvas.getContext('2d');
-                this.mouseX = 0.5;
-                this.mouseY = 0.5;
-                this.particles = [];
-                this.cracks = [];
-                this.dustClouds = [];
-                this.time = 0;
-                this.bgImage = new Image();
-                this.bgImage.src = 'images/hero-stone.jpg';
-                this.bgImageLoaded = false;
-                this.imageData = null;
-                this.bgImage.onload = () => {
-                    this.bgImageLoaded = true;
-                    this.sampleImagePixels();
-                };
-                this.init();
+    (function() {
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 配置
+        const config = {
+            sampleStep: 4,
+            brightnessThreshold: 30,
+            colors: [
+                [139,125,100],[160,145,115],[120,110,88],
+                [180,165,130],[100,92,75],[155,140,110],
+                [90,82,68],[170,155,120]
+            ],
+            particleSizeMin: 1.2, particleSizeMax: 3.2,
+            opacityMin: 0.25, opacityMax: 0.65,
+            shape: 'dust',
+            repelRadius: 200, repelStrength: 1.5,
+            springStrength: 0.035, damping: 0.92,
+            connectLines: true, connectDist: 28,
+            lineColor: 'rgba(160,145,110,0.06)',
+            bgColor: '#0c0c0e',
+            driftSpeed: 0.3, driftAmp: 0.8
+        };
+
+        let particles = [];
+        let mouse = { x: -9999, y: -9999, active: false };
+        let clickWave = { x: 0, y: 0, radius: 0, active: false, strength: 0 };
+        let time = 0;
+        let imageLoaded = false;
+        const img = new Image();
+        img.src = 'images/hero-stone.jpg';
+        img.crossOrigin = 'anonymous';
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            if (imageLoaded) createParticles();
+        }
+
+        function createParticles() {
+            const w = canvas.width;
+            const h = canvas.height;
+            const off = document.createElement('canvas');
+            const offCtx = off.getContext('2d');
+            off.width = w; off.height = h;
+
+            const imgRatio = img.width / img.height;
+            const canvasRatio = w / h;
+            let drawW, drawH, drawX, drawY;
+            if (imgRatio > canvasRatio) {
+                drawH = h; drawW = h * imgRatio; drawX = (w - drawW) / 2; drawY = 0;
+            } else {
+                drawW = w; drawH = w / imgRatio; drawX = 0; drawY = (h - drawH) / 2;
             }
-            init() {
-                this.resizeCanvas();
-                this.createCracks();
-                this.createDustClouds();
-                this.bindEvents();
-                this.animate();
-            }
-            resizeCanvas() {
-                this.canvas.width = this.canvas.parentElement.offsetWidth;
-                this.canvas.height = this.canvas.parentElement.offsetHeight;
-                if (this.bgImageLoaded) this.sampleImagePixels();
-            }
-            sampleImagePixels() {
-                const offCanvas = document.createElement('canvas');
-                const offCtx = offCanvas.getContext('2d');
-                offCanvas.width = this.canvas.width;
-                offCanvas.height = this.canvas.height;
-                offCtx.drawImage(this.bgImage, 0, 0, offCanvas.width, offCanvas.height);
-                this.imageData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height);
-                this.createDustParticles();
-            }
-            createDustParticles() {
-                this.particles = [];
-                if (!this.imageData) return;
-                const data = this.imageData.data;
-                const w = this.imageData.width;
-                const h = this.imageData.height;
-                const totalPixels = w * h;
-                const numParticles = Math.min(4000, Math.floor(totalPixels / 80));
-                const dustColors = [
-                    [139, 125, 100], [160, 145, 115], [120, 110, 88],
-                    [180, 165, 130], [100, 92, 75], [155, 140, 110],
-                    [90, 82, 68], [170, 155, 120]
-                ];
-                for (let i = 0; i < numParticles; i++) {
-                    const idx = Math.floor(Math.random() * totalPixels) * 4;
+            offCtx.drawImage(img, drawX, drawY, drawW, drawH);
+
+            const imageData = offCtx.getImageData(0, 0, w, h);
+            const data = imageData.data;
+            const step = config.sampleStep;
+
+            particles = [];
+            for (let y = 0; y < h; y += step) {
+                for (let x = 0; x < w; x += step) {
+                    const idx = (y * w + x) * 4;
                     const r = data[idx], g = data[idx+1], b = data[idx+2];
                     const brightness = (r + g + b) / 3;
-                    if (brightness < 20) continue;
-                    const baseColor = dustColors[Math.floor(Math.random() * dustColors.length)];
-                    const blend = 0.4 + Math.random() * 0.6;
-                    const pr = Math.floor(baseColor[0] * blend + r * (1-blend));
-                    const pg = Math.floor(baseColor[1] * blend + g * (1-blend));
-                    const pb = Math.floor(baseColor[2] * blend + b * (1-blend));
-                    this.particles.push({
-                        ox: (idx / 4) % w,
-                        oy: Math.floor((idx / 4) / w),
-                        x: (idx / 4) % w,
-                        y: Math.floor((idx / 4) / w),
-                        size: 1.2 + Math.random() * 2.8,
-                        driftX: (Math.random() - 0.5) * 0.4,
-                        driftY: (Math.random() - 0.5) * 0.25 + 0.1,
-                        rotation: Math.random() * Math.PI * 2,
-                        rotSpeed: (Math.random() - 0.5) * 0.015,
-                        opacity: 0.35 + Math.random() * 0.5,
+                    if (brightness < config.brightnessThreshold || brightness > 245) continue;
+
+                    const themeColor = config.colors[Math.floor(Math.random() * config.colors.length)];
+                    const blend = 0.25 + Math.random() * 0.45;
+                    const pr = Math.floor(themeColor[0] * blend + r * (1-blend));
+                    const pg = Math.floor(themeColor[1] * blend + g * (1-blend));
+                    const pb = Math.floor(themeColor[2] * blend + b * (1-blend));
+
+                    particles.push({
+                        ox: x, oy: y,
+                        x: x + (Math.random()-0.5)*2,
+                        y: y + (Math.random()-0.5)*2,
+                        vx: 0, vy: 0,
                         r: pr, g: pg, b: pb,
-                        wobble: Math.random() * Math.PI * 2,
-                        wobbleSpeed: 0.3 + Math.random() * 0.7,
-                        wobbleAmp: 0.3 + Math.random() * 0.8,
-                        shape: Math.floor(Math.random() * 4),
-                        aspectRatio: 0.4 + Math.random() * 0.6,
-                        phase: Math.random() * Math.PI * 2
+                        size: config.particleSizeMin + Math.random() * (config.particleSizeMax - config.particleSizeMin),
+                        opacity: config.opacityMin + Math.random() * (config.opacityMax - config.opacityMin),
+                        phase: Math.random() * Math.PI * 2,
+                        rotSpeed: (Math.random() - 0.5) * 0.02,
+                        rotation: Math.random() * Math.PI * 2,
+                        aspectRatio: 0.3 + Math.random() * 0.7
                     });
                 }
             }
-            createCracks() {
-                for (let i = 0; i < 10; i++) {
-                    const points = [];
-                    let cx = Math.random();
-                    let cy = Math.random();
-                    for (let j = 0; j < 4 + Math.random() * 5; j++) {
-                        points.push({ x: cx, y: cy });
-                        cx += (Math.random() - 0.5) * 0.1;
-                        cy += (Math.random() - 0.5) * 0.1;
+        }
+
+        img.onload = function() {
+            imageLoaded = true;
+            resize();
+        };
+
+        window.addEventListener('resize', resize);
+
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+            mouse.active = true;
+        });
+        canvas.addEventListener('mouseleave', () => { mouse.active = false; });
+        canvas.addEventListener('click', e => {
+            const rect = canvas.getBoundingClientRect();
+            clickWave.x = e.clientX - rect.left;
+            clickWave.y = e.clientY - rect.top;
+            clickWave.radius = 0;
+            clickWave.active = true;
+            clickWave.strength = 4;
+        });
+
+        function update() {
+            time += 0.016;
+            const mx = mouse.x, my = mouse.y;
+            const repelR = config.repelRadius;
+            const repelS = config.repelStrength;
+            const spring = config.springStrength;
+            const damping = config.damping;
+
+            if (clickWave.active) {
+                clickWave.radius += 12;
+                clickWave.strength *= 0.96;
+                if (clickWave.radius > 800 || clickWave.strength < 0.1) clickWave.active = false;
+            }
+
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                const driftX = Math.sin(time * config.driftSpeed + p.phase) * config.driftAmp * 0.4;
+                const driftY = Math.cos(time * config.driftSpeed * 0.7 + p.phase) * config.driftAmp * 0.25;
+
+                const tx = p.ox + driftX;
+                const ty = p.oy + driftY;
+
+                p.vx += (tx - p.x) * spring;
+                p.vy += (ty - p.y) * spring;
+
+                if (mouse.active) {
+                    const dx = p.x - mx;
+                    const dy = p.y - my;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < repelR && dist > 1) {
+                        const force = (1 - dist / repelR) * repelS;
+                        p.vx += (dx / dist) * force;
+                        p.vy += (dy / dist) * force;
                     }
-                    this.cracks.push({ points, opacity: 0.03 + Math.random() * 0.04 });
+                }
+
+                if (clickWave.active) {
+                    const dx = p.x - clickWave.x;
+                    const dy = p.y - clickWave.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    const waveW = 50;
+                    if (Math.abs(dist - clickWave.radius) < waveW && dist > 1) {
+                        const f = (1 - Math.abs(dist - clickWave.radius) / waveW) * clickWave.strength;
+                        p.vx += (dx / dist) * f;
+                        p.vy += (dy / dist) * f;
+                    }
+                }
+
+                p.vx *= damping;
+                p.vy *= damping;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.rotation += p.rotSpeed;
+            }
+        }
+
+        function draw() {
+            const w = canvas.width, h = canvas.height;
+            ctx.fillStyle = config.bgColor;
+            ctx.fillRect(0, 0, w, h);
+
+            // 连线
+            if (config.connectLines) {
+                ctx.lineWidth = 0.4;
+                const cd = config.connectDist;
+                for (let i = 0; i < particles.length; i++) {
+                    const p1 = particles[i];
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const dx = p1.x - p2.x, dy = p1.y - p2.y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        if (dist < cd) {
+                            ctx.globalAlpha = (1 - dist / cd) * 0.12;
+                            ctx.strokeStyle = config.lineColor;
+                            ctx.beginPath();
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                        }
+                    }
                 }
             }
-            createDustClouds() {
-                for (let i = 0; i < 5; i++) {
-                    this.dustClouds.push({
-                        x: Math.random(),
-                        y: Math.random(),
-                        radius: 60 + Math.random() * 100,
-                        opacity: 0.02 + Math.random() * 0.03,
-                        driftX: (Math.random() - 0.5) * 0.0003,
-                        driftY: (Math.random() - 0.5) * 0.0002,
-                        phase: Math.random() * Math.PI * 2
-                    });
-                }
-            }
-            bindEvents() {
-                window.addEventListener('resize', () => this.resizeCanvas());
-                document.addEventListener('mousemove', (e) => {
-                    this.mouseX = e.clientX / window.innerWidth;
-                    this.mouseY = e.clientY / window.innerHeight;
-                });
-            }
-            animate() {
-                this.time += 0.016;
-                this.draw();
-                requestAnimationFrame(() => this.animate());
-            }
-            draw() {
-                const ctx = this.ctx;
-                const w = this.canvas.width;
-                const h = this.canvas.height;
-                ctx.fillStyle = '#0c0c0e';
-                ctx.fillRect(0, 0, w, h);
-                this.drawDustClouds(ctx, w, h);
-                this.drawCracks(ctx, w, h);
-                this.drawDustParticles(ctx, w, h);
-                this.drawStoneLight(ctx, w, h);
-                this.drawVignette(ctx, w, h);
-            }
-            drawDustClouds(ctx, w, h) {
-                this.dustClouds.forEach(dc => {
-                    dc.x += dc.driftX;
-                    dc.y += dc.driftY;
-                    if (dc.x < -0.1) dc.x = 1.1;
-                    if (dc.x > 1.1) dc.x = -0.1;
-                    if (dc.y < -0.1) dc.y = 1.1;
-                    if (dc.y > 1.1) dc.y = -0.1;
-                    const pulse = Math.sin(this.time * 0.3 + dc.phase) * 0.3 + 0.7;
-                    const gradient = ctx.createRadialGradient(dc.x*w, dc.y*h, 0, dc.x*w, dc.y*h, dc.radius);
-                    gradient.addColorStop(0, `rgba(160, 145, 115, ${dc.opacity * pulse})`);
-                    gradient.addColorStop(0.6, `rgba(130, 118, 95, ${dc.opacity * 0.3 * pulse})`);
-                    gradient.addColorStop(1, 'transparent');
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(0, 0, w, h);
-                });
-            }
-            drawDustParticles(ctx, w, h) {
-                const mx = (this.mouseX - 0.5) * 40;
-                const my = (this.mouseY - 0.5) * 25;
-                this.particles.forEach(p => {
-                    const wobbleX = Math.sin(this.time * p.wobbleSpeed + p.wobble) * p.wobbleAmp;
-                    const wobbleY = Math.cos(this.time * p.wobbleSpeed * 0.7 + p.wobble) * p.wobbleAmp * 0.5;
-                    p.x = p.ox + p.driftX * Math.sin(this.time * 0.2 + p.phase) + wobbleX + mx * 0.15;
-                    p.y = p.oy + p.driftY * this.time * 0.05 + wobbleY + my * 0.15;
-                    p.rotation += p.rotSpeed;
-                    if (p.y > h + 20) {
-                        p.y = -10;
-                        p.oy = -10;
-                    }
-                    const alpha = p.opacity * (0.5 + Math.sin(this.time * 0.5 + p.phase) * 0.3);
+
+            // 粒子
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                ctx.globalAlpha = p.opacity;
+                ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+                const s = p.size;
+
+                if (config.shape === 'dust') {
                     ctx.save();
                     ctx.translate(p.x, p.y);
                     ctx.rotate(p.rotation);
-                    ctx.globalAlpha = Math.max(0.05, alpha);
-                    ctx.fillStyle = `rgb(${p.r}, ${p.g}, ${p.b})`;
-                    const s = p.size;
-                    switch (p.shape) {
-                        case 0:
-                            ctx.fillRect(-s/2, -s*p.aspectRatio/2, s, s*p.aspectRatio);
-                            break;
-                        case 1:
-                            ctx.beginPath();
-                            ctx.ellipse(0, 0, s/2, s*p.aspectRatio/2, 0, 0, Math.PI*2);
-                            ctx.fill();
-                            break;
-                        case 2:
-                            ctx.beginPath();
-                            ctx.moveTo(-s/2, -s*p.aspectRatio/3);
-                            ctx.lineTo(s/2, 0);
-                            ctx.lineTo(-s/2, s*p.aspectRatio/3);
-                            ctx.closePath();
-                            ctx.fill();
-                            break;
-                        case 3:
-                            ctx.beginPath();
-                            ctx.moveTo(0, -s/2);
-                            ctx.lineTo(s/2, s*p.aspectRatio/2);
-                            ctx.lineTo(0, s/3);
-                            ctx.lineTo(-s/2, s*p.aspectRatio/2);
-                            ctx.closePath();
-                            ctx.fill();
-                            break;
-                    }
+                    ctx.fillRect(-s/2, -s*p.aspectRatio/2, s, s*p.aspectRatio);
                     ctx.restore();
-                });
+                }
             }
-            drawStoneLight(ctx, w, h) {
-                const centerX = w * 0.5 + (this.mouseX - 0.5) * 60;
-                const centerY = h * 0.35 + (this.mouseY - 0.5) * 30;
-                const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, w * 0.45);
-                gradient.addColorStop(0, 'rgba(170, 158, 130, 0.06)');
-                gradient.addColorStop(0.5, 'rgba(130, 120, 100, 0.025)');
-                gradient.addColorStop(1, 'transparent');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, w, h);
-            }
-            drawVignette(ctx, w, h) {
-                const gradient = ctx.createRadialGradient(w/2, h/2, w*0.3, w/2, h/2, w*0.8);
-                gradient.addColorStop(0, 'rgba(12, 12, 14, 0)');
-                gradient.addColorStop(1, 'rgba(12, 12, 14, 0.75)');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, w, h);
-            }
+            ctx.globalAlpha = 1;
         }
 
-        const heroCanvas = document.getElementById('hero-canvas');
-        if (heroCanvas) {
-            new StoneCarvingEffect('hero-canvas');
+        function animate() {
+            update();
+            draw();
+            requestAnimationFrame(animate);
         }
+
+        animate();
+    })();
     </script>
-
 </body>
 </html>
