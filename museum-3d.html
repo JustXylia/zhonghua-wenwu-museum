@@ -1025,9 +1025,9 @@
             card.innerHTML = `
                 <div class="artifact-img-wrap">
                     <img src="${imgSrc}" alt="${artifact.name}" onerror="this.src='images/bronze-vessel.jpg'">
-                    ${artifact.has3d ? '<span class="badge-3d">3D</span>' : ''}
+                    <span class="badge-3d">3D</span>
                     <div class="artifact-hover-overlay">
-                        <span class="hover-text">${artifact.has3d ? '点击查看3D鉴赏' : '点击查看详情'}</span>
+                        <span class="hover-text">点击查看3D鉴赏</span>
                     </div>
                 </div>
                 <div class="artifact-card-body">
@@ -1101,20 +1101,14 @@
             modalTitle.textContent = artifact.name;
             
             let tagsHtml = `<span class="modal-tag">${artifact.dynasty}</span>
-                           <span class="modal-tag">${categoryName}</span>`;
-            if (artifact.has3d) {
-                tagsHtml += `<span class="modal-tag model-tag">3D模型</span>`;
-            }
+                           <span class="modal-tag">${categoryName}</span>
+                           <span class="modal-tag model-tag">3D模型</span>`;
             modalTags.innerHTML = tagsHtml;
             
             modalDesc.textContent = artifact.desc;
             
-            if (artifact.has3d && artifact.url) {
-                modal3dBtn.style.display = 'inline-flex';
-                modal3dBtn.href = artifact.url;
-            } else {
-                modal3dBtn.style.display = 'none';
-            }
+            modal3dBtn.style.display = 'inline-flex';
+            modal3dBtn.href = artifact.url || 'sanyangzun-3d.html';
             
             modalOverlay.classList.add('active');
             document.body.style.overflow = 'hidden';
