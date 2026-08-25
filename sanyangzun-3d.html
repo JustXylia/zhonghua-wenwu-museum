@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>指尖博物馆 · 三羊尊 | Bronze Zun with Three Ram-Heads</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: #0a0a0a; color: #c0c0bb;
+      font-family: 'PingFang SC', 'Microsoft YaHei', 'Source Han Sans CN', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      touch-action: none;
+    }
+
+    #canvas-container {
+      position: fixed; inset: 0; z-index: 1;
+    }
+    #canvas-container canvas { display: block; width: 100% !important; height: 100% !important; }
+
+    /* Loading screen */
+    #loading-screen {
+      position: fixed; inset: 0; z-index: 100;
+      background: #0a0a0a;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px;
+      transition: opacity 0.8s ease;
+    }
+    #loading-screen.hidden { opacity: 0; pointer-events: none; }
+    .loading-title {
+      font-size: 14px; color: rgba(192,192,187,0.5);
+      letter-spacing: 4px; text-transform: uppercase;
+    }
+    .loading-bar-wrap {
+      width: 200px; height: 2px;
+      background: rgba(74,124,89,0.15);
+      border-radius: 1px; overflow: hidden;
+    }
+    .loading-bar-fill {
+      width: 0%; height: 100%;
+      background: linear-gradient(to right, #4a7c59, #5b8ea6);
+      box-shadow: 0 0 8px rgba(74,124,89,0.6);
+      transition: width 0.3s ease;
+    }
+    .loading-percent {
+      font-size: 12px; color: rgba(192,192,187,0.35);
+      font-family: 'Consolas', monospace; letter-spacing: 1px;
+    }
+
+    /* Corner brackets */
+    .corner { position: fixed; width: 32px; height: 32px; z-index: 10; pointer-events: none; border-color: rgba(74,124,89,0.35); }
+    .corner.tl { top: 16px; left: 16px; border-top: 1.5px solid; border-left: 1.5px solid; }
+    .corner.tr { top: 16px; right: 16px; border-top: 1.5px solid; border-right: 1.5px solid; }
+    .corner.bl { bottom: 16px; left: 16px; border-bottom: 1.5px solid; border-left: 1.5px solid; }
+    .corner.br { bottom: 16px; right: 16px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+
+    /* Top bar */
+    .top-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 10;
+      display: flex; flex-direction: column; align-items: center;
+      padding-top: env(safe-area-inset-top, 16px);
+      padding-top: max(16px, env(safe-area-inset-top));
+      pointer-events: none;
+      text-align: center;
+    }
+    .top-bar .tb-main {
+      font-size: clamp(13px, 3.8vw, 16px);
+      color: rgba(192,192,187,0.55);
+      letter-spacing: clamp(3px, 1vw, 6px);
+      font-weight: 500;
+    }
+    .top-bar .tb-sub {
+      font-size: clamp(8px, 2.2vw, 10px);
+      color: rgba(192,192,187,0.25);
+      letter-spacing: clamp(2px, 0.8vw, 4px);
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+    .top-bar .tb-divider {
+      width: 30px; height: 1px;
+      background: rgba(74,124,89,0.25);
+      margin-top: 6px;
+    }
+
+    /* Info panel - desktop left side */
+    .info-panel {
+      position: fixed; left: 0; top: 0;
+      width: 400px; height: 100vh;
+      padding: 60px 40px 80px;
+      z-index: 20;
+      background: linear-gradient(to right, rgba(10,10,10,0.85) 0%, rgba(10,10,10,0.6) 70%, transparent 100%);
+      display: flex; flex-direction: column;
+      gap: 0;
+      pointer-events: none;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .info-panel::-webkit-scrollbar { display: none; }
+
+    .info-panel * { pointer-events: auto; }
+
+    .ip-category {
+      font-size: 11px; color: #5a8a6a;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      font-weight: 500; margin-bottom: 12px;
+    }
+    .ip-title {
+      font-size: 56px; color: #5a8a6a;
+      font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', serif;
+      font-weight: 700; line-height: 1.05;
+      letter-spacing: 4px; margin-bottom: 6px;
+      text-shadow: 0 0 20px rgba(74,124,89,0.2);
+    }
+    .ip-alias {
+      font-size: 18px; color: #c0c0bb;
+      font-family: 'Georgia', serif;
+      letter-spacing: 3px; margin-bottom: 20px;
+    }
+    .ip-divider {
+      width: 50px; height: 2px;
+      background: #4a7c59;
+      box-shadow: 0 0 6px rgba(74,124,89,0.4);
+      margin-bottom: 20px;
+    }
+    .ip-intro {
+      font-size: 20px; color: rgba(192,192,187,0.7);
+      font-family: 'Noto Serif SC', serif;
+      margin-bottom: 18px; line-height: 1.5;
+    }
+    .ip-body {
+      font-size: 13px; color: rgba(192,192,187,0.6);
+      line-height: 2; letter-spacing: 0.3px;
+      margin-bottom: 24px;
+    }
+    .ip-features {
+      font-size: 15px; color: #5a8a6a;
+      font-family: 'Noto Serif SC', serif;
+      letter-spacing: 1px; margin-bottom: 24px;
+    }
+    .ip-section-block {
+      margin-bottom: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(192,192,187,0.06);
+    }
+    .ip-section-title {
+      font-size: 11px; color: #5a8a6a;
+      letter-spacing: 2px; text-transform: uppercase;
+      font-weight: 500; margin-bottom: 8px;
+    }
+    .ip-section-body {
+      font-size: 13px; color: rgba(192,192,187,0.55);
+      line-height: 1.9; letter-spacing: 0.3px;
+    }
+    .ip-quote {
+      font-size: 14px; color: rgba(168,197,160,0.6);
+      font-family: 'Noto Serif SC', serif;
+      line-height: 1.7; padding-left: 12px;
+      border-left: 2px solid rgba(90,138,106,0.3);
+      margin-bottom: 20px; font-style: italic;
+    }
+
+    .ip-section-label {
+      font-size: 10px; color: rgba(192,192,187,0.3);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .ip-palette { display: flex; gap: 14px; margin-bottom: 24px; }
+    .ip-palette-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .ip-color-dot {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid rgba(192,192,187,0.08);
+    }
+    .ip-color-name { font-size: 10px; color: rgba(192,192,187,0.35); }
+
+    .ip-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px; }
+    .ip-tag {
+      font-size: 11px; color: rgba(192,192,187,0.55);
+      border: 1px solid rgba(90,138,106,0.2);
+      padding: 2px 8px; letter-spacing: 0.5px;
+    }
+
+    .ip-metadata { display: flex; gap: 28px; margin-bottom: 20px; }
+    .ip-meta-item { display: flex; flex-direction: column; gap: 2px; }
+    .ip-meta-label { font-size: 9px; color: rgba(192,192,187,0.3); letter-spacing: 1.5px; text-transform: uppercase; }
+    .ip-meta-value { font-size: 15px; color: #c0c0bb; font-weight: 700; letter-spacing: 1px; }
+
+    /* Hotspot labels (CSS2D) */
+    .hotspot {
+      width: 28px; height: 28px;
+      background: rgba(74,124,89,0.15);
+      border: 1.5px solid rgba(168,197,160,0.7);
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+      pointer-events: auto;
+    }
+    .hotspot::before {
+      content: '';
+      position: absolute; inset: -4px;
+      border-radius: 50%;
+      border: 1px solid rgba(168,197,160,0.3);
+      animation: hotspot-pulse 2s ease-in-out infinite;
+    }
+    .hotspot::after {
+      content: attr(data-num);
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; color: #a8c5a0;
+      font-family: 'Consolas', monospace; font-weight: 600;
+    }
+    .hotspot:hover, .hotspot.active {
+      background: rgba(74,124,89,0.4);
+      border-color: #a8c5a0;
+      transform: scale(1.15);
+    }
+    .hotspot:hover::before, .hotspot.active::before { border-color: rgba(168,197,160,0.6); }
+    @keyframes hotspot-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.3); opacity: 0.2; }
+    }
+
+    /* Hotspot tooltip */
+    .hotspot-tooltip {
+      position: fixed; z-index: 50;
+      max-width: 280px;
+      background: rgba(10,10,10,0.92);
+      border: 1px solid rgba(90,138,106,0.3);
+      padding: 16px 18px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      backdrop-filter: blur(8px);
+    }
+    .hotspot-tooltip.visible { opacity: 1; }
+    .ht-title { font-size: 13px; color: #a8c5a0; font-weight: 600; margin-bottom: 6px; letter-spacing: 1px; }
+    .ht-body { font-size: 12px; color: rgba(192,192,187,0.65); line-height: 1.7; }
+
+    /* Control bar */
+    .control-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      z-index: 30;
+      display: flex; justify-content: center; align-items: stretch;
+      gap: 0;
+      background: rgba(10,10,10,0.85);
+      border-top: 1px solid rgba(90,138,106,0.15);
+      padding: 8px 4px;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      backdrop-filter: blur(12px);
+    }
+    .ctrl-btn {
+      flex: 1;
+      max-width: 72px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 3px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: rgba(192,192,187,0.5);
+      transition: all 0.2s ease;
+      font-family: inherit;
+      padding: 4px 2px;
+    }
+    .ctrl-icon {
+      font-size: clamp(16px, 4.5vw, 20px);
+      line-height: 1;
+    }
+    .ctrl-label {
+      font-size: clamp(9px, 2.2vw, 11px);
+      letter-spacing: 0.5px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .ctrl-btn:hover { color: #a8c5a0; }
+    .ctrl-btn.active {
+      color: #a8c5a0;
+    }
+    .ctrl-btn.active .ctrl-icon {
+      text-shadow: 0 0 8px rgba(168,197,160,0.4);
+    }
+    .ctrl-divider {
+      width: 1px;
+      background: rgba(192,192,187,0.08);
+      margin: 6px 2px;
+      flex: 0 0 1px;
+    }
+
+    /* Bottom info */
+    .bottom-info {
+      position: fixed; bottom: 24px; right: 24px;
+      z-index: 15; text-align: right;
+      pointer-events: none;
+    }
+    .bi-hint {
+      font-size: 10px; color: rgba(192,192,187,0.25);
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 768px) {
+      .info-panel {
+        width: 100%;
+        height: 65vh;
+        bottom: 60px; top: auto;
+        padding: 0 20px 0;
+        background: rgba(10,10,10,0.97);
+        backdrop-filter: blur(12px);
+        border-radius: 16px 16px 0 0;
+        border-top: 1px solid rgba(90,138,106,0.2);
+        border-bottom: 1px solid rgba(90,138,106,0.1);
+        max-height: 65vh;
+        transform: translateY(calc(100% - 48px));
+        pointer-events: auto;
+        overflow: hidden;
+        z-index: 25;
+      }
+      .info-panel.expanded {
+        transform: translateY(0);
+        height: calc(100vh - 60px);
+        max-height: calc(100vh - 60px);
+      }
+      .info-panel .ip-drag-handle {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 12px 0 8px;
+        cursor: grab;
+      }
+      .info-panel .ip-drag-bar {
+        width: 36px; height: 4px;
+        background: rgba(192,192,187,0.25);
+        border-radius: 2px;
+      }
+      .info-panel .ip-drag-hint {
+        font-size: 11px; color: rgba(168,197,160,0.4);
+        letter-spacing: 1px;
+      }
+      .info-panel .ip-scroll-content {
+        overflow-y: auto;
+        flex: 1;
+        padding: 8px 0 80px;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+      }
+      .info-panel .ip-scroll-content::-webkit-scrollbar {
+        width: 3px;
+      }
+      .info-panel .ip-scroll-content::-webkit-scrollbar-thumb {
+        background: rgba(90,138,106,0.2);
+        border-radius: 2px;
+      }
+      .ip-title { font-size: 32px; letter-spacing: 2px; }
+      .ip-alias { font-size: 13px; }
+      .ip-intro { font-size: 14px; }
+      .ip-body { font-size: 12px; line-height: 1.8; }
+      .ip-features { font-size: 12px; }
+      .ip-section-body { font-size: 12px; line-height: 1.8; }
+      .ip-quote { font-size: 12px; }
+      .ip-palette-item { transform: scale(0.85); }
+      .corner { width: 24px; height: 24px; }
+      .bottom-info { display: none; }
+    }
+
+    /* Very small phones */
+    @media (max-width: 360px) {
+      .ctrl-label { font-size: 9px; }
+      .ctrl-icon { font-size: 15px; }
+      .ip-title { font-size: 26px; }
+      .ctrl-btn { max-width: 60px; }
+    }
+
+    /* Landscape phones */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .info-panel { max-height: 80vh; height: 80vh; }
+      .ip-title { font-size: 24px; }
+    }
+
+    @media (min-width: 769px) {
+      .info-panel .ip-drag-handle { display: none; }
+      .info-panel .ip-scroll-content {
+        overflow: visible;
+        flex: none;
+      }
+      /* Desktop: control bar becomes floating */
+      .control-bar {
+        bottom: 20px; left: 50%; right: auto;
+        transform: translateX(-50%);
+        width: auto;
+        border: 1px solid rgba(90,138,106,0.15);
+        border-radius: 40px;
+        padding: 6px 8px;
+        gap: 2px;
+      }
+      .ctrl-btn {
+        flex: 0 0 auto;
+        max-width: 48px;
+        min-width: 44px;
+        border-radius: 50%;
+        height: 48px;
+        flex-direction: row;
+        gap: 4px;
+      }
+      .ctrl-label { display: none; }
+      .ctrl-icon { font-size: 18px; }
+      .ctrl-divider { margin: 4px 2px; }
+    }
+
+    .ip-drag-handle {
+      display: none;
+      cursor: pointer;
+    }
+
+    /* Tour mode indicator */
+    .tour-indicator {
+      position: fixed; top: 20px; right: 20px;
+      z-index: 15;
+      font-size: 11px; color: #a8c5a0;
+      letter-spacing: 2px; text-transform: uppercase;
+      opacity: 0; transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .tour-indicator.active { opacity: 1; }
+    .tour-indicator::before {
+      content: ''; display: inline-block;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #a8c5a0; margin-right: 8px;
+      animation: tour-pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes tour-pulse { 50% { opacity: 0.3; } }
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <div class="loading-title">BRONZE ZUN · LOADING</div>
+    <div class="loading-bar-wrap"><div class="loading-bar-fill" id="loadingBar"></div></div>
+    <div class="loading-percent" id="loadingPercent">0%</div>
+  </div>
+
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <div class="top-bar">
+    <div class="tb-main">指尖博物馆</div>
+    <div class="tb-sub">FINGERTIP MUSEUM</div>
+    <div class="tb-divider"></div>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <div class="info-panel" id="infoPanel">
+    <div class="ip-drag-handle" id="dragHandle">
+      <div class="ip-drag-bar"></div>
+      <div class="ip-drag-hint" id="dragHint">向上滑动查看详情 ↑</div>
+    </div>
+    <div class="ip-scroll-content" id="scrollContent">
+      <div class="ip-category">BRONZE ZUN WITH THREE RAM-HEADS</div>
+      <div class="ip-title">三羊尊</div>
+      <div class="ip-alias">SAN YANG ZUN</div>
+      <div class="ip-divider"></div>
+      <div class="ip-intro">商代晚期 · 盛酒礼器 · 三峡博物馆十大镇馆之宝</div>
+
+      <div class="ip-body">三羊尊因肩部铸有三只立体羊首而得名，是商代晚期青铜礼器中的精品。器身侈口、束颈、折肩、敛腹、高圈足，造型庄重挺拔。通体纹饰繁密：颈部饰夔龙纹，腹部饰饕餮纹（兽面纹），以云雷纹为地，层次分明、主次有序。</div>
+
+      <div class="ip-features">立体羊首造型 — 纹饰繁密 — 青铜范铸工艺</div>
+
+      <div class="ip-section-block">
+        <div class="ip-section-title">历史背景 HISTORICAL CONTEXT</div>
+        <div class="ip-section-body">商代晚期（约公元前1300—前1046年），中国青铜铸造进入鼎盛时期。这一时期铜锡铅三元合金工艺成熟，器类丰富、纹饰复杂。"尊"为大型盛酒器，在祭祀礼仪中用于盛放鬯酒（香酒），是沟通人神的重器。三羊尊正是这一辉煌文明的实物见证。</div>
+      </div>
+
+      <div class="ip-section-block">
+        <div class="ip-section-title">文化寓意 CULTURAL SYMBOLISM</div>
+        <div class="ip-section-body">"羊"在古汉语中通"祥"，《说文解字》载"羊，祥也"。三只羊首等距排列于器肩，寓意"三阳开泰"——《周易》以正月为泰卦，三阳生于下，象征冬去春来、万象更新。将祥瑞寓意铸于祭祀重器，表达了商人对天命、丰收与吉运的祈愿。</div>
+        <div class="ip-quote">"三阳开泰"——古人对自然更替、生命循环最质朴的哲学表达，三千年前的工匠将其凝固于青铜之上。</div>
+      </div>
+
+      <div class="ip-section-block">
+        <div class="ip-section-title">铸造工艺 CASTING TECHNIQUE</div>
+        <div class="ip-section-body">三羊尊采用商代成熟的"分范合铸"工艺：先以泥塑成胎，再分段制作外范与芯范，拼合后浇铸铜液。立体羊首需先单独铸造，再嵌于器身范中与器身合铸（"浑铸法"）。器身可见的范线痕迹，是三千年前工匠的手作印记，也是真品鉴定的重要依据。</div>
+      </div>
+
+      <div class="ip-section-block">
+        <div class="ip-section-title">纹饰美学 DECORATIVE ART</div>
+        <div class="ip-section-body">器身纹饰从上至下分区排列：颈部为夔龙纹带，以弦纹分隔；肩部为三羊首与浮雕辅助纹饰；腹部为主体饕餮纹，以细密云雷纹为地（"三层花"工艺）；圈足饰变形夔纹。整体纹饰繁而不乱、密而有致，体现了商代工匠对对称、节奏与层次的精湛把控。</div>
+      </div>
+
+      <div class="ip-section-block">
+        <div class="ip-section-title">收藏传承 COLLECTION</div>
+        <div class="ip-section-body">三羊尊现藏于重庆中国三峡博物馆，为该馆"十大镇馆之宝"之一。该馆是首批国家一级博物馆，青铜器收藏涵盖巴蜀文化精品。三羊尊作为商代青铜器的代表，以其恢宏的体量、精湛的铸造工艺和深厚的文化内涵，向世人展示着三千年前长江流域的青铜文明。</div>
+      </div>
+
+      <div class="ip-section-label">主要颜色 PALETTE</div>
+      <div class="ip-palette" id="palette"></div>
+
+      <div class="ip-tags" id="tags"></div>
+
+      <div class="ip-metadata" id="metadata"></div>
+    </div>
+  </div>
+
+  <div class="hotspot-tooltip" id="hotspotTooltip">
+    <div class="ht-title" id="htTitle"></div>
+    <div class="ht-body" id="htBody"></div>
+  </div>
+
+  <div class="tour-indicator" id="tourIndicator">导览漫游中 TOUR MODE</div>
+
+  <div class="control-bar">
+    <button class="ctrl-btn" id="btnRotate" aria-label="自动旋转">
+      <span class="ctrl-icon">↻</span>
+      <span class="ctrl-label">旋转</span>
+    </button>
+    <button class="ctrl-btn" id="btnTour" aria-label="导览漫游">
+      <span class="ctrl-icon">◎</span>
+      <span class="ctrl-label">导览</span>
+    </button>
+    <div class="ctrl-divider"></div>
+    <button class="ctrl-btn" id="btnHotspots" aria-label="热点开关">
+      <span class="ctrl-icon">◉</span>
+      <span class="ctrl-label">热点</span>
+    </button>
+    <div class="ctrl-divider"></div>
+    <button class="ctrl-btn" id="btnReset" aria-label="重置视角">
+      <span class="ctrl-icon">⌖</span>
+      <span class="ctrl-label">重置</span>
+    </button>
+    <button class="ctrl-btn" id="btnInfo" aria-label="信息面板">
+      <span class="ctrl-icon">☰</span>
+      <span class="ctrl-label">详情</span>
+    </button>
+  </div>
+
+  <div class="bottom-info">
+    <div class="bi-hint">DRAG TO ROTATE · PINCH TO ZOOM</div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="museum-3d.js"></script>
+</body>
+</html>

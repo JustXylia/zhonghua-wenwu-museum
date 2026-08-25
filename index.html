@@ -11,6 +11,7 @@
         :root {
             --color-primary: #c9a962;
             --color-primary-dark: #8b7355;
+            --color-primary-light: #e0c685;
             --color-bg-dark: #0a0a0f;
             --color-bg-medium: #12121a;
             --color-bg-light: #1a1a25;
@@ -92,6 +93,7 @@
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 1;
+            pointer-events: none;
         }
         .hero-content {
             position: relative;
@@ -134,6 +136,33 @@
             color: var(--color-text-muted);
             line-height: 1.8;
             margin-bottom: 2rem;
+        }
+        .hero-3d-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 2rem;
+            background: linear-gradient(135deg, rgba(201,169,98,0.15) 0%, rgba(201,169,98,0.05) 100%);
+            border: 1px solid rgba(201,169,98,0.4);
+            border-radius: 30px;
+            color: var(--color-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+            pointer-events: auto;
+        }
+        .hero-3d-btn:hover {
+            background: linear-gradient(135deg, rgba(201,169,98,0.25) 0%, rgba(201,169,98,0.1) 100%);
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 30px rgba(201,169,98,0.2);
+            transform: translateY(-2px);
+        }
+        .hero-3d-btn .btn-icon {
+            font-size: 1.1rem;
         }
         .scroll-hint {
             position: absolute;
@@ -891,6 +920,106 @@
             .restoration-accordion { flex-direction: column; height: auto; }
             .restoration-accordion-item { height: 200px; }
         }
+
+        /* ===== 陆 · 指尖博物馆 - 入口卡片 ===== */
+        .section-3d {
+            background:
+                radial-gradient(ellipse at 50% 50%, rgba(201,169,98,0.04) 0%, transparent 50%),
+                linear-gradient(180deg, var(--color-bg-medium) 0%, var(--color-bg-dark) 100%);
+        }
+        .museum-entry {
+            position: relative;
+            z-index: 2;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            transition: all 0.5s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .museum-entry:hover {
+            border-color: rgba(201,169,98,0.4);
+            box-shadow: 0 12px 50px rgba(201,169,98,0.15);
+            transform: translateY(-4px);
+        }
+        .museum-entry-bg {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+        .museum-entry:hover .museum-entry-bg {
+            transform: scale(1.05);
+        }
+        .museum-entry-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(10,10,15,0.3) 0%, rgba(10,10,15,0.9) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 2.5rem;
+            text-align: center;
+        }
+        .museum-entry-title {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+        }
+        .museum-entry-desc {
+            font-size: 0.9rem;
+            color: var(--color-text);
+            max-width: 600px;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        .museum-entry-stats {
+            display: flex;
+            gap: 2.5rem;
+            margin-bottom: 2rem;
+        }
+        .museum-stat {
+            text-align: center;
+        }
+        .museum-stat-num {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        .museum-stat-label {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+        .museum-entry-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 2.5rem;
+            background: var(--color-primary);
+            color: #0a0a0f;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .museum-entry:hover .museum-entry-btn {
+            background: var(--color-primary-light);
+            box-shadow: 0 4px 20px rgba(201,169,98,0.4);
+        }
+        @media (max-width: 768px) {
+            .museum-entry-bg { height: 240px; }
+            .museum-entry-title { font-size: 2rem; }
+            .museum-entry-stats { gap: 1.5rem; }
+            .museum-stat-num { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
@@ -904,6 +1033,7 @@
             <li><a href="history-cover.html">史之痕</a></li>
             <li><a href="restoration-cover.html">文物修复</a></li>
             <li><a href="promotion-cover.html">推广</a></li>
+            <li><a href="museum-3d.html">指尖博物馆</a></li>
         </ul>
     </nav>
 
@@ -915,6 +1045,10 @@
             <h1 class="hero-title">中华文物</h1>
             <p class="hero-subtitle">从古迹到博物馆 · 穿越时空的对话</p>
             <p class="hero-description">移动鼠标探索从千年古迹到现代博物馆的奇妙旅程<br>感受文物在时光流转中的永恒魅力</p>
+            <a href="museum-3d.html" class="hero-3d-btn">
+                <span class="btn-icon">&#9881;</span>
+                <span>3D文物鉴赏 · 指尖博物馆</span>
+            </a>
         </div>
         <div class="scroll-hint">向下探索</div>
     </section>
@@ -1246,6 +1380,47 @@
         </div>
     </section>
 
+    <!-- Section Divider: Promotion -> 3D Museum -->
+    <div class="section-divider">
+        <div class="divider-line"></div>
+        <div class="divider-diamond">&#9670;</div>
+        <div class="divider-line"></div>
+    </div>
+
+    <!-- ===== 陆 · 指尖博物馆 - 入口卡片 ===== -->
+    <section class="section section-3d slide-from-bottom" id="3d-museum">
+        <div class="section-inner">
+            <div class="section-header reveal-element">
+                <div class="gold-line-animated"></div>
+                <span class="section-number">陆 · 指尖博物馆</span>
+                <h2 class="section-title">3D文物鉴赏</h2>
+                <p class="section-subtitle">3D Artifact Exhibition</p>
+            </div>
+            <a href="museum-3d.html" class="museum-entry reveal-element">
+                <img class="museum-entry-bg" src="images/hero-museum.jpg" alt="指尖博物馆" loading="lazy">
+                <div class="museum-entry-overlay">
+                    <h3 class="museum-entry-title">指尖博物馆</h3>
+                    <p class="museum-entry-desc">足不出户，触摸千年文明。三百余件珍贵文物的3D数字模型，在线鉴赏中华文明的璀璨瑰宝。</p>
+                    <div class="museum-entry-stats">
+                        <div class="museum-stat">
+                            <div class="museum-stat-num">320+</div>
+                            <div class="museum-stat-label">文物总数</div>
+                        </div>
+                        <div class="museum-stat">
+                            <div class="museum-stat-num">8</div>
+                            <div class="museum-stat-label">文物类别</div>
+                        </div>
+                        <div class="museum-stat">
+                            <div class="museum-stat-num">19</div>
+                            <div class="museum-stat-label">跨越朝代</div>
+                        </div>
+                    </div>
+                    <span class="museum-entry-btn">进入指尖博物馆 →</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
     <!-- 页脚 -->
     <footer class="footer">
         <p>中华文物 · 守护千年文明 | 从古迹到博物馆，穿越时空的对话</p>
@@ -1342,17 +1517,19 @@ class HeroTransitionEffect {
     }
 
     bindEvents() {
-        this.canvas.addEventListener('mousemove', (e) => {
-            const rect = this.canvas.getBoundingClientRect();
+        const heroSection = this.canvas.parentElement;
+
+        heroSection.addEventListener('mousemove', (e) => {
+            const rect = heroSection.getBoundingClientRect();
             this.targetMouse.x = (e.clientX - rect.left) / rect.width;
             this.targetMouse.y = (e.clientY - rect.top) / rect.height;
         });
 
-        this.canvas.addEventListener('mouseenter', () => {
+        heroSection.addEventListener('mouseenter', () => {
             this.targetTransition = 1;
         });
 
-        this.canvas.addEventListener('mouseleave', () => {
+        heroSection.addEventListener('mouseleave', () => {
             this.targetTransition = 0;
         });
 

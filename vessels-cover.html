@@ -1,413 +1,1130 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>器之灵 · 中华文物</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>器之灵 - 中华文物</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #c9a962;
+            --color-primary-dark: #8b7355;
+            --color-bg-dark: #0a0a0f;
+            --color-bg-medium: #12121a;
+            --color-bg-light: #1a1a25;
+            --glass-bg: rgba(20, 20, 30, 0.7);
+            --glass-border: rgba(201, 169, 98, 0.15);
+            --color-text: #f5f0e8;
+            --color-text-muted: #8a8578;
+            --font-display: 'Ma Shan Zheng', cursive;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            overflow: hidden;
-            background: #0c0c0e;
-            font-family: 'Noto Serif SC', serif;
-            color: #f5f0e8;
+            font-family: var(--font-sans);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text);
+            overflow-x: hidden;
+            line-height: 1.8;
         }
-        canvas {
-            display: block;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1;
-        }
-        .ui-layer {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 10;
-        }
+
+        /* ========== Navigation ========== */
         .nav {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%;
-            padding: 1.5rem 3rem;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            z-index: 20;
-            pointer-events: auto;
-            background: linear-gradient(180deg, rgba(12,12,14,0.9) 0%, rgba(12,12,14,0) 100%);
+            justify-content: space-between;
+            padding: 1rem 3rem;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
         }
+
         .nav-logo {
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 1.6rem;
-            color: #c9a962;
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--color-primary);
             text-decoration: none;
             letter-spacing: 0.1em;
         }
+
         .nav-links {
             display: flex;
-            gap: 2.2rem;
             list-style: none;
+            gap: 2rem;
         }
+
         .nav-links a {
-            color: rgba(245,240,232,0.55);
+            color: var(--color-text-muted);
             text-decoration: none;
-            font-size: 0.88rem;
-            transition: all 0.3s ease;
-            letter-spacing: 0.05em;
+            font-size: 0.95rem;
+            font-weight: 400;
+            transition: color 0.3s ease;
             position: relative;
         }
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: #c9a962;
-        }
+
         .nav-links a::after {
             content: '';
             position: absolute;
-            bottom: -4px; left: 0;
-            width: 0; height: 1px;
-            background: #c9a962;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--color-primary);
             transition: width 0.3s ease;
         }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--color-primary);
+        }
+
         .nav-links a:hover::after,
         .nav-links a.active::after {
             width: 100%;
         }
-        .hero-text {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            pointer-events: none;
+
+        /* ========== Hero Section ========== */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 600px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        .hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            padding: 0 2rem;
+        }
+
         .hero-badge {
             display: inline-block;
-            padding: 0.35rem 1.4rem;
-            border: 1px solid rgba(201,169,98,0.4);
+            padding: 0.4rem 1.5rem;
+            border: 1px solid var(--color-primary);
             border-radius: 50px;
-            font-size: 0.82rem;
-            color: #c9a962;
+            font-size: 0.85rem;
+            color: var(--color-primary);
             letter-spacing: 0.2em;
             margin-bottom: 1.5rem;
-            background: rgba(201,169,98,0.06);
-            backdrop-filter: blur(8px);
+            background: rgba(201, 169, 98, 0.08);
+            backdrop-filter: blur(10px);
         }
+
         .hero-title {
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 7.5rem;
-            color: #f5f0e8;
-            text-shadow: 0 4px 40px rgba(0,0,0,0.7), 0 0 80px rgba(0,0,0,0.3);
-            letter-spacing: 0.18em;
-            line-height: 1.1;
+            font-family: var(--font-display);
+            font-size: 5rem;
+            color: var(--color-text);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.15em;
         }
+
         .hero-subtitle {
-            font-size: 1.35rem;
-            color: #c9a962;
-            margin-top: 1.2rem;
-            letter-spacing: 0.35em;
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.3em;
             font-weight: 400;
         }
-        .hero-desc {
-            font-size: 1rem;
-            color: rgba(245,240,232,0.55);
-            margin-top: 1.5rem;
-            max-width: 520px;
-            line-height: 1.8;
+
+        .hero-description {
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            line-height: 1.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
         }
+
         .scroll-hint {
             position: absolute;
-            bottom: 2.5rem;
+            bottom: 2rem;
             left: 50%;
             transform: translateX(-50%);
+            z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 0.5rem;
-            color: rgba(245,240,232,0.35);
-            font-size: 0.78rem;
-            letter-spacing: 0.15em;
-            animation: floatHint 2.5s ease-in-out infinite;
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            animation: float 2s ease-in-out infinite;
         }
+
         .scroll-hint-line {
             width: 1px;
-            height: 36px;
-            background: linear-gradient(to bottom, rgba(201,169,98,0.5), transparent);
+            height: 40px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
         }
-        @keyframes floatHint {
-            0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.4; }
-            50% { transform: translateX(-50%) translateY(-8px); opacity: 0.8; }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
         }
+
+        /* ========== Cover Introduction Section ========== */
+        .cover-intro {
+            width: 100%;
+            padding: 5rem 2rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: center;
+        }
+
+        .cover-intro-card {
+            max-width: 900px;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-intro-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+        }
+
+        .cover-intro-card h2 {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            color: var(--color-primary);
+            margin-bottom: 2rem;
+            letter-spacing: 0.15em;
+        }
+
+        .cover-intro-card p {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            line-height: 2;
+            margin-bottom: 2.5rem;
+        }
+
+        .btn-detail {
+            display: inline-block;
+            padding: 1rem 3rem;
+            border: 2px solid var(--color-primary);
+            color: var(--color-primary);
+            text-decoration: none;
+            font-family: var(--font-sans);
+            font-size: 1.05rem;
+            letter-spacing: 0.15em;
+            border-radius: 8px;
+            transition: all 0.4s ease;
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-detail::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(201, 169, 98, 0.15), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-detail:hover {
+            background: rgba(201, 169, 98, 0.12);
+            box-shadow: 0 0 30px rgba(201, 169, 98, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-detail:hover::before {
+            left: 100%;
+        }
+
+        /* ========== Preview Cards Section ========== */
+        .preview-section {
+            width: 100%;
+            padding: 5rem 2rem;
+            background: var(--color-bg-dark);
+        }
+
+        .preview-section-title {
+            text-align: center;
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            color: var(--color-primary);
+            margin-bottom: 3rem;
+            letter-spacing: 0.15em;
+        }
+
+        .preview-cards {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .preview-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            min-width: auto;
+            flex: none;
+            scroll-snap-align: none;
+            width: 360px;
+            height: 260px;
+        }
+
+        .preview-card:hover {
+            transform: scale(1.03);
+            border-color: var(--color-primary);
+            box-shadow: 0 10px 40px rgba(201, 169, 98, 0.15);
+        }
+
+        .preview-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #0d0d14;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+
+        .preview-card:hover .preview-card-img {
+            transform: scale(1.05);
+        }
+
+        .preview-card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            background: linear-gradient(to top, rgba(10, 10, 15, 0.95), transparent);
+        }
+
+        .preview-card-title {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            color: var(--color-text);
+            font-weight: 600;
+        }
+
+        .preview-card-desc {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-top: 0.3rem;
+        }
+
+        /* ========== Footer ========== */
+        .footer {
+            width: 100%;
+            padding: 2.5rem 2rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .footer p {
+            font-family: var(--font-serif);
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+            letter-spacing: 0.2em;
+        }
+
+        .footer .footer-dot {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            margin: 0 0.8rem;
+            vertical-align: middle;
+        }
+
+
+        /* ========== Detail Grid & Cards ========== */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            align-items: start;
+        }
+        .detail-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        .detail-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            border-color: rgba(201,169,98,0.3);
+        }
+        .detail-card-image {
+            width: 100%;
+            height: 260px;
+            overflow: hidden;
+            position: relative;
+        }
+        .detail-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #0d0d14;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+        .detail-card:hover .detail-card-image img {
+            transform: scale(1.05);
+        }
+        .detail-card-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(10,10,15,0.9), transparent);
+        }
+        .detail-card-tag {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(201,169,98,0.2);
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+        }
+        .detail-card-content {
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        .detail-card-content h3 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+        .detail-card-content .era {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(201,169,98,0.15);
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .detail-card-content p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        .detail-card-content .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        .detail-card-content .features span {
+            padding: 0.3rem 0.8rem;
+            background: rgba(201,169,98,0.1);
+            border: 1px solid rgba(201,169,98,0.2);
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+            border-radius: 20px;
+        }
+
+        /* ========== Timeline Section ========== */
+        .timeline-section {
+            padding: 4rem 2rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .timeline-section-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .timeline-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--color-primary);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 3rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -3.4rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            border: 3px solid var(--color-bg-medium);
+        }
+        .timeline-item h4 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+        .timeline-item .time {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        .timeline-item p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        /* ========== Back Section ========== */
+        .back-section {
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-family: var(--font-sans);
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background: var(--color-primary);
+            color: var(--color-bg-dark);
+        }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 3.8rem;
+            }
+
+            .preview-cards {
+                justify-content: center;
+                gap: 1rem;
+            }
+            .preview-card {
+                width: 240px;
+                height: 190px;
+            }
+
+            .cover-intro-card {
+                padding: 3rem;
+            }
+        }
+
         @media (max-width: 768px) {
-            .hero-title { font-size: 4rem; }
-            .hero-subtitle { font-size: 1rem; }
-            .nav-links { display: none; }
-            .nav { justify-content: center; }
+            .nav {
+                padding: 0.8rem 1.5rem;
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links a {
+                font-size: 0.85rem;
+            }
+
+            .hero-title {
+                font-size: 2.8rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+                letter-spacing: 0.15em;
+            }
+
+            .hero-description {
+                font-size: 0.95rem;
+            }
+
+            .cover-intro {
+                padding: 3rem 1rem;
+            }
+
+            .cover-intro-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .cover-intro-card h2 {
+                font-size: 2rem;
+            }
+
+            .preview-cards {
+                justify-content: center;
+            }
+            .preview-card {
+                width: 100%;
+                max-width: 400px;
+                height: 240px;
+            }
+            .preview-card-img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                background: #0d0d14;
+                display: block;
+                transition: transform 0.6s ease;
+            }
+
+            .btn-detail {
+                padding: 0.8rem 2rem;
+                font-size: 0.95rem;
+            }
         }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            .detail-card-image { height: 200px; }
+            .detail-card-content { padding: 1.5rem; }
+            .timeline { padding-left: 2rem; }
+            .timeline-item::before { left: -2.4rem; }
+
+    
+        /* ========== Detail Section ========== */
+        .detail-section {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1508 50%, #0a0a0f 100%);
+            position: relative;
+        }
+        .detail-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+        .detail-section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+        .detail-section-header h2 {
+            font-family: var(--font-display);
+            font-size: 2.4rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            letter-spacing: 0.15em;
+        }
+        .detail-section-header p {
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            color: var(--color-text-muted);
+            line-height: 1.8;
+        }
+
+
+
+        /* ========== Diamond Divider ========== */
+        .diamond-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .diamond-divider::before,
+        .diamond-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+        }
+        .diamond-divider span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--color-primary);
+            transform: rotate(45deg);
+            opacity: 0.6;
+        }
+
+        /* ========== Decorative Corner Elements ========== */
+        .cover-intro-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border-right: 2px solid rgba(201, 169, 98, 0.2);
+            border-bottom: 2px solid rgba(201, 169, 98, 0.2);
+            border-radius: 0 0 16px 0;
+        }
+
+        /* ========== Preview Section Themed Background ========== */
+        .preview-section {
+            width: 100%;
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1508 50%, #0a0a0f 100%);
+            position: relative;
+        }
+        .preview-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+
+        /* ========== Scrollbar Styling ========== */
+        .preview-cards::-webkit-scrollbar {
+            height: 6px;
+        }
+        .preview-cards::-webkit-scrollbar-track {
+            background: rgba(20, 20, 30, 0.5);
+            border-radius: 3px;
+        }
+        .preview-cards::-webkit-scrollbar-thumb {
+            background: rgba(201, 169, 98, 0.3);
+            border-radius: 3px;
+        }
+        .preview-cards::-webkit-scrollbar-thumb:hover {
+            background: rgba(201, 169, 98, 0.5);
+        }
+
     </style>
 </head>
 <body>
-    <canvas id="particleCanvas"></canvas>
-    <div class="ui-layer">
-        <nav class="nav">
-            <a href="index.html" class="nav-logo">中华文物</a>
-            <ul class="nav-links">
-                <li><a href="index.html">首页</a></li>
-                <li><a href="vessels-cover.html" class="active">器之灵</a></li>
-                <li><a href="stone-cover.html">石之韵</a></li>
-                <li><a href="history-cover.html">史之痕</a></li>
-                <li><a href="restoration-cover.html">文物修复</a></li>
-                <li><a href="promotion-cover.html">推广</a></li>
-            </ul>
-        </nav>
-        <div class="hero-text">
-            <div class="hero-badge">礼器之道</div>
+
+    <!-- Navigation -->
+    <nav class="nav" id="mainNav">
+        <a href="index.html" class="nav-logo">中华文物</a>
+        <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="vessels-cover.html" class="active">器之灵</a></li>
+            <li><a href="stone-cover.html">石之韵</a></li>
+            <li><a href="history-cover.html">史之痕</a></li>
+            <li><a href="restoration-cover.html">文物修复</a></li>
+            <li><a href="promotion-cover.html">推广</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <canvas class="hero-canvas" id="hero-canvas"></canvas>
+        <div class="hero-content">
+            <span class="hero-badge">千年器物</span>
             <h1 class="hero-title">器之灵</h1>
-            <p class="hero-subtitle">青铜礼器 · 玉器珍玩 · 陶瓷瑰宝</p>
-            <p class="hero-desc">从夏商周的青铜重器到明清的精美瓷器，器物承载着中华文明的礼仪与审美</p>
+            <p class="hero-subtitle">青铜礼器 · 玉石珍品 · 金银器皿</p>
+            <p class="hero-description">从远古石器到商周青铜，从战汉玉器到唐宋金银，每一件器物都承载着中华文明的辉煌记忆</p>
         </div>
         <div class="scroll-hint">
             <span>向下滚动</span>
             <div class="scroll-hint-line"></div>
         </div>
-    </div>
+    </section>
 
+    <!-- Cover Introduction Section -->
+    <section class="cover-intro">
+        <div class="cover-intro-card">
+            <h2>器物之美</h2>
+            <p>中国器物文化源远流长，从远古时期的石器工具到商周时期的青铜礼器，从战汉时期的玉器到唐宋时期的金银器皿，每一件器物都是时代的见证。它们不仅是实用的工具，更是权力、信仰与审美的载体，展现了中华文明在不同历史时期的工艺水平与精神追求。</p>
+        </div>
+    </section>
+
+    <!-- Preview Cards Section -->
+    <section class="preview-section">
+        <h2 class="preview-section-title">精选器物</h2>
+        <div class="preview-cards">
+            <a href="vessels-detail.html" class="preview-card">
+                <img src="images/vessel-bronze-canvas.jpg" alt="青铜器" class="preview-card-img">
+                <div class="preview-card-overlay">
+                    <div class="preview-card-title">青铜礼器</div>
+                    <div class="preview-card-desc">商周文明的权力象征</div>
+                </div>
+            </a>
+            <a href="vessels-detail.html" class="preview-card">
+                <img src="images/stone-tool.jpg" alt="石器" class="preview-card-img">
+                <div class="preview-card-overlay">
+                    <div class="preview-card-title">远古石器</div>
+                    <div class="preview-card-desc">人类文明的起源</div>
+                </div>
+            </a>
+            <a href="vessels-detail.html" class="preview-card">
+                <img src="images/gold-silver.jpg" alt="金银器" class="preview-card-img">
+                <div class="preview-card-overlay">
+                    <div class="preview-card-title">金银器皿</div>
+                    <div class="preview-card-desc">唐宋工艺的巅峰之作</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+<!-- Diamond Divider -->
+    <div class="diamond-divider"><span></span></div>
+
+    <!-- Detail Section -->
+    <section class="detail-section">
+        <div class="detail-section-header">
+            <h2>深入了解器物</h2>
+            <p>探索中华文明中各类器物的精湛工艺与文化内涵</p>
+        </div>
+        <div class="detail-grid">
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">礼器之首</span>
+                    <img src="images/detail-bronze.jpg" alt="青铜礼器" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">商周时期 · 公元前1600-256年</span>
+                    <h3>青铜礼器</h3>
+                    <p>
+                        青铜礼器是中国古代青铜器的核心类别，主要包括鼎、簋、爵、觚、尊等器型。
+                        鼎是权力的象征，天子用九鼎，诸侯用七鼎；簋是盛放谷物的礼器，常与鼎配合使用。
+                        商代青铜器以厚重的造型和神秘的饕餮纹著称，西周时期则更注重铭文记载，
+                        记录了当时的政治、军事与祭祀活动。
+                    </p>
+                    <div class="features">
+                        <span>饕餮纹</span>
+                        <span>云雷纹</span>
+                        <span>铭文</span>
+                        <span>失蜡法</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">礼天祭地</span>
+                    <img src="images/detail-jade.jpg" alt="玉石礼器" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">新石器时代-商周 · 公元前5000-256年</span>
+                    <h3>玉石礼器</h3>
+                    <p>
+                        "以玉作六器，以礼天地四方"——玉璧礼天，玉琮礼地，玉圭礼东方，
+                        玉璋礼南方，玉璜礼北方，玉琥礼西方。良渚文化的玉琮以其精美的神人兽面纹闻名，
+                        红山文化的玉龙则是中华龙文化的重要源头。玉石礼器体现了古人对天地神灵的敬畏，
+                        也是身份地位的重要象征。
+                    </p>
+                    <div class="features">
+                        <span>玉璧</span>
+                        <span>玉琮</span>
+                        <span>玉圭</span>
+                        <span>玉龙</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">盛世华章</span>
+                    <img src="images/detail-gold.jpg" alt="金银器皿" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">唐代 · 公元618-907年</span>
+                    <h3>金银器皿</h3>
+                    <p>
+                        唐代是中国金银器工艺的黄金时代。1970年西安何家村出土的窖藏金银器，
+                        包括鎏金舞马衔杯纹银壶、鸳鸯莲瓣纹金碗等，展现了极高的工艺水平。
+                        唐代金银器融合了中原传统与西域风格，采用了锤揲、錾刻、鎏金、镶嵌等多种技法，
+                        是丝绸之路文化交流的珍贵见证。
+                    </p>
+                    <div class="features">
+                        <span>锤揲</span>
+                        <span>錾刻</span>
+                        <span>鎏金</span>
+                        <span>镶嵌</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">瓷国瑰宝</span>
+                    <img src="images/detail-porcelain.jpg" alt="陶瓷精品" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">唐宋元明清 · 公元7-20世纪</span>
+                    <h3>陶瓷精品</h3>
+                    <p>
+                        中国瓷器以其精湛工艺和独特美学享誉世界。唐三彩以黄、绿、白三色为主，
+                        造型生动；宋代五大名窑（汝、官、哥、钧、定）各具特色，
+                        汝窑天青釉更是被誉为"雨过天青云破处"。元代青花瓷开启了彩瓷新时代，
+                        明清时期的斗彩、粉彩、珐琅彩将瓷器艺术推向巅峰。
+                    </p>
+                    <div class="features">
+                        <span>唐三彩</span>
+                        <span>五大名窑</span>
+                        <span>青花瓷</span>
+                        <span>珐琅彩</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="diamond-divider"><span></span></div>
+
+    <!-- 发展时间线 -->
+    <section class="timeline-section">
+        <div class="timeline-section-inner">
+            <h2 class="timeline-title">器物发展简史</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>新石器时代</h4>
+                    <div class="time">约公元前10000-2000年</div>
+                    <p>石器工具广泛使用，陶器开始出现。仰韶文化的彩陶、龙山文化的黑陶代表了早期制陶工艺的最高水平。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>夏商周时期</h4>
+                    <div class="time">约公元前2070-256年</div>
+                    <p>青铜时代鼎盛，礼器制度完善。商代司母戊鼎、西周毛公鼎等重器成为国家权力的象征。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>春秋战国时期</h4>
+                    <div class="time">公元前770-221年</div>
+                    <p>铁器开始出现，青铜器向日常生活用具转变。错金银、镶嵌等工艺达到新高度。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>秦汉时期</h4>
+                    <div class="time">公元前221-公元220年</div>
+                    <p>青铜器继续发展，漆器工艺成熟。丝绸之路开通后，西域玻璃器等外来器物传入。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>唐宋元明清</h4>
+                    <div class="time">公元618-1912年</div>
+                    <p>瓷器取代青铜器成为主流，金银器、玉器工艺登峰造极。明清时期家具、文房用具等品类丰富。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 返回按钮 -->
+    <section class="back-section">
+        <a href="index.html" class="back-btn">← 返回首页</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>中华文物 <span class="footer-dot"></span> 守护千年文明</p>
+    </footer>
+
+    <!-- JavaScript -->
     <script>
-    (function() {
-        const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
+        // Nav scroll effect
+        const nav = document.getElementById('mainNav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
 
-        // 配置
-        const config = {
-            sampleStep: 3,
-            brightnessThreshold: 20,
-            colors: [
-                [184,148,58],[196,160,72],[139,105,20],
-                [220,190,100],[160,128,40],[210,175,85],
-                [130,100,25],[240,210,130],[170,140,55]
-            ],
-            particleSizeMin: 0.8, particleSizeMax: 2.5,
-            opacityMin: 0.45, opacityMax: 0.85,
-            shape: 'metal',
-            repelRadius: 180, repelStrength: 1.2,
-            springStrength: 0.04, damping: 0.9,
-            connectLines: true, connectDist: 22,
-            lineColor: 'rgba(200,170,80,0.08)',
-            bgColor: '#0a0a0f',
-            driftSpeed: 0.4, driftAmp: 0.5
-        };
-
-        let particles = [];
-        let mouse = { x: -9999, y: -9999, active: false };
-        let clickWave = { x: 0, y: 0, radius: 0, active: false, strength: 0 };
-        let time = 0;
-        let imageLoaded = false;
-        const img = new Image();
-        img.src = 'images/hero-vessels.jpg';
-        img.crossOrigin = 'anonymous';
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            if (imageLoaded) createParticles();
-        }
-
-        function createParticles() {
-            const w = canvas.width;
-            const h = canvas.height;
-            const off = document.createElement('canvas');
-            const offCtx = off.getContext('2d');
-            off.width = w; off.height = h;
-
-            const imgRatio = img.width / img.height;
-            const canvasRatio = w / h;
-            let drawW, drawH, drawX, drawY;
-            if (imgRatio > canvasRatio) {
-                drawH = h; drawW = h * imgRatio; drawX = (w - drawW) / 2; drawY = 0;
-            } else {
-                drawW = w; drawH = w / imgRatio; drawX = 0; drawY = (h - drawH) / 2;
+        // Hero background: parallax image + dust + light rays (same as homepage)
+        class HeroBgEffect {
+            constructor(canvasId, imgSrc) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.mouse = { x: 0.5, y: 0.5 };
+                this.target = { x: 0.5, y: 0.5 };
+                this.dust = [];
+                this.bgImg = new Image();
+                this.bgImg.src = imgSrc;
+                this.loaded = false;
+                this.bgImg.onload = () => { this.loaded = true; };
+                this.resize();
+                this.createDust();
+                this.bind();
+                this.animate();
             }
-            offCtx.drawImage(img, drawX, drawY, drawW, drawH);
-
-            const imageData = offCtx.getImageData(0, 0, w, h);
-            const data = imageData.data;
-            const step = config.sampleStep;
-
-            particles = [];
-            for (let y = 0; y < h; y += step) {
-                for (let x = 0; x < w; x += step) {
-                    const idx = (y * w + x) * 4;
-                    const r = data[idx], g = data[idx+1], b = data[idx+2];
-                    const brightness = (r + g + b) / 3;
-                    if (brightness < config.brightnessThreshold || brightness > 245) continue;
-
-                    const themeColor = config.colors[Math.floor(Math.random() * config.colors.length)];
-                    const blend = 0.25 + Math.random() * 0.45;
-                    const pr = Math.floor(themeColor[0] * blend + r * (1-blend));
-                    const pg = Math.floor(themeColor[1] * blend + g * (1-blend));
-                    const pb = Math.floor(themeColor[2] * blend + b * (1-blend));
-
-                    particles.push({
-                        ox: x, oy: y,
-                        x: x + (Math.random()-0.5)*2,
-                        y: y + (Math.random()-0.5)*2,
-                        vx: 0, vy: 0,
-                        r: pr, g: pg, b: pb,
-                        size: config.particleSizeMin + Math.random() * (config.particleSizeMax - config.particleSizeMin),
-                        opacity: config.opacityMin + Math.random() * (config.opacityMax - config.opacityMin),
-                        phase: Math.random() * Math.PI * 2,
-                        rotSpeed: (Math.random() - 0.5) * 0.02,
-                        rotation: Math.random() * Math.PI * 2,
-                        aspectRatio: 0.3 + Math.random() * 0.7
+            resize() {
+                this.canvas.width = this.canvas.parentElement.offsetWidth;
+                this.canvas.height = this.canvas.parentElement.offsetHeight;
+            }
+            createDust() {
+                this.dust = [];
+                for (let i = 0; i < 60; i++) {
+                    this.dust.push({
+                        x: Math.random(), y: Math.random(),
+                        size: Math.random() * 2 + 0.5,
+                        sx: (Math.random() - 0.5) * 0.0005,
+                        sy: (Math.random() - 0.5) * 0.0003,
+                        op: Math.random() * 0.6 + 0.2,
+                        ph: Math.random() * 6.28
                     });
                 }
             }
-        }
-
-        img.onload = function() {
-            imageLoaded = true;
-            resize();
-        };
-
-        window.addEventListener('resize', resize);
-
-        canvas.addEventListener('mousemove', e => {
-            const rect = canvas.getBoundingClientRect();
-            mouse.x = e.clientX - rect.left;
-            mouse.y = e.clientY - rect.top;
-            mouse.active = true;
-        });
-        canvas.addEventListener('mouseleave', () => { mouse.active = false; });
-        canvas.addEventListener('click', e => {
-            const rect = canvas.getBoundingClientRect();
-            clickWave.x = e.clientX - rect.left;
-            clickWave.y = e.clientY - rect.top;
-            clickWave.radius = 0;
-            clickWave.active = true;
-            clickWave.strength = 4;
-        });
-
-        function update() {
-            time += 0.016;
-            const mx = mouse.x, my = mouse.y;
-            const repelR = config.repelRadius;
-            const repelS = config.repelStrength;
-            const spring = config.springStrength;
-            const damping = config.damping;
-
-            if (clickWave.active) {
-                clickWave.radius += 12;
-                clickWave.strength *= 0.96;
-                if (clickWave.radius > 800 || clickWave.strength < 0.1) clickWave.active = false;
+            bind() {
+                window.addEventListener('resize', () => this.resize());
+                document.addEventListener('mousemove', (e) => {
+                    this.target.x = e.clientX / window.innerWidth;
+                    this.target.y = e.clientY / window.innerHeight;
+                });
             }
-
-            for (let i = 0; i < particles.length; i++) {
-                const p = particles[i];
-                const driftX = Math.sin(time * config.driftSpeed + p.phase) * config.driftAmp * 0.4;
-                const driftY = Math.cos(time * config.driftSpeed * 0.7 + p.phase) * config.driftAmp * 0.25;
-
-                const tx = p.ox + driftX;
-                const ty = p.oy + driftY;
-
-                p.vx += (tx - p.x) * spring;
-                p.vy += (ty - p.y) * spring;
-
-                if (mouse.active) {
-                    const dx = p.x - mx;
-                    const dy = p.y - my;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < repelR && dist > 1) {
-                        const force = (1 - dist / repelR) * repelS;
-                        p.vx += (dx / dist) * force;
-                        p.vy += (dy / dist) * force;
-                    }
-                }
-
-                if (clickWave.active) {
-                    const dx = p.x - clickWave.x;
-                    const dy = p.y - clickWave.y;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    const waveW = 50;
-                    if (Math.abs(dist - clickWave.radius) < waveW && dist > 1) {
-                        const f = (1 - Math.abs(dist - clickWave.radius) / waveW) * clickWave.strength;
-                        p.vx += (dx / dist) * f;
-                        p.vy += (dy / dist) * f;
-                    }
-                }
-
-                p.vx *= damping;
-                p.vy *= damping;
-                p.x += p.vx;
-                p.y += p.vy;
-                p.rotation += p.rotSpeed;
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                const ctx = this.ctx, w = this.canvas.width, h = this.canvas.height;
+                this.mouse.x += (this.target.x - this.mouse.x) * 0.05;
+                this.mouse.y += (this.target.y - this.mouse.y) * 0.05;
+                ctx.fillStyle = '#0c0c0e';
+                ctx.fillRect(0, 0, w, h);
+                if (this.loaded) this.drawBg(ctx, w, h);
+                this.drawDust(ctx, w, h);
+                this.drawRays(ctx, w, h);
+                this.drawVignette(ctx, w, h);
             }
-        }
-
-        function draw() {
-            const w = canvas.width, h = canvas.height;
-            ctx.fillStyle = config.bgColor;
-            ctx.fillRect(0, 0, w, h);
-
-            // 连线
-            if (config.connectLines) {
-                ctx.lineWidth = 0.4;
-                const cd = config.connectDist;
-                for (let i = 0; i < particles.length; i++) {
-                    const p1 = particles[i];
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const p2 = particles[j];
-                        const dx = p1.x - p2.x, dy = p1.y - p2.y;
-                        const dist = Math.sqrt(dx*dx + dy*dy);
-                        if (dist < cd) {
-                            ctx.globalAlpha = (1 - dist / cd) * 0.12;
-                            ctx.strokeStyle = config.lineColor;
-                            ctx.beginPath();
-                            ctx.moveTo(p1.x, p1.y);
-                            ctx.lineTo(p2.x, p2.y);
-                            ctx.stroke();
-                        }
-                    }
+            drawBg(ctx, w, h) {
+                const img = this.bgImg;
+                const s = Math.max(w / img.width, h / img.height);
+                const dw = img.width * s, dh = img.height * s;
+                const ox = (this.mouse.x - 0.5) * 0.04 * w;
+                const oy = (this.mouse.y - 0.5) * 0.04 * h;
+                ctx.save();
+                ctx.globalAlpha = 0.45;
+                ctx.drawImage(img, (w - dw) / 2 + ox, (h - dh) / 2 + oy, dw, dh);
+                ctx.restore();
+            }
+            drawDust(ctx, w, h) {
+                const t = Date.now() * 0.001;
+                for (const p of this.dust) {
+                    p.x += p.sx; p.y += p.sy; p.ph += 0.01;
+                    if (p.x < 0) p.x = 1; if (p.x > 1) p.x = 0;
+                    if (p.y < 0) p.y = 1; if (p.y > 1) p.y = 0;
+                    const fl = Math.sin(p.ph) * 0.3 + 0.7;
+                    ctx.beginPath();
+                    ctx.arc(p.x * w, p.y * h, p.size, 0, 6.28);
+                    ctx.fillStyle = gba(201,169,98,);
+                    ctx.fill();
                 }
             }
-
-            // 粒子
-            for (let i = 0; i < particles.length; i++) {
-                const p = particles[i];
-                ctx.globalAlpha = p.opacity;
-                ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
-                const s = p.size;
-
-                if (config.shape === 'metal') {
-                    ctx.save();
-                    ctx.translate(p.x, p.y);
-                    ctx.rotate(p.rotation);
-                    ctx.fillRect(-s/2, -s/2, s, s);
-                    // 高光
-                    const shimmer = Math.sin(time * 2 + p.phase) * 0.5 + 0.5;
-                    if (shimmer > 0.6) {
-                        ctx.globalAlpha = p.opacity * shimmer * 0.4;
-                        ctx.fillStyle = 'rgba(255,240,200,0.8)';
-                        ctx.beginPath();
-                        ctx.arc(-s*0.15, -s*0.15, s*0.25, 0, Math.PI*2);
-                        ctx.fill();
-                    }
-                    ctx.restore();
+            drawRays(ctx, w, h) {
+                const t = Date.now() * 0.0005;
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                for (let i = 0; i < 3; i++) {
+                    const a = t + i * 2.09;
+                    const rw = 100 + Math.sin(t + i) * 50;
+                    const sx = w * 0.5 + Math.cos(a) * w * 0.3;
+                    const sy = h * 0.3 + Math.sin(a * 0.5) * h * 0.2;
+                    const g = ctx.createLinearGradient(sx, sy, sx + Math.cos(a) * w, sy + Math.sin(a) * h);
+                    g.addColorStop(0, 'rgba(201,169,98,0.08)');
+                    g.addColorStop(1, 'rgba(201,169,98,0)');
+                    ctx.beginPath();
+                    ctx.moveTo(sx - rw/2, sy);
+                    ctx.lineTo(sx + rw/2, sy);
+                    ctx.lineTo(sx + rw*2 + Math.cos(a)*w, sy + Math.sin(a)*h);
+                    ctx.lineTo(sx - rw*2 + Math.cos(a)*w, sy + Math.sin(a)*h);
+                    ctx.closePath();
+                    ctx.fillStyle = g;
+                    ctx.fill();
                 }
+                ctx.restore();
             }
-            ctx.globalAlpha = 1;
+            drawVignette(ctx, w, h) {
+                const g = ctx.createRadialGradient(w/2, h/2, h*0.3, w/2, h/2, h*0.8);
+                g.addColorStop(0, 'rgba(10,10,15,0)');
+                g.addColorStop(1, 'rgba(10,10,15,0.7)');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, w, h);
+            }
         }
-
-        function animate() {
-            update();
-            draw();
-            requestAnimationFrame(animate);
-        }
-
-        animate();
-    })();
+        new HeroBgEffect('hero-canvas', 'images/hero-vessels.jpg');
     </script>
 </body>
 </html>

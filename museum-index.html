@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>指尖博物馆 · FINGERTIP MUSEUM</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a0a;
+      --card: rgba(20,20,20,0.8);
+      --green: #4a7c59;
+      --green-light: #a8c5a0;
+      --text: #c0c0bb;
+      --text-dim: rgba(192,192,187,0.4);
+    }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 80px 20px 40px;
+      position: relative;
+    }
+    .header::after {
+      content: '';
+      display: block;
+      width: 40px; height: 1px;
+      background: var(--green);
+      margin: 16px auto 0;
+    }
+    .header h1 {
+      font-size: clamp(24px, 5vw, 36px);
+      color: var(--green-light);
+      letter-spacing: clamp(4px, 1.5vw, 8px);
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 700;
+    }
+    .header .subtitle {
+      font-size: clamp(10px, 2.5vw, 13px);
+      color: var(--text-dim);
+      letter-spacing: clamp(2px, 0.8vw, 4px);
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+    .header .desc {
+      font-size: clamp(12px, 2.8vw, 15px);
+      color: rgba(192,192,187,0.5);
+      max-width: 600px;
+      margin: 20px auto 0;
+      line-height: 1.8;
+    }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 24px 60px;
+    }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(74,124,89,0.15);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      border-color: rgba(168,197,160,0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(74,124,89,0.08);
+    }
+
+    .card-preview {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-preview .icon {
+      font-size: 64px;
+      opacity: 0.15;
+      transition: opacity 0.3s ease;
+    }
+    .card:hover .card-preview .icon { opacity: 0.25; }
+    .card-preview::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(74,124,89,0.06) 0%, transparent 70%);
+    }
+    .card-preview .badge {
+      position: absolute;
+      top: 12px; right: 12px;
+      font-size: 10px;
+      color: var(--green);
+      border: 1px solid rgba(74,124,89,0.3);
+      padding: 2px 8px;
+      letter-spacing: 1px;
+    }
+
+    .card-body { padding: 20px 24px 24px; flex: 1; display: flex; flex-direction: column; }
+    .card-title {
+      font-size: 22px;
+      color: var(--green-light);
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+    .card-alias {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .card-meta {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .card-meta span {
+      font-size: 11px;
+      color: rgba(192,192,187,0.45);
+      border-left: 2px solid rgba(74,124,89,0.3);
+      padding-left: 8px;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: rgba(192,192,187,0.55);
+      line-height: 1.7;
+      flex: 1;
+    }
+    .card-arrow {
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--green);
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      border-top: 1px solid rgba(192,192,187,0.05);
+    }
+    .footer a { color: var(--green); text-decoration: none; }
+
+    /* Instructions */
+    .instructions {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 24px 20px;
+      text-align: center;
+    }
+    .instructions p {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+    .instructions code {
+      background: rgba(74,124,89,0.1);
+      border: 1px solid rgba(74,124,89,0.2);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 11px;
+      color: var(--green-light);
+    }
+
+    @media (max-width: 600px) {
+      .grid { grid-template-columns: 1fr; padding: 16px; }
+      .header { padding: 50px 20px 30px; }
+      .card-preview { height: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>指尖博物馆</h1>
+    <div class="subtitle">FINGERTIP MUSEUM</div>
+    <div class="desc">三峡博物馆十大镇馆之宝 · 三维交互展示<br>支持手势旋转、缩放、热点导览与自动漫游</div>
+  </div>
+
+  <div class="instructions">
+    <p>点击下方任意文物卡片进入三维展示页面<br>需要通过本地服务器访问：运行 <code>npx http-server</code> 后打开 <code>http://localhost:8080/museum-index.html</code></p>
+  </div>
+
+  <div class="grid">
+    <a class="card" href="museum-3d.html">
+      <div class="card-preview">
+        <span class="icon">尊</span>
+        <span class="badge">01</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">三羊尊</div>
+        <div class="card-alias">BRONZE ZUN WITH THREE RAM-HEADS</div>
+        <div class="card-meta">
+          <span>商代晚期</span>
+          <span>盛酒礼器</span>
+        </div>
+        <div class="card-desc">肩部铸有三只立体羊首，通体饕餮纹、夔龙纹，寓意"三阳开泰"，是商代青铜铸造的精品。</div>
+        <div class="card-arrow">进入展示 →</div>
+      </div>
+    </a>
+
+    <a class="card" href="museum-jiagu.html">
+      <div class="card-preview">
+        <span class="icon">俑</span>
+        <span class="badge">02</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">击鼓说唱俑</div>
+        <div class="card-alias">HAN STORYTELLER FIGURINE</div>
+        <div class="card-meta">
+          <span>东汉</span>
+          <span>陪葬陶俑</span>
+        </div>
+        <div class="card-desc">张口吐舌，击鼓说唱，表情极度夸张，被誉为"中国第一笑"，是写意雕塑的巅峰之作。</div>
+        <div class="card-arrow">进入展示 →</div>
+      </div>
+    </a>
+
+    <a class="card" href="museum-huniu.html">
+      <div class="card-preview">
+        <span class="icon">虎</span>
+        <span class="badge">03</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">虎钮淳于</div>
+        <div class="card-alias">TIGER-BUTTON CHUNYU</div>
+        <div class="card-meta">
+          <span>战国</span>
+          <span>青铜军乐器</span>
+        </div>
+        <div class="card-desc">顶部铸有立体立虎为钮，虎为巴人图腾祖先，淳于为军中指挥乐器，是巴文化最具辨识度的重器。</div>
+        <div class="card-arrow">进入展示 →</div>
+      </div>
+    </a>
+
+    <a class="card" href="museum-niao.html">
+      <div class="card-preview">
+        <span class="icon">鸟</span>
+        <span class="badge">04</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">青铜鸟</div>
+        <div class="card-alias">BRONZE BIRD</div>
+        <div class="card-meta">
+          <span>商周</span>
+          <span>青铜礼器</span>
+        </div>
+        <div class="card-desc">鸟首高昂，双翼展开，尾羽舒张。鸟是巴蜀先民的核心图腾，此器承载着对天空与太阳的崇拜。</div>
+        <div class="card-arrow">进入展示 →</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="footer">
+    重庆中国三峡博物馆 · 十大镇馆之宝<br>
+    Three Gorges Museum · Top Ten Treasures
+  </div>
+
+</body>
+</html>

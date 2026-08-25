@@ -1,417 +1,1130 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>史之痕 · 中华文物</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>史之痕 - 中华文物</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #c9a962;
+            --color-primary-dark: #8b7355;
+            --color-bg-dark: #0a0a0f;
+            --color-bg-medium: #12121a;
+            --color-bg-light: #1a1a25;
+            --glass-bg: rgba(20, 20, 30, 0.7);
+            --glass-border: rgba(201, 169, 98, 0.15);
+            --color-text: #f5f0e8;
+            --color-text-muted: #8a8578;
+            --font-display: 'Ma Shan Zheng', cursive;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            overflow: hidden;
-            background: #0c0c0e;
-            font-family: 'Noto Serif SC', serif;
-            color: #f5f0e8;
+            font-family: var(--font-sans);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text);
+            overflow-x: hidden;
+            line-height: 1.8;
         }
-        canvas {
-            display: block;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 1;
-        }
-        .ui-layer {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 10;
-        }
+
+        /* ========== Navigation ========== */
         .nav {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%;
-            padding: 1.5rem 3rem;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            z-index: 20;
-            pointer-events: auto;
-            background: linear-gradient(180deg, rgba(12,12,14,0.9) 0%, rgba(12,12,14,0) 100%);
+            justify-content: space-between;
+            padding: 1rem 3rem;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
         }
+
         .nav-logo {
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 1.6rem;
-            color: #c9a962;
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--color-primary);
             text-decoration: none;
             letter-spacing: 0.1em;
         }
+
         .nav-links {
             display: flex;
-            gap: 2.2rem;
             list-style: none;
+            gap: 2rem;
         }
+
         .nav-links a {
-            color: rgba(245,240,232,0.55);
+            color: var(--color-text-muted);
             text-decoration: none;
-            font-size: 0.88rem;
-            transition: all 0.3s ease;
-            letter-spacing: 0.05em;
+            font-size: 0.95rem;
+            font-weight: 400;
+            transition: color 0.3s ease;
             position: relative;
         }
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: #c9a962;
-        }
+
         .nav-links a::after {
             content: '';
             position: absolute;
-            bottom: -4px; left: 0;
-            width: 0; height: 1px;
-            background: #c9a962;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--color-primary);
             transition: width 0.3s ease;
         }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--color-primary);
+        }
+
         .nav-links a:hover::after,
         .nav-links a.active::after {
             width: 100%;
         }
-        .hero-text {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            pointer-events: none;
+
+        /* ========== Hero Section ========== */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 600px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        .hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            padding: 0 2rem;
+        }
+
         .hero-badge {
             display: inline-block;
-            padding: 0.35rem 1.4rem;
-            border: 1px solid rgba(201,169,98,0.4);
+            padding: 0.4rem 1.5rem;
+            border: 1px solid var(--color-primary);
             border-radius: 50px;
-            font-size: 0.82rem;
-            color: #c9a962;
+            font-size: 0.85rem;
+            color: var(--color-primary);
             letter-spacing: 0.2em;
             margin-bottom: 1.5rem;
-            background: rgba(201,169,98,0.06);
-            backdrop-filter: blur(8px);
+            background: rgba(201, 169, 98, 0.08);
+            backdrop-filter: blur(10px);
         }
+
         .hero-title {
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 7.5rem;
-            color: #f5f0e8;
-            text-shadow: 0 4px 40px rgba(0,0,0,0.7), 0 0 80px rgba(0,0,0,0.3);
-            letter-spacing: 0.18em;
-            line-height: 1.1;
+            font-family: var(--font-display);
+            font-size: 5rem;
+            color: var(--color-text);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.15em;
         }
+
         .hero-subtitle {
-            font-size: 1.35rem;
-            color: #c9a962;
-            margin-top: 1.2rem;
-            letter-spacing: 0.35em;
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.3em;
             font-weight: 400;
         }
-        .hero-desc {
-            font-size: 1rem;
-            color: rgba(245,240,232,0.55);
-            margin-top: 1.5rem;
-            max-width: 520px;
-            line-height: 1.8;
+
+        .hero-description {
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            line-height: 1.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
         }
+
         .scroll-hint {
             position: absolute;
-            bottom: 2.5rem;
+            bottom: 2rem;
             left: 50%;
             transform: translateX(-50%);
+            z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 0.5rem;
-            color: rgba(245,240,232,0.35);
-            font-size: 0.78rem;
-            letter-spacing: 0.15em;
-            animation: floatHint 2.5s ease-in-out infinite;
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            animation: float 2s ease-in-out infinite;
         }
+
         .scroll-hint-line {
             width: 1px;
-            height: 36px;
-            background: linear-gradient(to bottom, rgba(201,169,98,0.5), transparent);
+            height: 40px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
         }
-        @keyframes floatHint {
-            0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.4; }
-            50% { transform: translateX(-50%) translateY(-8px); opacity: 0.8; }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
         }
+
+        /* ========== Cover Introduction Section ========== */
+        .cover-intro {
+            width: 100%;
+            padding: 5rem 2rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: center;
+        }
+
+        .cover-intro-card {
+            max-width: 900px;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-intro-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+        }
+
+        .cover-intro-card h2 {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            color: var(--color-primary);
+            margin-bottom: 2rem;
+            letter-spacing: 0.15em;
+        }
+
+        .cover-intro-card p {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            line-height: 2;
+            margin-bottom: 2.5rem;
+        }
+
+        .btn-detail {
+            display: inline-block;
+            padding: 1rem 3rem;
+            border: 2px solid var(--color-primary);
+            color: var(--color-primary);
+            text-decoration: none;
+            font-family: var(--font-sans);
+            font-size: 1.05rem;
+            letter-spacing: 0.15em;
+            border-radius: 8px;
+            transition: all 0.4s ease;
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-detail::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(201, 169, 98, 0.15), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-detail:hover {
+            background: rgba(201, 169, 98, 0.12);
+            box-shadow: 0 0 30px rgba(201, 169, 98, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-detail:hover::before {
+            left: 100%;
+        }
+
+        /* ========== Preview Cards Section ========== */
+        .preview-section {
+            width: 100%;
+            padding: 5rem 2rem;
+            background: var(--color-bg-dark);
+        }
+
+        .preview-section-title {
+            text-align: center;
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            color: var(--color-primary);
+            margin-bottom: 3rem;
+            letter-spacing: 0.15em;
+        }
+
+        .preview-cards {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .preview-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            min-width: auto;
+            flex: none;
+            scroll-snap-align: none;
+            width: 360px;
+            height: 260px;
+        }
+
+        .preview-card:hover {
+            transform: scale(1.03);
+            border-color: var(--color-primary);
+            box-shadow: 0 10px 40px rgba(201, 169, 98, 0.15);
+        }
+
+        .preview-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #0d0d14;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+
+        .preview-card:hover .preview-card-img {
+            transform: scale(1.05);
+        }
+
+        .preview-card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            background: linear-gradient(to top, rgba(10, 10, 15, 0.95), transparent);
+        }
+
+        .preview-card-title {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            color: var(--color-text);
+            font-weight: 600;
+        }
+
+        .preview-card-desc {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-top: 0.3rem;
+        }
+
+        /* ========== Footer ========== */
+        .footer {
+            width: 100%;
+            padding: 2.5rem 2rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .footer p {
+            font-family: var(--font-serif);
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+            letter-spacing: 0.2em;
+        }
+
+        .footer .footer-dot {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            margin: 0 0.8rem;
+            vertical-align: middle;
+        }
+
+
+        /* ========== Detail Grid & Cards ========== */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            align-items: start;
+        }
+        .detail-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        .detail-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            border-color: rgba(201,169,98,0.3);
+        }
+        .detail-card-image {
+            width: 100%;
+            height: 260px;
+            overflow: hidden;
+            position: relative;
+        }
+        .detail-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #0d0d14;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+        .detail-card:hover .detail-card-image img {
+            transform: scale(1.05);
+        }
+        .detail-card-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(10,10,15,0.9), transparent);
+        }
+        .detail-card-tag {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(201,169,98,0.2);
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+        }
+        .detail-card-content {
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        .detail-card-content h3 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+        .detail-card-content .era {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(201,169,98,0.15);
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .detail-card-content p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        .detail-card-content .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        .detail-card-content .features span {
+            padding: 0.3rem 0.8rem;
+            background: rgba(201,169,98,0.1);
+            border: 1px solid rgba(201,169,98,0.2);
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+            border-radius: 20px;
+        }
+
+        /* ========== Timeline Section ========== */
+        .timeline-section {
+            padding: 4rem 2rem;
+            background: var(--color-bg-medium);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .timeline-section-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .timeline-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--color-primary);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 3rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -3.4rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            border: 3px solid var(--color-bg-medium);
+        }
+        .timeline-item h4 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+        .timeline-item .time {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        .timeline-item p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        /* ========== Back Section ========== */
+        .back-section {
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 1rem;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-family: var(--font-sans);
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background: var(--color-primary);
+            color: var(--color-bg-dark);
+        }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 3.8rem;
+            }
+
+            .preview-cards {
+                justify-content: center;
+                gap: 1rem;
+            }
+            .preview-card {
+                width: 240px;
+                height: 190px;
+            }
+
+            .cover-intro-card {
+                padding: 3rem;
+            }
+        }
+
         @media (max-width: 768px) {
-            .hero-title { font-size: 4rem; }
-            .hero-subtitle { font-size: 1rem; }
-            .nav-links { display: none; }
-            .nav { justify-content: center; }
+            .nav {
+                padding: 0.8rem 1.5rem;
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-links a {
+                font-size: 0.85rem;
+            }
+
+            .hero-title {
+                font-size: 2.8rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+                letter-spacing: 0.15em;
+            }
+
+            .hero-description {
+                font-size: 0.95rem;
+            }
+
+            .cover-intro {
+                padding: 3rem 1rem;
+            }
+
+            .cover-intro-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .cover-intro-card h2 {
+                font-size: 2rem;
+            }
+
+            .preview-cards {
+                justify-content: center;
+            }
+            .preview-card {
+                width: 100%;
+                max-width: 400px;
+                height: 240px;
+            }
+            .preview-card-img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                background: #0d0d14;
+                display: block;
+                transition: transform 0.6s ease;
+            }
+
+            .btn-detail {
+                padding: 0.8rem 2rem;
+                font-size: 0.95rem;
+            }
         }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            .detail-card-image { height: 200px; }
+            .detail-card-content { padding: 1.5rem; }
+            .timeline { padding-left: 2rem; }
+            .timeline-item::before { left: -2.4rem; }
+
+    
+        /* ========== Detail Section ========== */
+        .detail-section {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #0a0a0f 0%, #0f0e12 50%, #0a0a0f 100%);
+            position: relative;
+        }
+        .detail-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+        .detail-section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+        .detail-section-header h2 {
+            font-family: var(--font-display);
+            font-size: 2.4rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            letter-spacing: 0.15em;
+        }
+        .detail-section-header p {
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            color: var(--color-text-muted);
+            line-height: 1.8;
+        }
+
+
+
+        /* ========== Diamond Divider ========== */
+        .diamond-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .diamond-divider::before,
+        .diamond-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+        }
+        .diamond-divider span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--color-primary);
+            transform: rotate(45deg);
+            opacity: 0.6;
+        }
+
+        /* ========== Decorative Corner Elements ========== */
+        .cover-intro-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border-right: 2px solid rgba(201, 169, 98, 0.2);
+            border-bottom: 2px solid rgba(201, 169, 98, 0.2);
+            border-radius: 0 0 16px 0;
+        }
+
+        /* ========== Preview Section Themed Background ========== */
+        .preview-section {
+            width: 100%;
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #0a0a0f 0%, #0f0e12 50%, #0a0a0f 100%);
+            position: relative;
+        }
+        .preview-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+        }
+
+        /* ========== Scrollbar Styling ========== */
+        .preview-cards::-webkit-scrollbar {
+            height: 6px;
+        }
+        .preview-cards::-webkit-scrollbar-track {
+            background: rgba(20, 20, 30, 0.5);
+            border-radius: 3px;
+        }
+        .preview-cards::-webkit-scrollbar-thumb {
+            background: rgba(201, 169, 98, 0.3);
+            border-radius: 3px;
+        }
+        .preview-cards::-webkit-scrollbar-thumb:hover {
+            background: rgba(201, 169, 98, 0.5);
+        }
+
     </style>
 </head>
 <body>
-    <canvas id="particleCanvas"></canvas>
-    <div class="ui-layer">
-        <nav class="nav">
-            <a href="index.html" class="nav-logo">中华文物</a>
-            <ul class="nav-links">
-                <li><a href="index.html">首页</a></li>
-                <li><a href="vessels-cover.html">器之灵</a></li>
-                <li><a href="stone-cover.html">石之韵</a></li>
-                <li><a href="history-cover.html" class="active">史之痕</a></li>
-                <li><a href="restoration-cover.html">文物修复</a></li>
-                <li><a href="promotion-cover.html">推广</a></li>
-            </ul>
-        </nav>
-        <div class="hero-text">
-            <div class="hero-badge">笔墨丹青</div>
+
+    <!-- Navigation -->
+    <nav class="nav" id="mainNav">
+        <a href="index.html" class="nav-logo">中华文物</a>
+        <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="vessels-cover.html">器之灵</a></li>
+            <li><a href="stone-cover.html">石之韵</a></li>
+            <li><a href="history-cover.html" class="active">史之痕</a></li>
+            <li><a href="restoration-cover.html">文物修复</a></li>
+            <li><a href="promotion-cover.html">推广</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <canvas class="hero-canvas" id="hero-canvas"></canvas>
+        <div class="hero-content">
+            <span class="hero-badge">文脉传承</span>
             <h1 class="hero-title">史之痕</h1>
-            <p class="hero-subtitle">历史画卷 · 书法碑帖 · 文物传承</p>
-            <p class="hero-desc">从甲骨刻辞到丹青长卷，笔墨之间记录着华夏文明的千年脉络</p>
+            <p class="hero-subtitle">书画艺术 · 非遗技艺 · 文化传承</p>
+            <p class="hero-description">从甲骨文到行草飘逸，从人物画到山水意境，千年文脉薪火相传</p>
         </div>
         <div class="scroll-hint">
             <span>向下滚动</span>
             <div class="scroll-hint-line"></div>
         </div>
-    </div>
+    </section>
 
+    <!-- Cover Introduction Section -->
+    <section class="cover-intro">
+        <div class="cover-intro-card">
+            <h2>文脉传承</h2>
+            <p>中国书画艺术源远流长，书法从甲骨文的古朴到行草的飘逸，绘画从人物画的传神到山水画的意境，形成了独特的审美体系。与此同时，景泰蓝、苏绣、紫砂壶、漆器等传统手工艺代代相传，凝聚着匠人的智慧与心血，是中华文明的重要组成部分。</p>
+        </div>
+    </section>
+
+    <!-- Preview Cards Section -->
+    <section class="preview-section">
+        <h2 class="preview-section-title">文化瑰宝</h2>
+        <div class="preview-cards">
+            <a href="history-detail.html" class="preview-card">
+                <img src="images/calligraphy.jpg" alt="书法" class="preview-card-img">
+                <div class="preview-card-overlay">
+                    <div class="preview-card-title">书法艺术</div>
+                    <div class="preview-card-desc">笔墨之间的千年风骨</div>
+                </div>
+            </a>
+            <a href="history-detail.html" class="preview-card">
+                <img src="images/landscape-painting.jpg" alt="山水画" class="preview-card-img">
+                <div class="preview-card-overlay">
+                    <div class="preview-card-title">山水意境</div>
+                    <div class="preview-card-desc">天人合一的东方美学</div>
+                </div>
+            </a>
+            <a href="history-detail.html" class="preview-card">
+                <img src="images/heritage-craft.jpg" alt="非遗技艺" class="preview-card-img">
+                <div class="preview-card-overlay">
+                    <div class="preview-card-title">非遗技艺</div>
+                    <div class="preview-card-desc">匠心独运的传世工艺</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+<!-- Diamond Divider -->
+    <div class="diamond-divider"><span></span></div>
+
+    <!-- Detail Section -->
+    <section class="detail-section">
+        <div class="detail-section-header">
+            <h2>深入了解文脉</h2>
+            <p>探索中华书画艺术与传统工艺的博大精深</p>
+        </div>
+        <div class="detail-grid">
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">书圣之作</span>
+                    <img src="images/detail-calligraphy.jpg" alt="书法大家" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">魏晋时期 · 公元3-5世纪</span>
+                    <h3>魏晋风骨</h3>
+                    <p>
+                        王羲之《兰亭序》被誉为"天下第一行书"，记述了永和九年兰亭雅集的盛况，
+                        全文324字，字字珠玑，气韵生动。王献之继承父业，其书法更加飘逸洒脱，
+                        父子二人确立了书法艺术的美学标准。钟繇的楷书、张芝的草书也为后世树立了典范，
+                        魏晋书法成为中国书法史上不可逾越的高峰。
+                    </p>
+                    <div class="features">
+                        <span>兰亭序</span>
+                        <span>行书</span>
+                        <span>楷书</span>
+                        <span>草书</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">笔墨山水</span>
+                    <img src="images/detail-landscape.jpg" alt="山水画" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">五代-宋代 · 公元10-13世纪</span>
+                    <h3>山水画卷</h3>
+                    <p>
+                        范宽《溪山行旅图》以雄健的笔触描绘了北方山水的壮阔，
+                        郭熙《早春图》则展现了春天山水的灵动。宋代是中国山水画的黄金时代，
+                        李成、范宽、郭熙等大家辈出，确立了"高远、深远、平远"的三远构图法则。
+                        山水画不仅是自然景观的再现，更是文人精神世界的寄托。
+                    </p>
+                    <div class="features">
+                        <span>三远法</span>
+                        <span>皴法</span>
+                        <span>写意</span>
+                        <span>工笔</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">百工之美</span>
+                    <img src="images/detail-heritage.jpg" alt="非遗技艺" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">明清时期 · 公元14-20世纪</span>
+                    <h3>百工之美</h3>
+                    <p>
+                        景泰蓝以铜胎掐丝、点蓝烧制的繁复工艺著称，是皇家御用珍品；
+                        苏绣以"平、齐、细、密、匀、顺、和、光"八字诀闻名，
+                        双面绣《猫》更是令人叹为观止。宜兴紫砂壶以独特的泥料和造型成为茶具之首，
+                        福州脱胎漆器则以"轻如鸿毛、坚如金石"的特性享誉世界。
+                    </p>
+                    <div class="features">
+                        <span>景泰蓝</span>
+                        <span>苏绣</span>
+                        <span>紫砂壶</span>
+                        <span>漆器</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <div class="detail-card-image">
+                    <span class="detail-card-tag">数字传承</span>
+                    <img src="images/detail-digital.jpg" alt="传承创新" loading="lazy">
+                </div>
+                <div class="detail-card-content">
+                    <span class="era">当代 · 21世纪</span>
+                    <h3>薪火相传</h3>
+                    <p>
+                        传统书画与非遗技艺在当代焕发新生。数字化技术让千年书画得以高清保存和全球传播，
+                        3D扫描和虚拟现实技术让观众可以身临其境地欣赏文物细节。
+                        非遗传承人培养计划、传统工艺工作站等项目为古老技艺注入新的活力，
+                        文创产品让传统文化走进现代生活。
+                    </p>
+                    <div class="features">
+                        <span>数字化保护</span>
+                        <span>VR体验</span>
+                        <span>文创产品</span>
+                        <span>传承计划</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="diamond-divider"><span></span></div>
+
+    <!-- 发展时间线 -->
+    <section class="timeline-section">
+        <div class="timeline-section-inner">
+            <h2 class="timeline-title">书画艺术发展脉络</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>先秦萌芽</h4>
+                    <div class="time">公元前21世纪-前221年</div>
+                    <p>甲骨文、金文是最早的汉字书写形式。春秋战国时期，帛画、漆画已经出现，为后世书画艺术奠定基础。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>秦汉奠基</h4>
+                    <div class="time">公元前221-公元220年</div>
+                    <p>秦始皇统一文字，小篆成为标准字体。汉代隶书成熟，草书、楷书、行书开始萌芽。帛画、壁画艺术蓬勃发展。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>魏晋风度</h4>
+                    <div class="time">公元220-589年</div>
+                    <p>书法艺术达到第一个高峰，王羲之、王献之父子确立了书法美学标准。顾恺之的人物画开创了"以形写神"的传统。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>唐宋鼎盛</h4>
+                    <div class="time">公元618-1279年</div>
+                    <p>唐代书法百花齐放，颜真卿、柳公权、欧阳询等大家辈出。宋代山水画达到巅峰，文人画兴起，诗书画印融为一体。</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>元明清传承</h4>
+                    <div class="time">公元1279-1912年</div>
+                    <p>元代赵孟頫提倡"书画同源"，明清时期流派纷呈。非遗手工艺在明清时期达到巅峰，形成了完整的传承体系。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 返回按钮 -->
+    <section class="back-section">
+        <a href="index.html" class="back-btn">← 返回首页</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>中华文物 <span class="footer-dot"></span> 守护千年文明</p>
+    </footer>
+
+    <!-- JavaScript -->
     <script>
-    (function() {
-        const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
+        // Nav scroll effect
+        const nav = document.getElementById('mainNav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
 
-        // 配置
-        const config = {
-            sampleStep: 5,
-            brightnessThreshold: 25,
-            colors: [
-                [210,195,155],[195,178,140],[225,210,175],
-                [180,165,130],[200,185,150],[235,220,185],
-                [170,155,125],[215,200,165],[190,175,140]
-            ],
-            particleSizeMin: 1.8, particleSizeMax: 4,
-            opacityMin: 0.3, opacityMax: 0.6,
-            shape: 'paper',
-            repelRadius: 220, repelStrength: 1.0,
-            springStrength: 0.03, damping: 0.93,
-            connectLines: false,
-            lineColor: 'rgba(200,185,150,0.04)',
-            bgColor: '#0a0a0e',
-            driftSpeed: 0.25, driftAmp: 1.2
-        };
-
-        let particles = [];
-        let mouse = { x: -9999, y: -9999, active: false };
-        let clickWave = { x: 0, y: 0, radius: 0, active: false, strength: 0 };
-        let time = 0;
-        let imageLoaded = false;
-        const img = new Image();
-        img.src = 'images/hero-history.jpg';
-        img.crossOrigin = 'anonymous';
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            if (imageLoaded) createParticles();
-        }
-
-        function createParticles() {
-            const w = canvas.width;
-            const h = canvas.height;
-            const off = document.createElement('canvas');
-            const offCtx = off.getContext('2d');
-            off.width = w; off.height = h;
-
-            const imgRatio = img.width / img.height;
-            const canvasRatio = w / h;
-            let drawW, drawH, drawX, drawY;
-            if (imgRatio > canvasRatio) {
-                drawH = h; drawW = h * imgRatio; drawX = (w - drawW) / 2; drawY = 0;
-            } else {
-                drawW = w; drawH = w / imgRatio; drawX = 0; drawY = (h - drawH) / 2;
+        // Hero background: parallax image + dust + light rays (same as homepage)
+        class HeroBgEffect {
+            constructor(canvasId, imgSrc) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.mouse = { x: 0.5, y: 0.5 };
+                this.target = { x: 0.5, y: 0.5 };
+                this.dust = [];
+                this.bgImg = new Image();
+                this.bgImg.src = imgSrc;
+                this.loaded = false;
+                this.bgImg.onload = () => { this.loaded = true; };
+                this.resize();
+                this.createDust();
+                this.bind();
+                this.animate();
             }
-            offCtx.drawImage(img, drawX, drawY, drawW, drawH);
-
-            const imageData = offCtx.getImageData(0, 0, w, h);
-            const data = imageData.data;
-            const step = config.sampleStep;
-
-            particles = [];
-            for (let y = 0; y < h; y += step) {
-                for (let x = 0; x < w; x += step) {
-                    const idx = (y * w + x) * 4;
-                    const r = data[idx], g = data[idx+1], b = data[idx+2];
-                    const brightness = (r + g + b) / 3;
-                    if (brightness < config.brightnessThreshold || brightness > 245) continue;
-
-                    const themeColor = config.colors[Math.floor(Math.random() * config.colors.length)];
-                    const blend = 0.25 + Math.random() * 0.45;
-                    const pr = Math.floor(themeColor[0] * blend + r * (1-blend));
-                    const pg = Math.floor(themeColor[1] * blend + g * (1-blend));
-                    const pb = Math.floor(themeColor[2] * blend + b * (1-blend));
-
-                    particles.push({
-                        ox: x, oy: y,
-                        x: x + (Math.random()-0.5)*2,
-                        y: y + (Math.random()-0.5)*2,
-                        vx: 0, vy: 0,
-                        r: pr, g: pg, b: pb,
-                        size: config.particleSizeMin + Math.random() * (config.particleSizeMax - config.particleSizeMin),
-                        opacity: config.opacityMin + Math.random() * (config.opacityMax - config.opacityMin),
-                        phase: Math.random() * Math.PI * 2,
-                        rotSpeed: (Math.random() - 0.5) * 0.02,
-                        rotation: Math.random() * Math.PI * 2,
-                        aspectRatio: 0.3 + Math.random() * 0.7
+            resize() {
+                this.canvas.width = this.canvas.parentElement.offsetWidth;
+                this.canvas.height = this.canvas.parentElement.offsetHeight;
+            }
+            createDust() {
+                this.dust = [];
+                for (let i = 0; i < 60; i++) {
+                    this.dust.push({
+                        x: Math.random(), y: Math.random(),
+                        size: Math.random() * 2 + 0.5,
+                        sx: (Math.random() - 0.5) * 0.0005,
+                        sy: (Math.random() - 0.5) * 0.0003,
+                        op: Math.random() * 0.6 + 0.2,
+                        ph: Math.random() * 6.28
                     });
                 }
             }
-        }
-
-        img.onload = function() {
-            imageLoaded = true;
-            resize();
-        };
-
-        window.addEventListener('resize', resize);
-
-        canvas.addEventListener('mousemove', e => {
-            const rect = canvas.getBoundingClientRect();
-            mouse.x = e.clientX - rect.left;
-            mouse.y = e.clientY - rect.top;
-            mouse.active = true;
-        });
-        canvas.addEventListener('mouseleave', () => { mouse.active = false; });
-        canvas.addEventListener('click', e => {
-            const rect = canvas.getBoundingClientRect();
-            clickWave.x = e.clientX - rect.left;
-            clickWave.y = e.clientY - rect.top;
-            clickWave.radius = 0;
-            clickWave.active = true;
-            clickWave.strength = 4;
-        });
-
-        function update() {
-            time += 0.016;
-            const mx = mouse.x, my = mouse.y;
-            const repelR = config.repelRadius;
-            const repelS = config.repelStrength;
-            const spring = config.springStrength;
-            const damping = config.damping;
-
-            if (clickWave.active) {
-                clickWave.radius += 12;
-                clickWave.strength *= 0.96;
-                if (clickWave.radius > 800 || clickWave.strength < 0.1) clickWave.active = false;
+            bind() {
+                window.addEventListener('resize', () => this.resize());
+                document.addEventListener('mousemove', (e) => {
+                    this.target.x = e.clientX / window.innerWidth;
+                    this.target.y = e.clientY / window.innerHeight;
+                });
             }
-
-            for (let i = 0; i < particles.length; i++) {
-                const p = particles[i];
-                const driftX = Math.sin(time * config.driftSpeed + p.phase) * config.driftAmp * 0.4;
-                const driftY = Math.cos(time * config.driftSpeed * 0.7 + p.phase) * config.driftAmp * 0.25;
-
-                const tx = p.ox + driftX;
-                const ty = p.oy + driftY;
-
-                p.vx += (tx - p.x) * spring;
-                p.vy += (ty - p.y) * spring;
-
-                if (mouse.active) {
-                    const dx = p.x - mx;
-                    const dy = p.y - my;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < repelR && dist > 1) {
-                        const force = (1 - dist / repelR) * repelS;
-                        p.vx += (dx / dist) * force;
-                        p.vy += (dy / dist) * force;
-                    }
-                }
-
-                if (clickWave.active) {
-                    const dx = p.x - clickWave.x;
-                    const dy = p.y - clickWave.y;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    const waveW = 50;
-                    if (Math.abs(dist - clickWave.radius) < waveW && dist > 1) {
-                        const f = (1 - Math.abs(dist - clickWave.radius) / waveW) * clickWave.strength;
-                        p.vx += (dx / dist) * f;
-                        p.vy += (dy / dist) * f;
-                    }
-                }
-
-                p.vx *= damping;
-                p.vy *= damping;
-                p.x += p.vx;
-                p.y += p.vy;
-                p.rotation += p.rotSpeed;
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                const ctx = this.ctx, w = this.canvas.width, h = this.canvas.height;
+                this.mouse.x += (this.target.x - this.mouse.x) * 0.05;
+                this.mouse.y += (this.target.y - this.mouse.y) * 0.05;
+                ctx.fillStyle = '#0c0c0e';
+                ctx.fillRect(0, 0, w, h);
+                if (this.loaded) this.drawBg(ctx, w, h);
+                this.drawDust(ctx, w, h);
+                this.drawRays(ctx, w, h);
+                this.drawVignette(ctx, w, h);
             }
-        }
-
-        function draw() {
-            const w = canvas.width, h = canvas.height;
-            ctx.fillStyle = config.bgColor;
-            ctx.fillRect(0, 0, w, h);
-
-            // 连线
-            if (config.connectLines) {
-                ctx.lineWidth = 0.4;
-                const cd = config.connectDist;
-                for (let i = 0; i < particles.length; i++) {
-                    const p1 = particles[i];
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const p2 = particles[j];
-                        const dx = p1.x - p2.x, dy = p1.y - p2.y;
-                        const dist = Math.sqrt(dx*dx + dy*dy);
-                        if (dist < cd) {
-                            ctx.globalAlpha = (1 - dist / cd) * 0.12;
-                            ctx.strokeStyle = config.lineColor;
-                            ctx.beginPath();
-                            ctx.moveTo(p1.x, p1.y);
-                            ctx.lineTo(p2.x, p2.y);
-                            ctx.stroke();
-                        }
-                    }
-                }
+            drawBg(ctx, w, h) {
+                const img = this.bgImg;
+                const s = Math.max(w / img.width, h / img.height);
+                const dw = img.width * s, dh = img.height * s;
+                const ox = (this.mouse.x - 0.5) * 0.04 * w;
+                const oy = (this.mouse.y - 0.5) * 0.04 * h;
+                ctx.save();
+                ctx.globalAlpha = 0.45;
+                ctx.drawImage(img, (w - dw) / 2 + ox, (h - dh) / 2 + oy, dw, dh);
+                ctx.restore();
             }
-
-            // 粒子
-            for (let i = 0; i < particles.length; i++) {
-                const p = particles[i];
-                ctx.globalAlpha = p.opacity;
-                ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
-                const s = p.size;
-
-                if (config.shape === 'paper') {
-                    ctx.save();
-                    ctx.translate(p.x, p.y);
-                    ctx.rotate(p.rotation);
-                    // 不规则碎片
+            drawDust(ctx, w, h) {
+                const t = Date.now() * 0.001;
+                for (const p of this.dust) {
+                    p.x += p.sx; p.y += p.sy; p.ph += 0.01;
+                    if (p.x < 0) p.x = 1; if (p.x > 1) p.x = 0;
+                    if (p.y < 0) p.y = 1; if (p.y > 1) p.y = 0;
+                    const fl = Math.sin(p.ph) * 0.3 + 0.7;
                     ctx.beginPath();
-                    ctx.moveTo(-s*0.6, -s*p.aspectRatio*0.3);
-                    ctx.lineTo(s*0.4, -s*p.aspectRatio*0.5);
-                    ctx.lineTo(s*0.7, s*p.aspectRatio*0.2);
-                    ctx.lineTo(s*0.1, s*p.aspectRatio*0.6);
-                    ctx.lineTo(-s*0.5, s*p.aspectRatio*0.3);
-                    ctx.closePath();
+                    ctx.arc(p.x * w, p.y * h, p.size, 0, 6.28);
+                    ctx.fillStyle = gba(201,169,98,);
                     ctx.fill();
-                    // 墨痕边缘
-                    ctx.globalAlpha = p.opacity * 0.15;
-                    ctx.strokeStyle = 'rgba(40,35,25,0.4)';
-                    ctx.lineWidth = 0.3;
-                    ctx.stroke();
-                    ctx.restore();
                 }
             }
-            ctx.globalAlpha = 1;
+            drawRays(ctx, w, h) {
+                const t = Date.now() * 0.0005;
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                for (let i = 0; i < 3; i++) {
+                    const a = t + i * 2.09;
+                    const rw = 100 + Math.sin(t + i) * 50;
+                    const sx = w * 0.5 + Math.cos(a) * w * 0.3;
+                    const sy = h * 0.3 + Math.sin(a * 0.5) * h * 0.2;
+                    const g = ctx.createLinearGradient(sx, sy, sx + Math.cos(a) * w, sy + Math.sin(a) * h);
+                    g.addColorStop(0, 'rgba(201,169,98,0.08)');
+                    g.addColorStop(1, 'rgba(201,169,98,0)');
+                    ctx.beginPath();
+                    ctx.moveTo(sx - rw/2, sy);
+                    ctx.lineTo(sx + rw/2, sy);
+                    ctx.lineTo(sx + rw*2 + Math.cos(a)*w, sy + Math.sin(a)*h);
+                    ctx.lineTo(sx - rw*2 + Math.cos(a)*w, sy + Math.sin(a)*h);
+                    ctx.closePath();
+                    ctx.fillStyle = g;
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+            drawVignette(ctx, w, h) {
+                const g = ctx.createRadialGradient(w/2, h/2, h*0.3, w/2, h/2, h*0.8);
+                g.addColorStop(0, 'rgba(10,10,15,0)');
+                g.addColorStop(1, 'rgba(10,10,15,0.7)');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, w, h);
+            }
         }
-
-        function animate() {
-            update();
-            draw();
-            requestAnimationFrame(animate);
-        }
-
-        animate();
-    })();
+        new HeroBgEffect('hero-canvas', 'images/hero-history.jpg');
     </script>
 </body>
 </html>

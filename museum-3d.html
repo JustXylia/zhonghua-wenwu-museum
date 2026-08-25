@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>指尖博物馆 · 3D文物鉴赏 | 中华文物</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #c9a962;
+            --color-primary-dark: #8b7355;
+            --color-primary-light: #e0c685;
+            --color-bg-dark: #0a0a0f;
+            --color-bg-medium: #12121a;
+            --color-bg-light: #1a1a25;
+            --glass-bg: rgba(20, 20, 30, 0.7);
+            --glass-border: rgba(201, 169, 98, 0.15);
+            --color-text: #f5f0e8;
+            --color-text-muted: #8a8578;
+            --font-display: 'Ma Shan Zheng', cursive;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-sans);
+            background: var(--color-bg-dark);
+            color: var(--color-text);
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* ===== 导航栏 ===== */
+        .nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 1rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10,10,15,0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-links a {
+            color: var(--color-text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: color 0.3s ease;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 1px;
+            background: var(--color-primary);
+            transition: width 0.3s ease;
+        }
+        .nav-links a:hover { color: var(--color-primary); }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-links a.active {
+            color: var(--color-primary);
+        }
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* ===== 页面头部 ===== */
+        .page-header {
+            padding: 10rem 4rem 4rem;
+            text-align: center;
+            background:
+                radial-gradient(ellipse at 50% 30%, rgba(201,169,98,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 20% 70%, rgba(201,169,98,0.03) 0%, transparent 50%),
+                linear-gradient(180deg, var(--color-bg-dark) 0%, var(--color-bg-medium) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('images/hero-museum.jpg') center/cover no-repeat;
+            opacity: 0.15;
+            z-index: 0;
+        }
+        .page-header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .page-header-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 1.5rem;
+            background: rgba(10, 10, 15, 0.6);
+            backdrop-filter: blur(10px);
+        }
+        .page-header-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            color: var(--color-primary);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.8);
+        }
+        .page-header-subtitle {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: var(--color-text);
+            letter-spacing: 0.2em;
+            margin-bottom: 2rem;
+        }
+        .page-header-desc {
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+        }
+
+        /* ===== 统计数据 ===== */
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            color: var(--color-primary);
+            line-height: 1;
+            margin-bottom: 0.3rem;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            letter-spacing: 0.1em;
+        }
+
+        /* ===== 筛选区域 ===== */
+        .filter-section {
+            padding: 3rem 4rem 2rem;
+            background: var(--color-bg-medium);
+            position: sticky;
+            top: 70px;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            background: rgba(18, 18, 26, 0.95);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .filter-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .category-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .category-btn {
+            padding: 0.5rem 1.2rem;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: var(--font-sans);
+        }
+        .category-btn:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+        .category-btn.active {
+            background: linear-gradient(135deg, rgba(201,169,98,0.2) 0%, rgba(201,169,98,0.05) 100%);
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+        .search-box {
+            position: relative;
+            min-width: 260px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            background: var(--color-bg-light);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            color: var(--color-text);
+            font-size: 0.9rem;
+            font-family: var(--font-sans);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .search-box input:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 20px rgba(201,169,98,0.1);
+        }
+        .search-box input::placeholder {
+            color: var(--color-text-muted);
+        }
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===== 文物网格 ===== */
+        .museum-section {
+            padding: 3rem 4rem 5rem;
+            background:
+                radial-gradient(ellipse at 30% 20%, rgba(201,169,98,0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(201,169,98,0.02) 0%, transparent 50%),
+                var(--color-bg-medium);
+            min-height: 60vh;
+        }
+        .museum-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .artifact-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+        .artifact-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        .artifact-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .artifact-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(201,169,98,0.1);
+            border-color: var(--color-primary);
+        }
+        .artifact-img-wrap {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background-color: #12121a;
+        }
+        .artifact-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .artifact-card:hover .artifact-img-wrap img {
+            transform: scale(1.08);
+        }
+        .badge-3d {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            background: linear-gradient(135deg, rgba(201,169,98,0.9) 0%, rgba(139,115,85,0.9) 100%);
+            color: #0a0a0f;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 4px;
+            letter-spacing: 0.05em;
+            z-index: 2;
+        }
+        .artifact-hover-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10,10,15,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 3;
+        }
+        .artifact-card:hover .artifact-hover-overlay {
+            opacity: 1;
+        }
+        .hover-text {
+            color: var(--color-primary);
+            font-size: 0.95rem;
+            font-family: var(--font-serif);
+            letter-spacing: 0.1em;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--color-primary);
+            border-radius: 30px;
+            transform: translateY(10px);
+            transition: transform 0.4s ease;
+        }
+        .artifact-card:hover .hover-text {
+            transform: translateY(0);
+        }
+        .artifact-card-body {
+            padding: 1.2rem 1.2rem 1.4rem;
+        }
+        .artifact-name {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            color: var(--color-text);
+            margin-bottom: 0.4rem;
+            line-height: 1.3;
+        }
+        .artifact-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+        }
+        .artifact-dynasty {
+            color: var(--color-primary);
+        }
+        .artifact-meta-divider {
+            width: 3px;
+            height: 3px;
+            background: var(--color-text-muted);
+            border-radius: 50%;
+        }
+        .artifact-category {
+            color: var(--color-text-muted);
+        }
+
+        /* ===== 加载更多 ===== */
+        .load-more-wrap {
+            text-align: center;
+            margin-top: 3rem;
+        }
+        .load-more-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.8rem 2.5rem;
+            background: linear-gradient(135deg, rgba(201,169,98,0.15) 0%, rgba(201,169,98,0.05) 100%);
+            border: 1px solid rgba(201,169,98,0.4);
+            border-radius: 30px;
+            color: var(--color-primary);
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            font-family: var(--font-sans);
+            backdrop-filter: blur(4px);
+        }
+        .load-more-btn:hover {
+            background: linear-gradient(135deg, rgba(201,169,98,0.25) 0%, rgba(201,169,98,0.1) 100%);
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 30px rgba(201,169,98,0.2);
+            transform: translateY(-2px);
+        }
+        .load-more-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--color-text-muted);
+            font-size: 1rem;
+            grid-column: 1 / -1;
+        }
+
+        /* ===== 模态弹窗 ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: 2rem;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal {
+            background: var(--color-bg-medium);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(201,169,98,0.1);
+            border: 1px solid var(--glass-border);
+            color: var(--color-text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        .modal-close:hover {
+            background: rgba(201,169,98,0.2);
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+        .modal-image {
+            width: 100%;
+            height: 350px;
+            overflow: hidden;
+            background-color: #12121a;
+            position: relative;
+        }
+        .modal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .modal-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(to top, var(--color-bg-medium), transparent);
+        }
+        .modal-body {
+            padding: 2rem 2.5rem 2.5rem;
+        }
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 0.8rem;
+        }
+        .modal-tags {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .modal-tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(201,169,98,0.15);
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            border: 1px solid rgba(201,169,98,0.3);
+        }
+        .modal-tag.model-tag {
+            background: linear-gradient(135deg, rgba(201,169,98,0.3) 0%, rgba(201,169,98,0.1) 100%);
+            font-weight: 500;
+        }
+        .modal-description {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 2;
+            margin-bottom: 2rem;
+        }
+        .modal-3d-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, rgba(201,169,98,0.2) 0%, rgba(201,169,98,0.05) 100%);
+            border: 1px solid var(--color-primary);
+            border-radius: 30px;
+            color: var(--color-primary);
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            font-family: var(--font-sans);
+            text-decoration: none;
+        }
+        .modal-3d-btn:hover {
+            background: linear-gradient(135deg, rgba(201,169,98,0.3) 0%, rgba(201,169,98,0.1) 100%);
+            box-shadow: 0 4px 30px rgba(201,169,98,0.25);
+            transform: translateY(-2px);
+        }
+
+        /* ===== 页脚 ===== */
+        .footer {
+            padding: 3rem 4rem;
+            text-align: center;
+            background: var(--color-bg-dark);
+            border-top: 1px solid var(--glass-border);
+        }
+        .footer-text {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+        }
+        .footer-brand {
+            font-family: var(--font-display);
+            color: var(--color-primary);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 1200px) {
+            .artifact-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 900px) {
+            .nav { padding: 1rem 2rem; }
+            .nav-links { gap: 1.5rem; }
+            .page-header { padding: 8rem 2rem 3rem; }
+            .filter-section { padding: 2rem; top: 60px; }
+            .museum-section { padding: 2rem; }
+            .artifact-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-row { gap: 2rem; }
+            .modal-body { padding: 1.5rem; }
+            .modal-title { font-size: 1.5rem; }
+        }
+        @media (max-width: 600px) {
+            .nav-links { display: none; }
+            .artifact-grid { grid-template-columns: 1fr; }
+            .stat-number { font-size: 2rem; }
+            .search-box { min-width: 100%; flex: 1; }
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--color-bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--color-primary-dark); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">中华文物</a>
+        <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="vessels-cover.html">器之灵</a></li>
+            <li><a href="stone-cover.html">石之韵</a></li>
+            <li><a href="history-cover.html">史之痕</a></li>
+            <li><a href="restoration-cover.html">文物修复</a></li>
+            <li><a href="promotion-cover.html">推广</a></li>
+            <li><a href="museum-3d.html" class="active">指尖博物馆</a></li>
+        </ul>
+    </nav>
+
+    <!-- 页面头部 -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <span class="page-header-badge">MUSEUM · 3D</span>
+            <h1 class="page-header-title">指尖博物馆 · 3D文物鉴赏</h1>
+            <p class="page-header-subtitle">穿越千年时光 · 触摸文明瑰宝</p>
+            <p class="page-header-desc">
+                在这里，每一件文物都被赋予了数字生命。<br>
+                通过3D建模技术，您可以360度旋转观赏文物的每一个细节，<br>
+                感受中华文明五千年的璀璨与厚重。
+            </p>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-number" id="stat-total">0</div>
+                    <div class="stat-label">文物总数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="stat-category">0</div>
+                    <div class="stat-label">文物类别</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="stat-dynasty">0</div>
+                    <div class="stat-label">跨越朝代</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 筛选区域 -->
+    <section class="filter-section">
+        <div class="filter-inner">
+            <div class="category-buttons" id="categoryButtons">
+                <button class="category-btn active" data-category="all">全部</button>
+                <button class="category-btn" data-category="bronze">青铜器</button>
+                <button class="category-btn" data-category="pottery">陶器</button>
+                <button class="category-btn" data-category="stone">石雕石刻</button>
+                <button class="category-btn" data-category="jade">玉器</button>
+                <button class="category-btn" data-category="gold">金银器</button>
+                <button class="category-btn" data-category="porcelain">瓷器</button>
+                <button class="category-btn" data-category="calligraphy">书画</button>
+                <button class="category-btn" data-category="lacquer">漆木器</button>
+            </div>
+            <div class="search-box">
+                <span class="search-icon">&#9776;</span>
+                <input type="text" id="searchInput" placeholder="搜索文物名称...">
+            </div>
+        </div>
+    </section>
+
+    <!-- 文物网格 -->
+    <section class="museum-section">
+        <div class="museum-inner">
+            <div class="artifact-grid" id="artifactGrid">
+                <!-- 动态生成 -->
+            </div>
+            <div class="load-more-wrap">
+                <button class="load-more-btn" id="loadMoreBtn">加载更多文物</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 模态弹窗 -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-image">
+                <img id="modalImage" src="" alt="">
+            </div>
+            <div class="modal-body">
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <div class="modal-tags" id="modalTags"></div>
+                <p class="modal-description" id="modalDesc"></p>
+                <a href="#" class="modal-3d-btn" id="modal3dBtn" target="_blank" rel="noopener noreferrer">
+                    <span>3D模型查看</span>
+                    <span>&rarr;</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-brand">中华文物</div>
+        <div class="footer-text">守护千年文明 · 传承文化瑰宝</div>
+    </footer>
+
+    <script>
+        // ===== 文物数据 =====
+        const artifacts = [
+            // 真实3D文物（前4个）
+            { name: '击鼓说唱俑', category: 'pottery', dynasty: '东汉', has3d: true, url: 'museum-jiagu.html', img: 'artifact-drum-storyteller.jpg', desc: '击鼓说唱俑出土于四川成都天回山东汉崖墓，俑为泥质灰陶，头戴帻，额前有花饰，袒胸露腹，左臂环抱一扁鼓，右手举槌欲击，作击鼓说唱表演。其神态诙谐，动作夸张，是一件富有浓厚民间气息和地方风貌的优秀雕塑作品，被誉为"天下第一俑"。' },
+            { name: '虎钮淳于', category: 'bronze', dynasty: '战国', has3d: true, url: 'museum-huniu.html', img: 'artifact-tiger-chunyu.jpg', desc: '虎钮淳于为战国时期青铜乐器，器顶作圆盘形，中央立一虎形钮，虎作昂首张口状，造型威武雄健。淳于为古代军乐器，常与鼓配合使用，用于战争中指挥进退。此器造型精美，虎钮栩栩如生，是研究古代巴文化的重要实物资料。' },
+            { name: '青铜鸟', category: 'bronze', dynasty: '商代', has3d: true, url: 'museum-niao.html', img: 'artifact-bronze-bird.jpg', desc: '青铜鸟为商代晚期青铜酒器，整体作鸟形，昂首挺胸，双翅收敛，尾羽下垂，造型生动传神。鸟身饰有精细的羽毛纹，工艺精湛，是商代青铜艺术的杰出代表。这类鸟兽形尊在商周时期极为盛行，既是实用酒器，也是重要的礼器。' },
+            { name: '三羊尊', category: 'bronze', dynasty: '商代', has3d: true, url: 'sanyangzun-3d.html', img: 'artifact-three-goat-zun.jpg', desc: '三羊尊为商代晚期青铜酒器，大口外撇，长颈折肩，深腹圈足。肩部装饰三只高浮雕卷角羊首，羊首双目圆睁，双角卷曲，形象逼真生动。尊通体饰以云雷纹为地的兽面纹，纹饰繁缛精美，代表了商代青铜铸造工艺的最高水平。' },
+
+            // 青铜器
+            { name: '后母戊鼎', category: 'bronze', dynasty: '商代', img: 'artifact-houmwu-ding.jpg', desc: '后母戊鼎（原称司母戊鼎），又称后母戊大方鼎、后母戊方鼎，是商代晚期青铜铸品，是已知中国古代最重的青铜器。鼎身四周铸有精巧的盘龙纹和饕餮纹，增加了文物本身的威武凝重之感。此鼎形制巨大，雄伟庄严，重832.84公斤，反映了商代青铜铸造业的生产规模和技术水平。' },
+            { name: '四羊方尊', category: 'bronze', dynasty: '商代', img: 'artifact-four-goat-zun.jpg', desc: '四羊方尊是商代晚期青铜礼器，属于祭祀用品。尊的四角各塑一卷角羊，羊首与羊腿分别铸于尊的肩部和圈足上，羊的前胸及颈背部饰鳞纹，两侧饰有美丽的长冠凤纹。四羊方尊以四羊、四龙相对的造型展示了酒礼器中的至尊气象，被誉为"臻于极致的青铜典范"。' },
+            { name: '大盂鼎', category: 'bronze', dynasty: '西周', desc: '大盂鼎是西周早期青铜礼器中的重器，因作器者是康王时大臣名盂者而得名。鼎身为立耳、圆腹、三柱足，腹下略鼓，口沿下饰以饕餮纹带，三足上饰以兽面纹。器内壁铸铭文19行291字，记述了周康王二十三年九月册命贵族盂之事，是研究西周奴隶制社会的重要史料。' },
+            { name: '毛公鼎', category: 'bronze', dynasty: '西周', desc: '毛公鼎为西周晚期青铜器，因作器者毛公而得名。鼎口沿外敞，双立耳，深腹圆鼓，三蹄足。口沿下饰有一道重环纹带，腹部素面无纹，造型浑厚凝重。鼎内壁铸有铭文32行499字，是现存商周青铜器中铭文最长的一件，被誉为"抵得一篇尚书"。' },
+            { name: '散氏盘', category: 'bronze', dynasty: '西周', desc: '散氏盘又称夨人盘，西周晚期青铜器，因铭文中有"散氏"字样而得名。盘为圆形，浅腹，双附耳，高圈足。腹饰夔纹，间以兽首三，圈足饰兽面纹。内底铸有铭文19行357字，记述的是西周时期夨国侵略散国，后来议和，夨国割地赔偿散国的事情，是研究西周土地制度的重要史料。' },
+            { name: '何尊', category: 'bronze', dynasty: '西周', desc: '何尊是西周早期宗室贵族何所作的一件青铜酒器。尊内底铸有铭文12行122字，其中"宅兹中国"为"中国"一词最早的文字记载。何尊造型雄奇，纹饰精美，器身以雷纹为地，通体饰有蕉叶纹、蛇纹、兽面纹等，是西周初年青铜礼器的代表作。' },
+            { name: '利簋', category: 'bronze', dynasty: '西周', desc: '利簋又名武王征商簋，是西周早期青铜器，作器者名"利"，他随周武王参加了灭商的战争，胜利后受到赏赐，铸此簋以记其事。器内底铸铭文4行33字，记载了甲子日清晨武王伐纣这一重大历史事件，是目前能确知的最早的西周青铜器。' },
+            { name: '虢季子白盘', category: 'bronze', dynasty: '西周', desc: '虢季子白盘是西周晚期青铜器，形制为圆角长方形，四壁向外作弧形倾斜，腹下收敛，平底，四曲尺形足。盘内底部铸有铭文8行111字，记述了虢季子白率军征伐猃狁，大获全胜，周王在周庙宣榭举行庆典，赏赐马匹、弓矢、斧钺等物。' },
+            { name: '墙盘', category: 'bronze', dynasty: '西周', desc: '墙盘又称史墙盘，是西周中期青铜器，为微氏家族中名墙者为纪念其先祖而作的铜盘。盘为圆形，浅腹，圈足，双附耳。腹饰垂冠分尾凤鸟纹，圈足饰窃曲纹。内底铸有铭文284字，铭文前段追颂西周文、武、成、康、昭、穆六王的重要史迹，后段记述了微氏家族的发展史。' },
+            { name: '逨盘', category: 'bronze', dynasty: '西周', desc: '逨盘是西周晚期青铜器，作器者名单逨。盘内底铸有铭文21行372字，铭文记述了单氏家族8代人辅佐西周12位王（文王至宣王）征战、理政、管治林泽的历史，对西周王室变迁及年代世系有着明确的记载，可印证《史记·周本纪》所记西周诸王名号。' },
+            { name: '妇好鸮尊', category: 'bronze', dynasty: '商代', desc: '妇好鸮尊是商代晚期青铜酒器，出土于河南安阳殷墟妇好墓。整体作鸮形，头部微昂，圆眼宽喙，双翅并拢，两足粗壮有力，尾羽下垂，与两足共同支撑器身。器身饰有精细的羽纹、蟠螭纹、兽面纹等，造型生动传神，工艺精湛，是商代青铜艺术的珍品。' },
+            { name: '妇好三联甗', category: 'bronze', dynasty: '商代', desc: '妇好三联甗是商代晚期青铜器，出土于殷墟妇好墓，是迄今为止发现的唯一的一件三联甗。全器由长方形六足甗架和三件大甑组成，甗架面饰蟠龙纹，侧面饰大三角形纹，三角形内填以雷纹和蝉纹。三联甗的设计巧妙，可同时蒸煮三种食物，是研究商代烹饪文化的重要实物。' },
+            { name: '莲鹤方壶', category: 'bronze', dynasty: '春秋', desc: '莲鹤方壶是春秋中期青铜制盛酒或盛水器，有两件，分别藏于北京故宫博物院和河南博物院。壶身呈扁方形，长颈斜肩，鼓腹下垂，圈足。壶盖作双层莲瓣形，莲瓣中央立一仙鹤，展翅欲飞，造型优美，生动自然。此壶代表了春秋时期青铜铸造工艺的最高水平。' },
+            { name: '曾侯乙编钟', category: 'bronze', dynasty: '战国', desc: '曾侯乙编钟是战国早期曾国的一套大型礼乐重器，出土于湖北随州曾侯乙墓。全套编钟共65件，分三层八组悬挂在呈曲尺形的铜木结构钟架上。编钟音色优美，音质纯正，音域宽广，可以演奏中外各种乐曲，是中国迄今发现数量最多、保存最好、音律最全、气势最宏伟的一套编钟。' },
+            { name: '曾侯乙尊盘', category: 'bronze', dynasty: '战国', desc: '曾侯乙尊盘是战国早期青铜器，出土于湖北随州曾侯乙墓，由尊和盘两件器物组成。尊和盘均饰有极其繁缛的透雕龙纹和蟠螭纹，玲珑剔透，精巧绝伦。经鉴定，尊盘采用了失蜡法铸造工艺，证明了战国时期中国的失蜡铸造法已经达到了相当高的水平。' },
+            { name: '越王勾践剑', category: 'bronze', dynasty: '春秋', desc: '越王勾践剑是春秋晚期越国青铜器，出土于湖北江陵望山楚墓。剑身上布满了规则的黑色菱形暗格花纹，剑格正面镶有蓝色琉璃，背面镶有绿松石。剑身近格处铸有"越王鸠浅（勾践）自作用剑"八字鸟虫篆铭文。此剑历经两千四百余年仍纹饰清晰、锋利无比，被誉为"天下第一剑"。' },
+            { name: '吴王夫差矛', category: 'bronze', dynasty: '春秋', desc: '吴王夫差矛是春秋时期吴国青铜器，出土于湖北江陵马山楚墓。矛身与剑身相似而稍短，中线起脊，脊上有血槽，两面血槽后端各铸一兽首。矛通体满饰菱形几何暗纹，基部有错金铭文"吴王夫差自作用矛"八字。此矛铸造精良，纹饰华美，是吴越青铜兵器的代表作。' },
+            { name: '秦公簋', category: 'bronze', dynasty: '春秋', desc: '秦公簋是春秋时期秦国青铜器，为秦公所作的祭器。器身饰有蟠螭纹，盖及器身铸有铭文，记述了秦国祖先建都、秦公本人的功绩以及铸造此器的缘由。秦公簋铭文是研究秦国早期历史的重要资料，其字体规整秀丽，也是春秋时期书法艺术的珍品。' },
+            { name: '中山王铁足大铜鼎', category: 'bronze', dynasty: '战国', desc: '中山王铁足大铜鼎是战国时期中山国青铜器，是已发现的战国时期最大的铜铁合铸器。鼎身铜质，鼎足铁质，这种铜铁合铸的工艺在战国时期极为罕见。鼎身刻有铭文77行469字，是已发现的战国时期铭文最长的青铜器，记述了中山国讨伐燕国、开辟疆土的事件。' },
+            { name: '长信宫灯', category: 'bronze', dynasty: '西汉', desc: '长信宫灯是西汉青铜器，出土于河北满城汉墓。灯的整体造型为一跪坐的宫女，双手执灯，神态恬静优雅。宫女身体中空，右臂高举，袖口下垂形成灯罩，左手托住灯座。灯盘可以转动，灯罩可以开合，能够随意调整灯光的亮度和照射角度。宫女体内还可以贮水，用以吸纳烟尘，设计极为精巧。' },
+            { name: '错金博山炉', category: 'bronze', dynasty: '西汉', desc: '错金博山炉是西汉时期的熏炉，出土于河北满城汉墓。炉身呈青铜器中的豆形，上有盖，盖高而尖，镂空，呈山形，山形重叠，其间雕有飞禽走兽，象征传说中的海上仙山——博山。炉座饰错金卷云纹，线条流畅自然。此炉工艺精湛，造型优美，是汉代青铜工艺的杰作。' },
+            { name: '铜奔马', category: 'bronze', dynasty: '东汉', desc: '铜奔马又名马踏飞燕、马超龙雀，是东汉青铜器，出土于甘肃武威雷台汉墓。马昂首嘶鸣，躯干壮实而四肢修长，腿蹄轻捷，三足腾空、飞驰向前，一足踏飞鸟。飞鸟作回首惊视状，更加衬托出骏马的神速。铜奔马造型矫健精美，作昂首嘶鸣、疾足奔驰状，被誉为"古代艺术皇冠上的明珠"。' },
+            { name: '三星堆青铜大立人', category: 'bronze', dynasty: '商代', desc: '三星堆青铜大立人出土于四川广汉三星堆遗址二号祭祀坑，是现存最高、最完整的青铜立人像。人像高1.8米、冠高0.3米、座高0.8米，通高2.6米。立人像头戴高冠，身着窄袖与半臂式右衽三件套衣，赤脚站于方座之上。双手夸张地握成环形，似乎在主持某种神圣的仪式。' },
+            { name: '三星堆青铜面具', category: 'bronze', dynasty: '商代', img: 'artifact-sanxingdui-mask.jpg', desc: '三星堆青铜面具出土于四川广汉三星堆遗址，是商代古蜀文明的杰出代表。面具造型夸张奇特，大耳、高鼻、阔嘴、大眼，眼球呈圆柱状向外突出，极为神秘诡异。这类面具可能是古蜀人用于祭祀的神像或祖先神的形象，反映了古蜀人独特的宗教信仰和审美观念。' },
+            { name: '三星堆青铜神树', category: 'bronze', dynasty: '商代', desc: '三星堆青铜神树出土于四川广汉三星堆遗址二号祭祀坑，共有两棵，其中大的一棵高达3.96米，是迄今所见中国古代最大的青铜树。神树由底座、树身和龙三部分组成，树上有九只鸟、二十七个果实和一条蜿蜒盘旋的龙。青铜神树可能与古代传说中的"扶桑"、"建木"等神树有关，是古蜀人宇宙观的生动体现。' },
+            { name: '错金银四龙四凤铜方案', category: 'bronze', dynasty: '战国', desc: '错金银四龙四凤铜方案是战国时期中山国青铜器，出土于河北平山中山王墓。案面为方形，原应镶有漆木案面，已朽。案座由四龙四凤相互缠绕盘绕而成，造型复杂精美，玲珑剔透。龙凤的身上饰有错金银花纹，华丽非凡。此案集铸造、镶嵌、焊接等多种工艺于一体，代表了战国时期青铜工艺的最高水平。' },
+            { name: '十五连盏铜灯', category: 'bronze', dynasty: '战国', desc: '十五连盏铜灯是战国时期中山国青铜器，出土于河北平山中山王墓。全灯整体造型如同一棵大树，主干上伸出七对枝杈，每枝顶端托一灯盏，共十五盏。灯上还装饰有猿猴、鸟、龙等动物形象，或攀援于枝头，或嬉戏于树干，生动有趣。此灯设计精巧，造型优美，是战国时期青铜灯具的代表作。' },
+            { name: '蟠龙纹方壶', category: 'bronze', dynasty: '春秋', desc: '蟠龙纹方壶是春秋时期青铜器，壶体呈方形，长颈鼓腹，圈足，盖顶作莲瓣形。壶身通体饰有蟠龙纹，龙身相互缠绕，布满器身，纹饰繁缛精美。方壶的造型端庄大气，装饰华丽繁复，是春秋时期青铜礼器中的精品，反映了当时青铜铸造工艺的高超水平。' },
+            { name: '蟠螭纹鼎', category: 'bronze', dynasty: '春秋', desc: '蟠螭纹鼎是春秋时期青铜礼器，鼎身圆鼓，双立耳外撇，三蹄足。器身饰有蟠螭纹，螭龙相互缠绕，形态生动，是春秋时期青铜器上常见的装饰纹样。此鼎造型规整，纹饰精美，是研究春秋时期青铜铸造工艺和礼制文化的重要实物资料。' },
+            { name: '蟠虺纹簋', category: 'bronze', dynasty: '春秋', desc: '蟠虺纹簋是春秋时期青铜礼器，为盛食器。簋身圆鼓，双兽耳，圈足，有的还带有方座。器身饰有蟠虺纹，虺是古代传说中的一种毒蛇，蟠虺纹就是由许多小蛇状的图案相互缠绕而成的纹饰，是春秋时期非常流行的青铜器装饰纹样。' },
+
+            // 陶器
+            { name: '人面鱼纹彩陶盆', category: 'pottery', dynasty: '新石器时代', img: 'artifact-banpo-pot.jpg', desc: '人面鱼纹彩陶盆是新石器时代仰韶文化半坡类型的彩陶，出土于陕西西安半坡遗址。盆内壁绘有人面和鱼纹图案，人面呈圆形，眼睛细长，鼻子短小，嘴两侧各有一条鱼，好像人嘴里叼着两条鱼。人面鱼纹彩陶盆是仰韶文化彩陶的代表作，反映了半坡人独特的审美观念和宗教信仰。' },
+            { name: '鹳鱼石斧图彩陶缸', category: 'pottery', dynasty: '新石器时代', desc: '鹳鱼石斧图彩陶缸是新石器时代仰韶文化庙底沟类型的彩陶，出土于河南临汝阎村。缸外壁绘有一幅高37厘米、宽44厘米的图画，画面左边是一只昂首挺立的鹳鸟，嘴里叼着一条鱼，画面右边是一把竖立的石斧。这幅画是中国目前发现最早、面积最大的一幅陶画，被誉为"中国画的雏形"。' },
+            { name: '陶鹰鼎', category: 'pottery', dynasty: '新石器时代', desc: '陶鹰鼎是新石器时代仰韶文化的陶器，出土于陕西华县太平庄。鼎整体造型为一只雄鹰，鹰作站立状，双腿粗壮有力，与尾羽共同构成鼎的三足。鹰的前胸为鼎腹，头部微微昂起，双目圆睁，喙部弯曲，神态威猛。陶鹰鼎造型生动，是原始制陶工艺的杰作，也是迄今发现唯一的以鸟类为造型的陶鼎。' },
+            { name: '蛋壳黑陶杯', category: 'pottery', dynasty: '新石器时代', desc: '蛋壳黑陶杯是新石器时代龙山文化的陶器，因器壁薄如蛋壳而得名。杯身造型精巧，有的作宽沿高柄杯形，有的作豆形，器表磨光并饰有弦纹、镂孔等装饰。蛋壳黑陶的制作工艺达到了史前制陶业的顶峰，其器壁最薄处仅有0.2-0.3毫米，代表了龙山文化制陶工艺的最高水平。' },
+            { name: '彩陶漩涡纹双耳罐', category: 'pottery', dynasty: '新石器时代', desc: '彩陶漩涡纹双耳罐是新石器时代马家窑文化的彩陶，出土于甘肃地区。罐身呈鼓腹形，口沿外撇，颈部内收，腹部两侧有双耳。器身通体彩绘，以黑彩为主，间以红彩，纹饰以漩涡纹为主，线条流畅，构图繁复，具有强烈的动感和韵律感。马家窑文化彩陶以其繁缛精美的纹饰著称于世。' },
+            { name: '彩陶舞蹈纹盆', category: 'pottery', dynasty: '新石器时代', desc: '彩陶舞蹈纹盆是新石器时代马家窑文化的彩陶，出土于青海大通上孙家寨。盆内壁绘有三组舞蹈人物图案，每组五人，手拉手，面向一致，头侧各有一辫发，身后有一尾饰，正在翩翩起舞。舞蹈纹彩陶盆是目前发现最早的描绘舞蹈场面的彩陶，生动地再现了原始先民们集体舞蹈的情景。' },
+            { name: '兵马俑将军俑', category: 'pottery', dynasty: '秦代', img: 'artifact-terracotta-general.jpg', desc: '兵马俑将军俑是秦始皇陵兵马俑中的高级军吏俑，出土于陕西西安秦始皇陵兵马俑坑。将军俑身材高大，头戴双尾鹖冠，身穿双重长襦，外披彩色铠甲，足蹬方口翘尖履。双手交垂于腹前，神态庄重沉稳，气宇轩昂。将军俑是秦代雕塑艺术的杰作，也是研究秦代军事制度的重要实物资料。' },
+            { name: '兵马俑跪射俑', category: 'pottery', dynasty: '秦代', desc: '兵马俑跪射俑是秦始皇陵兵马俑中的一种，出土于二号坑东部。俑作跪坐射箭姿势，左腿曲蹲，右膝着地，双手在身体右侧作握弓弩待发状。俑身穿战袍，外披铠甲，头顶右侧绾一发髻。跪射俑造型准确，神态生动，是秦代雕塑艺术的精品，也是研究秦代军事和服饰的重要资料。' },
+            { name: '兵马俑骑兵俑', category: 'pottery', dynasty: '秦代', desc: '兵马俑骑兵俑是秦始皇陵兵马俑中的骑兵形象，出土于二号坑。骑兵俑上身挺直，身体微微前倾，双手作牵马状。俑头戴圆形小帽，身穿紧袖、交领右衽双襟掩于胸前的上衣，下穿紧口连裆长裤，足蹬短靴，身披短小的铠甲。骑兵俑的发现，为研究秦代骑兵的装备和战术提供了珍贵的实物资料。' },
+            { name: '兵马俑军吏俑', category: 'pottery', dynasty: '秦代', desc: '兵马俑军吏俑是秦始皇陵兵马俑中的中级军官形象，分为重甲和轻甲两种。军吏俑头戴双板长冠，身穿长襦，外披铠甲，脚穿方口齐头履。双手有的作拄剑状，有的作持戈状，神态严肃，威武勇猛。军吏俑是研究秦代军制和雕塑艺术的重要实物资料。' },
+            { name: '兵马俑立射俑', category: 'pottery', dynasty: '秦代', desc: '兵马俑立射俑是秦始皇陵兵马俑中的步兵形象，出土于二号坑。俑作站立射箭姿势，左腿微拱，右腿后绷，双臂向左侧举起，双手作持弓状。俑身穿战袍，外披铠甲，头顶左侧绾一发髻。立射俑姿态生动，动作准确，是秦代雕塑艺术的精品。' },
+            { name: '唐三彩马', category: 'pottery', dynasty: '唐代', img: 'artifact-tangsancai-horse.jpg', desc: '唐三彩马是唐代三彩釉陶器中的精品，以黄、绿、白三色为主。马的造型生动传神，或昂首嘶鸣，或低头饮水，或奔腾驰骋，姿态各异。马身饰有华丽的鞍鞯，马鬃修剪整齐，有的还剪成花式。唐三彩马是唐代社会经济繁荣、文化艺术昌盛的生动写照，也是中国古代陶塑艺术的巅峰之作。' },
+            { name: '唐三彩骆驼', category: 'pottery', dynasty: '唐代', desc: '唐三彩骆驼是唐代三彩釉陶器的代表作之一。骆驼作昂首嘶鸣状，双峰高耸，四肢强劲有力，背上载有驮架、丝绸、水壶等物品，有的还载有胡人乐师。唐三彩骆驼生动地再现了丝绸之路上商旅往来的繁忙景象，是研究唐代中外文化交流和经济贸易的重要实物资料。' },
+            { name: '唐三彩镇墓兽', category: 'pottery', dynasty: '唐代', desc: '唐三彩镇墓兽是唐代三彩釉陶器，用于镇守墓葬、驱邪避凶。镇墓兽一般成对出现，一为人面，一为兽面，均作蹲踞状，头顶有角或鬃毛，面目狰狞，威严可怖。镇墓兽的造型夸张奇特，色彩绚丽斑斓，是唐代三彩艺术中的精品，反映了唐代厚葬之风和鬼神信仰。' },
+            { name: '唐三彩女立俑', category: 'pottery', dynasty: '唐代', desc: '唐三彩女立俑是唐代三彩釉陶器中的人物俑代表。女俑体态丰腴，面容圆润，梳着高髻，身穿窄袖襦衫，下着长裙，肩披帛巾，足蹬云头履。女俑或站立，或行走，姿态优雅，神情安详。唐三彩女立俑生动地再现了唐代妇女的形象和服饰特点，是研究唐代社会生活的重要资料。' },
+            { name: '唐三彩骑马俑', category: 'pottery', dynasty: '唐代', desc: '唐三彩骑马俑是唐代三彩釉陶器的一种，表现的是人物骑马的形象。骑乘者有男有女，有胡有汉，或出行游玩，或狩猎驰骋，姿态各异。马的造型矫健有力，鞍鞯装饰华丽。唐三彩骑马俑生动地反映了唐代社会骑马之风的盛行和贵族生活的奢华。' },
+            { name: '彩绘陶乐舞俑', category: 'pottery', dynasty: '汉代', desc: '彩绘陶乐舞俑是汉代彩陶俑，出土于各地汉墓中。乐舞俑一般成组出现，有的演奏乐器，有的翩翩起舞，姿态生动传神。俑身施有彩绘，服饰艳丽，色彩鲜明。彩绘陶乐舞俑生动地再现了汉代乐舞表演的场景，是研究汉代音乐舞蹈艺术和社会生活的重要资料。' },
+            { name: '彩绘陶骑马俑', category: 'pottery', dynasty: '汉代', desc: '彩绘陶骑马俑是汉代彩陶俑的一种，表现人物骑马的形象。骑乘者或为武士，或为官吏，或为侍从，身份各异。马的造型敦实有力，俑身施有彩绘，色彩鲜明。彩绘陶骑马俑反映了汉代骑兵的发展和骑马出行的风气，是研究汉代军事和社会生活的重要资料。' },
+            { name: '彩绘陶文官俑', category: 'pottery', dynasty: '汉代', desc: '彩绘陶文官俑是汉代彩陶俑，表现的是文职官吏的形象。俑头戴进贤冠，身穿宽袖长袍，双手拱于胸前，神态恭谨端庄。俑身施有彩绘，服饰色彩鲜明。彩绘陶文官俑生动地再现了汉代官吏的形象和服饰特点，是研究汉代官制和服饰文化的重要资料。' },
+            { name: '彩绘陶武士俑', category: 'pottery', dynasty: '汉代', desc: '彩绘陶武士俑是汉代彩陶俑，表现的是武士的形象。俑头戴胄或巾帻，身穿战袍，外披铠甲，手持兵器，神态威武勇猛。俑身施有彩绘，铠甲和战袍的色彩鲜明。彩绘陶武士俑是研究汉代军事制度和武器装备的重要实物资料。' },
+            { name: '庖厨俑', category: 'pottery', dynasty: '汉代', desc: '庖厨俑是汉代陶俑的一种，表现的是厨房中从事烹饪劳作的人物形象。俑多作跪坐或站立状，有的在切肉，有的在揉面，有的在炊煮，动作生动，神态专注。庖厨俑生动地再现了汉代饮食文化和厨房劳作的场景，是研究汉代社会生活和饮食文化的重要资料。' },
+            { name: '抚琴俑', category: 'pottery', dynasty: '汉代', desc: '抚琴俑是汉代陶俑的一种，表现的是弹奏古琴的人物形象。俑多作跪坐状，琴横置于膝上，双手作弹奏状，神态专注安详。抚琴俑生动地再现了汉代音乐艺术的发展和文人雅士的生活情趣，是研究汉代音乐文化的重要实物资料。' },
+            { name: '陶楼', category: 'pottery', dynasty: '汉代', desc: '陶楼是汉代陶质建筑明器，是模仿现实生活中的楼阁建筑制作的陪葬品。陶楼有多层，结构复杂，有的高达五层，屋顶有庑殿顶、歇山顶等形式，楼上有窗户、阳台、斗拱等建筑构件。陶楼是研究汉代建筑技术和建筑风格的重要实物资料，也反映了汉代地主阶级的生活状况。' },
+            { name: '陶水榭', category: 'pool', dynasty: '汉代', desc: '陶水榭是汉代陶质建筑明器，是模仿建于水中的亭台楼阁制作的陪葬品。水榭一般建于水池之中，有栈桥与岸边相连，水榭上有人物活动，或垂钓，或宴饮，或歌舞。陶水榭生动地再现了汉代贵族园林生活的场景，是研究汉代建筑和园林艺术的重要资料。' },
+            { name: '陶城堡', category: 'pottery', dynasty: '汉代', desc: '陶城堡是汉代陶质建筑明器，是模仿古代城堡建筑制作的陪葬品。城堡呈方形或长方形，四周有围墙，墙上有角楼、门楼等建筑，城堡内有房屋、院落等。陶城堡是研究汉代城市建筑和防御工事的重要实物资料，也反映了汉代的社会结构和军事防御体系。' },
+
+            // 石刻
+            { name: '乐山大佛', category: 'stone', dynasty: '唐代', img: 'artifact-leshan-buddha.jpg', desc: '乐山大佛又名凌云大佛，位于四川乐山，岷江、青衣江、大渡河三江汇流处的岩壁上。大佛为弥勒佛坐像，通高71米，是中国最大的一尊摩崖石刻造像。大佛开凿于唐代开元元年，完成于贞元十九年，历时约九十年。乐山大佛造型庄严，气势雄伟，是世界文化与自然双重遗产峨眉山-乐山大佛的核心组成部分。' },
+            { name: '龙门石窟卢舍那大佛', category: 'stone', dynasty: '唐代', img: 'artifact-longmen-buddha.jpg', desc: '卢舍那大佛是龙门石窟中规模最大、艺术价值最高的佛像，位于河南洛阳龙门西山南部山腰奉先寺。大佛通高17.14米，头高4米，耳长1.9米，面容丰满秀丽，目光宁静慈祥，微微含笑，被誉为"东方的蒙娜丽莎"。卢舍那大佛是唐代雕塑艺术的巅峰之作，代表了中国石刻艺术的最高水平。' },
+            { name: '云冈石窟大佛', category: 'stone', dynasty: '北魏', desc: '云冈石窟位于山西大同，是北魏时期开凿的大型石窟群，与敦煌莫高窟、洛阳龙门石窟并称为中国三大石窟。云冈石窟中的昙曜五窟是最早开凿的五个洞窟，每窟各雕一尊大佛，其中第20窟的露天大佛高13.7米，是云冈石窟的代表作。大佛造型雄伟，面相丰满，鼻梁高直，具有明显的犍陀罗艺术风格。' },
+            { name: '麦积山石窟造像', category: 'stone', dynasty: '北魏至明清', desc: '麦积山石窟位于甘肃天水，是中国四大石窟之一，以其精美的泥塑艺术闻名于世，被誉为"东方雕塑馆"。石窟开凿在悬崖峭壁之上，洞窟之间靠凌空栈道相连。麦积山石窟保存了从北魏到明清各个时期的大量造像和壁画，造像以泥塑为主，风格写实生动，是研究中国古代雕塑艺术的宝库。' },
+            { name: '大足石刻千手观音', category: 'stone', dynasty: '宋代', desc: '大足石刻千手观音位于重庆大足宝顶山石窟，是宋代石刻艺术的代表作。千手观音结跏趺坐于莲台之上，有1007只手，每只手掌心有一只眼睛，千姿百态，无一雷同。千手观音造像金碧辉煌，气势恢宏，是中国现存最大的集雕刻、贴金、彩绘于一体的摩崖造像，被誉为"天下奇观"。' },
+            { name: '大足石刻卧佛', category: 'stone', dynasty: '宋代', desc: '大足石刻卧佛位于重庆大足宝顶山石窟，是宋代石刻艺术的精品。卧佛即释迦牟尼涅槃像，全长31米，头北脚南，背东面西，右侧而卧。卧佛面容安详，双目微闭，神态宁静超脱。卧佛上方及周围还刻有众多弟子、天王、天人等形象，构成了一幅壮观的涅槃图。' },
+            { name: '大足石刻牧牛图', category: 'stone', dynasty: '宋代', desc: '大足石刻牧牛图位于重庆大足宝顶山石窟，是宋代石刻艺术的代表作之一。牧牛图长达27米，雕刻了十组牧牛场景，通过牧牛来比喻修行的过程，从"未牧"、"初调"到"驯服"、"无碍"，最后达到"独照"的境界。造像生动自然，充满生活气息，是佛教艺术与生活情趣完美结合的典范。' },
+            { name: '昭陵六骏', category: 'stone', dynasty: '唐代', desc: '昭陵六骏是唐太宗李世民陵墓昭陵北面祭坛东西两侧的六块骏马青石浮雕石刻。六骏分别名为飒露紫、拳毛騧、青骓、什伐赤、特勒骠、白蹄乌，是李世民生前征战时骑过的六匹战马。六骏浮雕造型优美，雕刻精细，是唐代石刻艺术的珍品，也是研究唐代军事和美术的重要资料。' },
+            { name: '顺陵石狮', category: 'stone', dynasty: '唐代', desc: '顺陵石狮是唐代女皇武则天之母杨氏陵墓顺陵前的石刻，是唐代石狮中的精品。石狮高约3米，作行走状，昂首挺胸，张口怒吼，气势威猛雄健。石狮造型写实，肌肉饱满，神态生动，是唐代石雕艺术的杰作，反映了唐代雄浑大气的时代风格。' },
+            { name: '献陵石犀', category: 'stone', dynasty: '唐代', desc: '献陵石犀是唐代开国皇帝李渊陵墓献陵前的石刻，是唐代石雕中的珍品。石犀为圆雕，作站立状，躯体庞大，皮肤粗糙，有明显的褶皱纹理，造型写实生动。石犀的发现，证明了唐代中国与南亚、东南亚国家的友好往来，因为犀牛在当时的中原地区并不出产。' },
+            { name: '乾陵无字碑', category: 'stone', dynasty: '唐代', desc: '乾陵无字碑位于陕西乾县乾陵，是唐高宗李治和武则天合葬陵墓前的石碑。无字碑通身取材于一块完整的巨石，高7.53米，宽2.1米，厚1.49米，总重量约98.9吨。碑额未题碑名，只有碑首雕刻了八条螭龙，碑身两侧各有一条腾飞的巨龙。关于无字碑为何无字，众说纷纭，成为千古之谜。' },
+            { name: '石台孝经', category: 'stone', dynasty: '唐代', desc: '石台孝经碑立于陕西西安碑林，是唐玄宗李隆基亲自作序、注并书写的《孝经》石碑。碑由四块青石合成，立于三层石台之上，故名"石台孝经"。碑高6.2米，碑身四面都刻有文字。碑头为浮雕的瑞兽和卷云纹，碑座刻有蔓草和瑞兽图案。此碑书法工整，文字俊秀，是唐代书法艺术的精品。' },
+            { name: '汉画像石农耕图', category: 'stone', dynasty: '汉代', desc: '汉画像石农耕图是汉代石刻艺术的一种，出土于各地汉墓中。农耕图描绘了汉代农业生产的场景，包括耕田、播种、收割、打谷等环节，画面生动地再现了汉代农民劳作的情景。汉画像石是研究汉代农业生产、社会生活和艺术的重要实物资料。' },
+            { name: '汉画像石庖厨图', category: 'stone', dynasty: '汉代', desc: '汉画像石庖厨图是汉代石刻艺术的一种，描绘了厨房中烹饪劳作的场景。画面中有人物在宰牲、切肉、炊煮、酿酒等，各种炊具、食材一应俱全，生动地再现了汉代饮食文化的丰富多样。汉画像石庖厨图是研究汉代饮食文化和社会生活的重要资料。' },
+            { name: '汉画像石乐舞图', category: 'stone', dynasty: '汉代', desc: '汉画像石乐舞图是汉代石刻艺术的一种，描绘了乐舞表演的场景。画面中有乐队演奏各种乐器，有舞者翩翩起舞，还有观众在一旁欣赏，场面热闹非凡。汉画像石乐舞图生动地再现了汉代音乐舞蹈艺术的繁荣，是研究汉代音乐舞蹈的重要实物资料。' },
+
+            // 玉器
+            { name: '红山玉龙', category: 'jade', dynasty: '新石器时代', img: 'artifact-hongshan-dragon.jpg', desc: '红山玉龙又称C形龙，是新石器时代红山文化的玉器，出土于内蒙古赤峰红山遗址。玉龙由墨绿色的岫岩玉雕琢而成，身体蜷曲呈C字形，吻部前伸，略向上弯曲，嘴紧闭，有对称的双鼻孔，双眼突起呈棱形，鬣鬃长而飘逸。红山玉龙是目前发现的最早的玉龙形象，被誉为"中华第一龙"。' },
+            { name: '良渚玉琮', category: 'jade', dynasty: '新石器时代', img: 'artifact-jade-cong.jpg', desc: '良渚玉琮是新石器时代良渚文化的玉器，出土于浙江余杭良渚遗址。玉琮呈内圆外方的柱形，中间有通孔，器身四面雕刻有精美的神人兽面纹。玉琮是良渚文化最具代表性的玉器，是古代巫师用于沟通天地的礼器，也是权力和财富的象征。良渚玉琮代表了新石器时代中国玉雕工艺的最高水平。' },
+            { name: '玉鹰', category: 'jade', dynasty: '新石器时代', desc: '玉鹰是新石器时代红山文化的玉器，出土于辽宁牛河梁遗址。玉鹰作展翅飞翔状，造型简洁生动，线条流畅有力。鹰是红山文化玉器中常见的题材，可能与红山先民的鸟图腾崇拜有关。玉鹰的发现，反映了红山文化发达的玉雕工艺和丰富的精神世界。' },
+            { name: '玉人首', category: 'jade', dynasty: '新石器时代', desc: '玉人首是新石器时代石家河文化的玉器，出土于湖北天门石家河遗址。玉人首造型独特，面部特征夸张，大眼、高鼻、阔嘴，头戴冠饰，耳戴环饰。玉人首可能是神像或祖先神的形象，反映了石家河先民的宗教信仰和审美观念。石家河文化玉器以其精巧的工艺和独特的造型著称于世。' },
+            { name: '金缕玉衣', category: 'jade', dynasty: '汉代', desc: '金缕玉衣是汉代皇帝和高级贵族死后穿用的殓服，由两千多片玉片用金丝编缀而成，形如铠甲。玉衣是汉代玉殓葬制度的最高体现，古人认为玉能使尸骨不腐，因此用玉衣作为殓服。目前发现的最完整的金缕玉衣是河北满城汉墓出土的中山靖王刘胜及其妻窦绾的金缕玉衣。' },
+            { name: '银缕玉衣', category: 'jade', dynasty: '汉代', desc: '银缕玉衣是汉代贵族死后穿用的殓服，形制与金缕玉衣相似，但编缀玉片所用的是银丝而非金丝。根据汉代制度，皇帝死后用金缕玉衣，诸侯王、列侯、始封贵人、公主死后用银缕玉衣，大贵人、长公主用铜缕玉衣。银缕玉衣是研究汉代丧葬制度和等级制度的重要实物资料。' },
+            { name: '铜缕玉衣', category: 'jade', dynasty: '汉代', desc: '铜缕玉衣是汉代贵族死后穿用的殓服，用铜丝编缀玉片而成。根据汉代制度，大贵人、长公主死后使用铜缕玉衣。铜缕玉衣的发现，为研究汉代的丧葬制度和等级制度提供了重要的实物资料，也反映了汉代高超的玉器加工工艺。' },
+            { name: '玉琮王', category: 'jade', dynasty: '新石器时代', img: 'artifact-jade-cong.jpg', desc: '玉琮王是良渚文化玉琮中最大、最重、做工最精的一件，出土于浙江余杭反山12号墓。琮高8.8厘米，射径17.1-17.6厘米，孔径4.9厘米，重约6.5公斤。琮体四面各雕刻有一组神人兽面纹，纹饰繁缛精美，是良渚文化玉雕工艺的巅峰之作。玉琮王被誉为"琮王"，是国宝级文物。' },
+            { name: '谷纹玉璧', category: 'jade', dynasty: '战国', desc: '谷纹玉璧是战国时期的玉璧，璧面雕刻有排列整齐的谷纹。谷纹是谷物发芽的样子，象征着五谷丰登、风调雨顺。玉璧是中国古代最重要的玉礼器之一，"苍璧礼天"，是古代祭祀天地的重要礼器，也是权力和财富的象征。战国时期的玉璧工艺精湛，纹饰精美，达到了很高的艺术水平。' },
+            { name: '蒲纹玉璧', category: 'jade', dynasty: '汉代', desc: '蒲纹玉璧是汉代的玉璧，璧面雕刻有蒲纹。蒲纹是用浅而宽的横线或斜线把璧面分割成类似编织的蒲席纹样，故名蒲纹。蒲纹玉璧是汉代玉璧中常见的一种，造型规整，纹饰简洁大方，是汉代玉雕工艺的代表作之一。' },
+            { name: '勾云纹玉璧', category: 'jade', dynasty: '战国', desc: '勾云纹玉璧是战国时期的玉璧，璧面雕刻有勾云纹。勾云纹是战国时期非常流行的玉器装饰纹样，由一个个勾云形状的图案组成，线条流畅，富有韵律感。勾云纹玉璧造型优美，工艺精湛，是战国时期玉雕艺术的精品。' },
+            { name: '蟠螭纹玉璧', category: 'jade', dynasty: '汉代', desc: '蟠螭纹玉璧是汉代的玉璧，璧面雕刻有蟠螭纹。螭是古代传说中的一种神兽，形似龙而无角，蟠螭纹就是盘绕的螭龙形象。汉代玉璧常以蟠螭纹作为装饰，螭龙姿态生动，线条流畅，具有很高的艺术价值。蟠螭纹玉璧是汉代玉雕工艺的代表作之一。' },
+            { name: '玉带钩', category: 'jade', dynasty: '战国至汉', desc: '玉带钩是古代贵族系在腰间皮带上的挂钩，用于钩连腰带。玉带钩由钩首、钩身、钩钮三部分组成，钩首多作兽首形，如龙头、虎头、鸟头等。玉带钩不仅是实用器，也是身份地位的象征，制作精美，纹饰华丽。战国至汉代是玉带钩发展的鼎盛时期，工艺水平极高。' },
+            { name: '玉剑首', category: 'jade', dynasty: '汉代', desc: '玉剑首是镶嵌在剑柄顶端的玉饰，是玉具剑的组成部分之一。玉剑首多作圆形，正面雕刻有纹饰，常见的有谷纹、蒲纹、蟠螭纹等。玉具剑是汉代贵族佩剑的一种，在剑的不同部位镶嵌有玉饰，包括剑首、剑格、剑璏、剑珌，统称为"玉具剑四件套"。' },
+            { name: '玉剑格', category: 'jade', dynasty: '汉代', desc: '玉剑格是镶嵌在剑柄与剑身之间的玉饰，是玉具剑的组成部分之一。玉剑格多作长方体，中间有穿孔，用于贯穿剑茎。剑格的正面和侧面常雕刻有精美的纹饰，如兽面纹、蟠螭纹等。玉剑格不仅具有装饰作用，还能防止手滑向剑身，具有实用功能。' },
+            { name: '玉剑璏', category: 'jade', dynasty: '汉代', desc: '玉剑璏是镶嵌在剑鞘上端的玉饰，是玉具剑的组成部分之一。玉剑璏呈长条形，正面微鼓，雕刻有纹饰，背面有长方形穿孔，用于穿系皮带，将剑固定在腰间。玉剑璏的纹饰常见的有谷纹、蒲纹、蟠螭纹等，工艺精美，是汉代玉雕艺术的精品。' },
+            { name: '玉剑珌', category: 'jade', dynasty: '汉代', desc: '玉剑珌是镶嵌在剑鞘末端的玉饰，是玉具剑的组成部分之一。玉剑珌多作梯形或长方形，上端有榫口，用于插入剑鞘末端。玉剑珌的两面常雕刻有精美的纹饰，如兽面纹、蟠螭纹、云纹等。玉剑珌是玉具剑四件套之一，是汉代贵族佩剑的重要装饰。' },
+            { name: '玉觿', category: 'jade', dynasty: '战国', desc: '玉觿是古代一种角形玉器，一端粗一端细，呈兽角形或象牙形。玉觿最初是解绳结的工具，后来逐渐演变为佩饰，成为身份地位的象征。玉觿的造型多样，有的作龙首形，有的作虎首形，雕刻精美，纹饰华丽。战国时期是玉觿发展的鼎盛时期。' },
+            { name: '玉觥', category: 'jade', dynasty: '汉代', desc: '玉觥是古代用玉制作的酒器，形制为兽角形，一端粗一端细，可饮酒。玉觥是古代重要的礼器和酒器，常见于商周至汉代。玉觥的造型独特，工艺精湛，常雕刻有精美的纹饰，是古代玉雕艺术的珍品。' },
+            { name: '玉钺', category: 'jade', dynasty: '新石器时代', desc: '玉钺是新石器时代的玉制兵器，形制与斧相似，但比斧大，刃部宽阔。玉钺最初是实用兵器，后来逐渐演变为礼器，成为权力和地位的象征。良渚文化的玉钺制作精美，有的还刻有神人兽面纹，是良渚文化玉器中的精品。' },
+            { name: '玉戈', category: 'jade', dynasty: '商代', desc: '玉戈是商代的玉制兵器，形制与青铜戈相似，有援、内、胡等部分。玉戈并非实用兵器，而是用于祭祀的礼器，是权力和身份的象征。商代的玉戈制作规整，有的还雕刻有精美的纹饰，是商代玉雕艺术的代表作之一。' },
+            { name: '玉凤', category: 'jade', dynasty: '商代', desc: '玉凤是商代的玉器，出土于河南安阳殷墟妇好墓。玉凤作侧身回首状，头戴花冠，短翅长尾，姿态优美，线条流畅。凤是中国古代传说中的神鸟，是祥瑞的象征。妇好墓出土的玉凤是目前发现的最早的玉凤形象，被誉为"中华第一凤"。' },
+            { name: '玉熊', category: 'jade', dynasty: '汉代', desc: '玉熊是汉代的玉雕动物，作站立或行走状，造型憨态可掬，生动传神。熊在汉代是一种瑞兽，象征着勇猛和力量。汉代的玉雕动物造型写实生动，工艺精湛，达到了很高的艺术水平。玉熊是汉代玉雕动物中的精品。' },
+            { name: '玉鹿', category: 'jade', dynasty: '汉代', desc: '玉鹿是汉代的玉雕动物，鹿作站立或奔跑状，形态优美，线条流畅。鹿在中国传统文化中是瑞兽，象征着吉祥长寿。汉代的玉雕动物造型写实生动，工艺精湛，达到了很高的艺术水平。玉鹿是汉代玉雕动物中的精品。' },
+            { name: '玉龟', category: 'jade', dynasty: '汉代', desc: '玉龟是汉代的玉雕动物，龟作爬行状，造型写实生动。龟在中国传统文化中是长寿的象征，也是四灵之一。汉代的玉雕动物造型生动，工艺精湛，达到了很高的艺术水平。玉龟是汉代玉雕动物中的精品，也是研究汉代玉雕工艺的重要资料。' },
+            { name: '玉鱼', category: 'jade', dynasty: '商代', desc: '玉鱼是商代的玉雕动物，鱼身呈扁长形，有鳍有尾，造型简洁生动。鱼在中国传统文化中象征着富足和年年有余。商代的玉雕动物造型简洁，线条流畅，具有很高的艺术价值。玉鱼是商代玉器中常见的题材，也是研究商代玉雕工艺的重要资料。' },
+
+            // 金银器
+            { name: '金面具', category: 'gold', dynasty: '商代', img: 'artifact-gold-mask.jpg', desc: '金面具出土于四川广汉三星堆遗址，是商代古蜀文明的杰出代表。面具用纯金打制而成，造型与青铜面具相似，大眼、高鼻、阔耳，形态威严神秘。金面具可能是古蜀人用于祭祀的神像或祖先神的形象，反映了古蜀人独特的宗教信仰和高超的金器制作工艺。' },
+            { name: '金步摇', category: 'gold', dynasty: '唐代', desc: '金步摇是唐代妇女的头饰，用黄金制成，上有花枝、鸟兽等装饰，走路时随步伐摇曳，故名"步摇"。唐代的金步摇制作精美，造型华丽，常镶嵌有宝石、珍珠等，是唐代贵族妇女喜爱的头饰。金步摇反映了唐代金银器制作工艺的高超水平和贵族生活的奢华。' },
+            { name: '金冠', category: 'gold', dynasty: '明代', desc: '金冠是明代皇帝的皇冠，用细金丝编结而成，上有二龙戏珠装饰，造型精美，工艺精湛。明定陵出土的万历皇帝金冠是目前发现的唯一的皇帝金冠，重一斤六两左右，用极细的金丝编织而成，金龙盘绕，气势非凡，代表了明代金银器制作工艺的最高水平。' },
+            { name: '辽代金面具', category: 'gold', dynasty: '辽代', desc: '辽代金面具是辽代贵族的丧葬用品，用黄金打制而成，覆盖在死者面部。辽代有"金面具、银丝网"的丧葬习俗，贵族死后用金面具、银丝网络包裹尸体，以保护死者的面容和身体。辽代金面具有男女之分，造型写实，神态安详，是研究辽代文化和丧葬制度的重要实物资料。' },
+            { name: '银鎏金杯', category: 'gold', dynasty: '唐代', desc: '银鎏金杯是唐代的银器，杯身用银制成，表面鎏金，造型精美，纹饰华丽。唐代是中国古代金银器发展的鼎盛时期，金银器的制作工艺达到了很高的水平。银鎏金杯是唐代金银器中的精品，反映了唐代发达的金银器制作工艺和贵族阶层的奢华生活。' },
+            { name: '唐代金碗', category: 'gold', dynasty: '唐代', desc: '唐代金碗是唐代的金质食器，碗身用黄金制成，造型饱满，纹饰精美。唐代是中国古代金银器发展的鼎盛时期，金碗作为贵重的食器，只有皇室贵族才能使用。唐代金碗的纹饰多为缠枝花纹、瑞兽纹等，工艺精湛，富丽堂皇，代表了唐代金银器制作工艺的最高水平。' },
+            { name: '唐代银碗', category: 'gold', dynasty: '唐代', desc: '唐代银碗是唐代的银质食器，碗身用银制成，有的还鎏金或镶嵌宝石，造型多样，纹饰精美。唐代是中国古代金银器发展的鼎盛时期，银碗是唐代银器中最常见的器形之一。唐代银碗的纹饰丰富多样，有缠枝花纹、瑞兽纹、狩猎纹等，反映了唐代社会生活的各个方面。' },
+            { name: '银熏炉', category: 'gold', dynasty: '唐代', desc: '银熏炉是唐代的银质熏香器具，用于焚香取暖、净化空气。唐代的银熏炉造型精美，有的作球形，内外有多层，可以随意转动而香火不熄，称为"被中香炉"。银熏炉的纹饰华丽，常鎏金或镶嵌宝石，是唐代金银器中的精品，反映了唐代贵族精致的生活方式。' },
+            { name: '金棺银椁', category: 'gold', dynasty: '唐代', desc: '金棺银椁是唐代的佛教文物，用于供奉佛舍利。金棺银椁用黄金和白银制成，造型模仿真实的棺椁，上面雕刻有精美的纹饰，如飞天、莲花、瑞兽等。金棺银椁是唐代佛教兴盛的见证，也是唐代金银器制作工艺的杰出代表，具有极高的历史和艺术价值。' },
+            { name: '金银平脱镜', category: 'gold', dynasty: '唐代', desc: '金银平脱镜是唐代的铜镜，采用金银平脱工艺装饰。所谓金银平脱，就是将金箔、银箔剪成各种花纹图案，粘贴在铜镜的背面，然后涂漆研磨，使金银花纹与漆面平齐。金银平脱镜纹饰华丽，工艺精湛，是唐代铜镜中的精品，反映了唐代发达的手工业水平。' },
+            { name: '楚国金币', category: 'gold', dynasty: '战国', desc: '楚国金币又称郢爰，是战国时期楚国的黄金货币，也是中国最早的黄金货币之一。郢爰呈方形或圆形金版，上面钤有"郢爰"等印记，使用时根据需要切割称量。楚国金币的发现，反映了战国时期楚国发达的商业经济和黄金冶炼技术，是研究中国古代货币史的重要实物资料。' },
+            { name: '汉代金饼', category: 'gold', dynasty: '汉代', desc: '汉代金饼是汉代的黄金货币，呈圆饼形，有的上面刻有文字或符号。汉代黄金货币的使用非常普遍，金饼是其中最常见的形式之一，用于大额交易、赏赐、进贡等。汉代金饼的发现，反映了汉代发达的商品经济和黄金冶炼技术，是研究中国古代货币史的重要资料。' },
+            { name: '银盒', category: 'gold', dynasty: '汉代', desc: '银盒是汉代的银质容器，用于盛放物品。汉代的银盒造型多样，有圆形、方形、花瓣形等，盒盖和盒身常雕刻有精美的纹饰，有的还鎏金。银盒是汉代金银器中的常见器形，反映了汉代发达的金银器制作工艺和贵族阶层的生活方式。' },
+            { name: '银壶', category: 'gold', dynasty: '唐代', desc: '银壶是唐代的银质酒器或水器，用于盛酒或盛水。唐代的银壶造型多样，有提梁壶、凤首壶、皮囊壶等，壶身常雕刻有精美的纹饰，有的还鎏金。银壶是唐代金银器中的重要器形，反映了唐代发达的金银器制作工艺和丰富的社会生活。' },
+            { name: '金簪', category: 'gold', dynasty: '唐代', desc: '金簪是唐代妇女的头饰，用黄金制成，用于绾住发髻。唐代的金簪造型多样，有的作花卉形，有的作鸟兽形，有的镶嵌有宝石、珍珠等，制作精美，华丽无比。金簪是唐代金银器中的常见品类，反映了唐代贵族妇女精致的生活和高超的金银器制作工艺。' },
+            { name: '金钗', category: 'gold', dynasty: '唐代', desc: '金钗是唐代妇女的头饰，用黄金制成，双股，用于绾住发髻。唐代的金钗造型多样，钗首常装饰有花卉、鸟兽等图案，有的还镶嵌有宝石、珍珠等，精美华丽。金钗是唐代贵族妇女常用的头饰，也是唐代金银器中的重要品类。' },
+            { name: '金镯', category: 'gold', dynasty: '唐代', desc: '金镯是唐代的金质首饰，戴在手腕上。唐代的金镯造型多样，有的作圆形，有的作开口形，镯身常装饰有精美的纹饰，如缠枝花纹、联珠纹等，有的还镶嵌有宝石。金镯是唐代贵族妇女喜爱的首饰，也是唐代金银器中的常见品类。' },
+
+            // 瓷器
+            { name: '青瓷莲花尊', category: 'porcelain', dynasty: '南北朝', desc: '青瓷莲花尊是南北朝时期的青瓷器，器身通体装饰有仰覆莲花瓣，造型优美，纹饰精美。莲花尊是南北朝时期佛教兴盛的产物，莲花是佛教的象征，出淤泥而不染，象征着清净纯洁。青瓷莲花尊代表了南北朝时期青瓷烧造工艺的最高水平。' },
+            { name: '青瓷四系罐', category: 'porcelain', dynasty: '东汉', desc: '青瓷四系罐是东汉时期的青瓷器，是目前发现的最早的成熟青瓷之一。罐身呈圆鼓形，肩部有四个系，故名四系罐。器身施青釉，釉色均匀，胎质细腻。东汉青瓷的出现，标志着中国瓷器的正式诞生，是中国陶瓷史上的里程碑。' },
+            { name: '青瓷鸡首壶', category: 'porcelain', dynasty: '东晋', desc: '青瓷鸡首壶是东晋时期的青瓷器，因壶嘴作鸡首形而得名。鸡首壶是一种酒器，也可作水器，器身作盘口、短颈、鼓腹、平底，肩部一侧有鸡首形流，另一侧有柄。青瓷鸡首壶造型生动有趣，是魏晋南北朝时期青瓷的典型器形之一。' },
+            { name: '宋汝窑天青釉', category: 'porcelain', dynasty: '宋代', img: 'artifact-ru-porcelain.jpg', desc: '汝窑天青釉瓷器是宋代五大名窑之首汝窑的产品，以天青色釉著称于世。汝窑青瓷釉色如雨过天青，釉面莹润如玉，有"雨过天青云破处"之誉。汝窑瓷器胎质细腻，呈香灰色，釉面有细小的开片，称为"蟹爪纹"。汝窑瓷器传世极少，全世界仅有约70件，极为珍贵。' },
+            { name: '宋官窑粉青釉', category: 'porcelain', dynasty: '宋代', desc: '官窑粉青釉瓷器是宋代五大名窑之一官窑的产品。官窑是宋代官方设立的瓷窑，专门为宫廷烧制瓷器。官窑瓷器釉色以粉青为主，釉面莹润，有玉质感，开片较大，称为"冰裂纹"。官窑瓷器造型端庄规整，釉色典雅，是宋代青瓷中的精品。' },
+            { name: '宋哥窑金丝铁线', category: 'porcelain', dynasty: '宋代', desc: '哥窑金丝铁线瓷器是宋代五大名窑之一哥窑的产品。哥窑瓷器最显著的特征是釉面有大小两种开片，大开片呈深黑色，称为"铁线"，小开片呈金黄色，称为"金丝"，合称"金丝铁线"。哥窑瓷器釉色以粉青、米黄为主，造型典雅，是宋代青瓷中的珍品。' },
+            { name: '宋钧窑玫瑰紫', category: 'porcelain', dynasty: '宋代', desc: '钧窑玫瑰紫釉瓷器是宋代五大名窑之一钧窑的产品。钧窑以窑变釉著称，其釉色绚丽多彩，玫瑰紫是其中最名贵的品种之一。钧窑瓷器的釉色是在烧制过程中自然形成的，"入窑一色，出窑万彩"，每一件都是独一无二的。钧窑玫瑰紫釉瓷器色彩绚丽，美不胜收。' },
+            { name: '宋定窑白釉', category: 'porcelain', dynasty: '宋代', desc: '定窑白釉瓷器是宋代五大名窑之一定窑的产品。定窑以烧造白瓷著称，其白釉色白如玉，胎质细腻，釉面莹润。定窑瓷器装饰技法丰富，有刻花、划花、印花等，图案精美。定窑是宋代北方最重要的瓷窑之一，对后世白瓷的发展产生了深远的影响。' },
+            { name: '宋建窑兔毫盏', category: 'porcelain', dynasty: '宋代', desc: '建窑兔毫盏是宋代建窑的产品，因釉面有细密的兔毫状结晶纹而得名。兔毫盏是宋代斗茶的专用器具，宋代斗茶之风盛行，建窑兔毫盏因最适合斗茶而备受推崇。兔毫盏釉色黑如漆，兔毫纹银光闪闪，在茶汤的映衬下美不胜收，是宋代黑釉瓷中的精品。' },
+            { name: '宋龙泉窑梅子青', category: 'porcelain', dynasty: '宋代', desc: '龙泉窑梅子青釉瓷器是宋代龙泉窑的产品，以梅子青釉著称。梅子青釉色如青梅，苍翠欲滴，釉层厚而透明，釉面莹润如玉，是龙泉窑青瓷中的极品。龙泉窑是宋代南方最重要的青瓷窑场，其产品远销海外，在世界陶瓷史上占有重要地位。' },
+            { name: '元青花萧何月下追韩信', category: 'porcelain', dynasty: '元代', desc: '元青花萧何月下追韩信梅瓶是元代青花瓷的代表作，出土于江苏南京明洪武二十五年沐英墓。瓶身绘有萧何月下追韩信的历史故事，人物形象生动，青花发色浓艳，是元青花中的极品。此瓶是国宝级文物，被誉为"青花瓷之王"。' },
+            { name: '元青花鬼谷子下山', category: 'porcelain', dynasty: '元代', desc: '元青花鬼谷子下山图罐是元代青花瓷的精品，罐身绘有鬼谷子下山的故事图案。此罐曾在伦敦拍卖会上以约2.3亿元人民币的价格成交，创下了当时中国艺术品拍卖的最高纪录。元青花鬼谷子下山图罐代表了元代青花瓷的最高艺术水平。' },
+            { name: '明永乐青花', category: 'porcelain', dynasty: '明代', desc: '明永乐青花瓷器是明代永乐年间景德镇官窑的产品，以其胎釉精细、青色浓艳、造型多样、纹饰优美而著称。永乐青花使用进口的"苏麻离青"料，青花发色浓艳，有铁锈斑，是明代青花瓷中的精品。永乐青花代表了明代青花瓷的最高水平。' },
+            { name: '明宣德青花', category: 'porcelain', dynasty: '明代', desc: '明宣德青花瓷器是明代宣德年间景德镇官窑的产品，是明代青花瓷的巅峰之作。宣德青花使用进口的"苏麻离青"料，青花发色浓艳，铁锈斑明显，纹饰精美，造型丰富。宣德青花与永乐青花齐名，合称"永宣青花"，是中国青花瓷史上的黄金时代。' },
+            { name: '明成化斗彩', category: 'porcelain', dynasty: '明代', desc: '明成化斗彩瓷器是明代成化年间景德镇官窑的产品，以其胎质细腻、釉色莹润、色彩淡雅而著称。斗彩是一种釉下青花和釉上彩相结合的装饰工艺，先在胎上用青料勾画出花纹轮廓，施釉烧成后，再在釉上填绘各种色彩，最后低温烘烤而成。成化斗彩瓷器极为珍贵，有"明看成化，清看雍正"之说。' },
+            { name: '明弘治黄釉', category: 'porcelain', dynasty: '明代', desc: '明弘治黄釉瓷器是明代弘治年间景德镇官窑的产品，以其釉色娇黄、釉面莹润而著称。黄釉是皇家专用的釉色，只有皇帝才能使用，因此黄釉瓷器的等级非常高。弘治黄釉是明代黄釉瓷器中的极品，其釉色如鸡油般娇嫩，有"娇黄"之称。' },
+            { name: '明嘉靖五彩', category: 'porcelain', dynasty: '明代', desc: '明嘉靖五彩瓷器是明代嘉靖年间景德镇官窑的产品，以其色彩艳丽、纹饰繁密而著称。五彩是一种釉上彩瓷器，在烧好的白瓷上用多种彩料绘画图案，然后低温烘烤而成。嘉靖五彩瓷器色彩鲜艳，红、绿、黄、蓝、紫各色交相辉映，富丽堂皇，是明代彩瓷中的精品。' },
+            { name: '清康熙青花', category: 'porcelain', dynasty: '清代', desc: '清康熙青花瓷器是清代康熙年间景德镇官窑的产品，是清代青花瓷的巅峰之作。康熙青花使用国产的"浙料"，青花发色青翠明快，层次丰富，有"青花五彩"之誉。康熙青花瓷器造型多样，纹饰精美，题材丰富，代表了清代青花瓷的最高水平。' },
+            { name: '清雍正粉彩', category: 'porcelain', dynasty: '清代', desc: '清雍正粉彩瓷器是清代雍正年间景德镇官窑的产品，以其色彩柔和、纹饰精美而著称。粉彩是一种釉上彩瓷器，在烧好的白瓷上用含砷的玻璃白打底，再用彩料绘画，色彩柔和淡雅，有"软彩"之称。雍正粉彩是清代粉彩瓷器中的极品，有"清看雍正"之说。' },
+            { name: '清乾隆珐琅彩', category: 'porcelain', dynasty: '清代', desc: '清乾隆珐琅彩瓷器是清代乾隆年间景德镇官窑的产品，是清代彩瓷中的极品。珐琅彩是一种釉上彩瓷器，使用从西方传入的珐琅彩料绘画，色彩鲜艳，立体感强。珐琅彩瓷器是专门为皇帝烧制的御用瓷器，数量极少，极为珍贵。乾隆珐琅彩代表了中国古代彩瓷的最高水平。' },
+            { name: '清乾隆霁蓝釉', category: 'porcelain', dynasty: '清代', desc: '清乾隆霁蓝釉瓷器是清代乾隆年间景德镇官窑的产品，以其釉色深沉、釉面莹润而著称。霁蓝釉又称祭蓝釉，是一种高温钴蓝釉，釉色深蓝如宝石，釉面均匀莹润。霁蓝釉瓷器常用于祭祀，是清代颜色釉瓷器中的精品。乾隆霁蓝釉代表了清代颜色釉瓷器的最高水平。' },
+            { name: '明代德化白瓷', category: 'porcelain', dynasty: '明代', desc: '明代德化白瓷是福建德化窑的产品，以其白如凝脂、温润如玉而著称。德化白瓷又称"象牙白"、"鹅绒白"，胎釉浑然一体，洁白无瑕。德化白瓷以瓷塑最为著名，何朝宗等名家制作的观音、达摩等瓷塑，造型优美，神态生动，是中国古代瓷塑艺术的巅峰之作。' },
+            { name: '明代龙泉青瓷', category: 'porcelain', dynasty: '明代', desc: '明代龙泉青瓷是浙江龙泉窑的产品，是龙泉青瓷发展的延续。明代龙泉青瓷釉色以豆青为主，釉层厚而莹润，造型规整，纹饰精美。明代龙泉窑继续为宫廷烧制瓷器，产品远销海外，在国内外享有很高的声誉。明代龙泉青瓷是龙泉青瓷史上的重要发展阶段。' },
+
+            // 书画
+            { name: '兰亭序', category: 'calligraphy', dynasty: '东晋', desc: '《兰亭序》是东晋大书法家王羲之的代表作，被誉为"天下第一行书"。全序共28行324字，记述了王羲之与朋友们在兰亭修禊的情景。此帖书法飘逸遒劲，字字珠玑，是中国书法艺术的巅峰之作。唐太宗李世民对《兰亭序》推崇备至，死后将真迹陪葬于昭陵。现存的都是唐代摹本。' },
+            { name: '祭侄文稿', category: 'calligraphy', dynasty: '唐代', desc: '《祭侄文稿》是唐代大书法家颜真卿的代表作，被誉为"天下第二行书"。此帖是颜真卿为祭奠在安史之乱中遇难的侄子颜季明而作，全文共234字，书法气势磅礴，真情流露，是颜真卿悲愤心情的真实写照。《祭侄文稿》是颜体行书的代表作，对后世书法影响深远。' },
+            { name: '寒食帖', category: 'calligraphy', dynasty: '宋代', desc: '《黄州寒食帖》是宋代大文豪苏轼的代表作，被誉为"天下第三行书"。此帖是苏轼被贬黄州第三年的寒食节所作，全诗共129字，抒发了苏轼被贬后的惆怅孤独之情。书法起伏跌宕，气势奔放，是苏轼行书的代表作。此帖与王羲之《兰亭序》、颜真卿《祭侄文稿》合称"天下三大行书"。' },
+            { name: '快雪时晴帖', category: 'calligraphy', dynasty: '东晋', desc: '《快雪时晴帖》是东晋大书法家王羲之的行书作品，被誉为"二十八骊珠"。全帖仅4行28字，是王羲之写给友人的一封信札，内容是大雪初晴后的问候。此帖书法圆劲古雅，意态闲适，是王羲之行书的精品。清代乾隆皇帝将此帖与王献之《中秋帖》、王珣《伯远帖》合称"三希"，珍藏于养心殿三希堂。' },
+            { name: '中秋帖', category: 'calligraphy', dynasty: '东晋', desc: '《中秋帖》传为东晋大书法家王献之的行书作品，是"三希"之一。全帖仅3行22字，是王献之写给友人的信札。此帖书法连绵不断，一笔而成，气势连贯，是"一笔书"的代表作。《中秋帖》与王羲之《快雪时晴帖》、王珣《伯远帖》合称"三希"，是中国书法史上的瑰宝。' },
+            { name: '伯远帖', category: 'calligraphy', dynasty: '东晋', desc: '《伯远帖》是东晋书法家王珣的行书作品，是"三希"之一，也是"三希"中唯一的真迹。全帖共5行47字，是王珣写给亲友的信札。此帖书法俊逸潇洒，古淡遒劲，是东晋行书的代表作。《伯远帖》是研究东晋书法的珍贵实物资料，具有极高的历史和艺术价值。' },
+            { name: '黄州寒食帖', category: 'calligraphy', dynasty: '宋代', desc: '《黄州寒食帖》是宋代大文豪苏轼的代表作，被誉为"天下第三行书"。此帖是苏轼被贬黄州第三年的寒食节所作，全诗共129字，抒发了苏轼被贬后的惆怅孤独之情。书法起伏跌宕，气势奔放，是苏轼行书的代表作。此帖与王羲之《兰亭序》、颜真卿《祭侄文稿》合称"天下三大行书"。' },
+            { name: '松风阁诗', category: 'calligraphy', dynasty: '宋代', desc: '《松风阁诗帖》是宋代大书法家黄庭坚的行书代表作。此帖是黄庭坚游览湖北鄂城松风阁时所作的七言诗，共29行153字。书法结体舒展，笔画遒劲，是黄庭坚行书的精品。黄庭坚是"宋四家"之一，其书法风格独特，对后世影响很大。' },
+            { name: '清明上河图', category: 'calligraphy', dynasty: '宋代', desc: '《清明上河图》是北宋画家张择端的代表作，是中国十大传世名画之一。全画长528厘米，高24.8厘米，描绘了北宋都城汴京（今开封）清明时节的繁华景象。画中有人物814人，牲畜60多匹，船只28艘，房屋楼宇30多栋，车20辆，轿8顶，树木170多棵。《清明上河图》是研究宋代社会生活的珍贵资料。' },
+            { name: '千里江山图', category: 'calligraphy', dynasty: '宋代', desc: '《千里江山图》是北宋画家王希孟的代表作，是中国十大传世名画之一。全画长1191.5厘米，高51.5厘米，以青绿山水的形式描绘了祖国的壮丽山河。王希孟画此画时年仅18岁，是中国绘画史上最年轻的天才画家。《千里江山图》是宋代青绿山水画的巅峰之作。' },
+            { name: '富春山居图', category: 'calligraphy', dynasty: '元代', desc: '《富春山居图》是元代大画家黄公望的代表作，是中国十大传世名画之一。全画描绘了富春江两岸的秀美景色，是黄公望82岁时的作品。此画历经沧桑，明末被烧成两段，前段称《剩山图》，藏于浙江博物馆；后段称《无用师卷》，藏于台北故宫博物院。2011年，两段画作在台北故宫博物院合璧展出。' },
+            { name: '韩熙载夜宴图', category: 'calligraphy', dynasty: '五代', desc: '《韩熙载夜宴图》是五代南唐画家顾闳中的代表作，是中国十大传世名画之一。全画描绘了南唐大臣韩熙载夜宴宾客的情景，分为听乐、观舞、休憩、清吹、送别五个段落。画中人物形象生动，神态细腻，是五代人物画的巅峰之作。此画也是研究南唐社会生活的重要资料。' },
+            { name: '五牛图', category: 'calligraphy', dynasty: '唐代', desc: '《五牛图》是唐代画家韩滉的代表作，是中国十大传世名画之一，也是现存最古老的纸本中国画。全画描绘了五头神态各异的牛，或行或立，或俯首或昂头，姿态生动，栩栩如生。韩滉以画牛著称，《五牛图》代表了唐代畜兽画的最高水平。' },
+            { name: '步辇图', category: 'calligraphy', dynasty: '唐代', desc: '《步辇图》是唐代大画家阎立本的代表作，是中国十大传世名画之一。全画描绘了唐太宗李世民接见吐蕃赞普松赞干布派来迎娶文成公主的使臣禄东赞的情景。画中人物形象生动，神态各异，是唐代人物画的代表作。《步辇图》是汉藏友好交往的历史见证，具有极高的历史和艺术价值。' },
+            { name: '洛神赋图', category: 'calligraphy', dynasty: '东晋', desc: '《洛神赋图》是东晋大画家顾恺之根据三国曹植的《洛神赋》创作的绘画作品，是中国十大传世名画之一。全画分为多个段落，描绘了曹植与洛神相遇、相恋、最后分别的故事，人物形象优美，意境空灵。顾恺之是中国绘画史上第一位有画迹传世的画家，被誉为"画祖"。' },
+            { name: '女史箴图', category: 'calligraphy', dynasty: '东晋', desc: '《女史箴图》是东晋大画家顾恺之的代表作，是中国最早的专业画家作品之一。全画根据西晋张华的《女史箴》一文创作，共12段，描绘了古代宫廷妇女的生活场景，宣扬了妇女的道德规范。此画人物形象生动，线条流畅，是中国早期人物画的代表作。' },
+            { name: '簪花仕女图', category: 'calligraphy', dynasty: '唐代', desc: '《簪花仕女图》是唐代画家周昉的代表作，是唐代仕女画的巅峰之作。全画描绘了六位衣着华丽的贵族妇女在庭院中游玩的情景，人物体态丰腴，服饰华丽，反映了唐代贵族妇女的生活状态。周昉是唐代著名的人物画家，以画仕女著称，其画风对后世影响很大。' },
+            { name: '照夜白图', category: 'calligraphy', dynasty: '唐代', desc: '《照夜白图》是唐代大画家韩干的代表作，是中国古代鞍马画的精品。全画描绘了唐玄宗的坐骑"照夜白"被拴在马桩上的情景，马昂首嘶鸣，奋蹄欲奔，神态生动。韩干是唐代著名的鞍马画家，主张"以马为师"，其画马艺术达到了很高的水平。' },
+            { name: '游春图', category: 'calligraphy', dynasty: '隋代', desc: '《游春图》是隋代画家展子虔的代表作，是中国现存最早的山水画。全画描绘了贵族士女游春的情景，以青绿山水的形式表现了春天的美景。《游春图》是中国山水画从萌芽走向成熟的标志，开创了青绿山水的先河，在中国绘画史上具有重要地位。' },
+            { name: '匡庐图', category: 'calligraphy', dynasty: '五代', desc: '《匡庐图》是五代南唐画家荆浩的代表作，是中国山水画史上的重要作品。全画描绘了庐山的雄伟景色，山势险峻，云雾缭绕，意境深远。荆浩是五代时期最具影响力的山水画家，他创立了北方山水画派，著有《笔法记》，对后世山水画的发展产生了深远的影响。' },
+
+            // 漆木器
+            { name: '战国漆木鹿', category: 'lacquer', dynasty: '战国', desc: '战国漆木鹿是战国时期楚国的漆器，出土于湖北江陵楚墓。木鹿用整木雕成，作站立或卧伏状，通体髹黑漆，用红漆描绘花纹。鹿的造型生动，神态安详，是战国时期木雕艺术的精品。楚国漆器以其精美的纹饰和独特的造型著称于世。' },
+            { name: '楚国漆奁', category: 'lacquer', dynasty: '战国', desc: '楚国漆奁是战国时期楚国的漆器，是古代妇女盛放梳妆用品的器具。漆奁多为圆形，有盖，内外髹漆，器身彩绘各种纹饰，如云气纹、鸟兽纹、人物纹等。楚国漆器色彩鲜艳，纹饰精美，代表了战国时期漆器工艺的最高水平。' },
+            { name: '汉代漆耳杯', category: 'lacquer', dynasty: '汉代', desc: '汉代漆耳杯是汉代的漆器，因杯两侧有耳而得名，又称"羽觞"。耳杯是古代的酒器，也可作食器，用木胎或夹纻胎制成，内外髹漆，有的还彩绘精美的纹饰。汉代漆器工艺达到了很高的水平，漆耳杯是汉代漆器中数量最多的器形之一。' },
+            { name: '汉代漆盒', category: 'lacquer', dynasty: '汉代', desc: '汉代漆盒是汉代的漆器，用于盛放物品。漆盒有方形、圆形、长方形等多种形制，有盖，内外髹漆，有的还彩绘精美的纹饰，如云气纹、鸟兽纹、人物故事纹等。汉代漆器工艺发达，漆盒是汉代漆器中的常见器形，反映了汉代贵族精致的生活方式。' },
+            { name: '唐代金银平脱漆器', category: 'lacquer', dynasty: '唐代', desc: '唐代金银平脱漆器是唐代漆器中的精品，采用金银平脱工艺装饰。所谓金银平脱，就是将金箔、银箔剪成各种花纹图案，粘贴在漆器表面，然后涂漆研磨，使金银花纹与漆面平齐。唐代金银平脱漆器华丽无比，是唐代漆器工艺的巅峰之作。' },
+            { name: '宋代漆器', category: 'lacquer', dynasty: '宋代', desc: '宋代漆器以素雅著称，多为单色漆器，以黑、红、褐等色为主，造型简洁大方，注重实用功能。宋代漆器的品种丰富，有碗、盘、盒、罐等日常用品，也有奁、梳、镜匣等梳妆用具。宋代漆器工艺精湛，胎质细腻，釉色莹润，是中国漆器史上的重要发展阶段。' },
+            { name: '元代漆器', category: 'lacquer', dynasty: '元代', desc: '元代漆器以雕漆最为著名，是在器胎上髹漆数十层甚至上百层，然后雕刻各种花纹图案。元代雕漆工艺精湛，刀法圆润，纹饰精美，达到了很高的艺术水平。元代著名的漆工张成、杨茂的作品，是元代雕漆的代表作，对后世雕漆工艺的发展产生了深远的影响。' },
+            { name: '明代剔红', category: 'lacquer', dynasty: '明代', desc: '明代剔红是明代漆器中的精品，剔红就是雕漆的一种，因用红漆而得名。明代剔红工艺达到了历史的顶峰，以永乐、宣德时期的果园厂剔红最为著名。明代剔红刀法圆润，纹饰繁密，色彩鲜艳，造型多样，是中国古代漆器艺术的巅峰之作。' },
+            { name: '明代剔彩', category: 'lacquer', dynasty: '明代', desc: '明代剔彩是明代漆器中的精品，剔彩就是用多种颜色的漆髹在器胎上，然后雕刻花纹，利用不同颜色的漆层来表现花纹的色彩变化。明代剔彩工艺精湛，色彩丰富，纹饰精美，是明代漆器工艺的杰出代表。剔彩漆器比剔红更为名贵，传世极少。' },
+            { name: '清代脱胎漆器', category: 'lacquer', dynasty: '清代', desc: '清代脱胎漆器是清代福州的传统工艺，又称"夹纻胎"漆器。脱胎漆器的制作工艺非常复杂，先用泥土或石膏做成胎模，然后用夏布或丝绸一层层裱糊，待干后去掉胎模，形成轻巧的胎体，再髹漆装饰。脱胎漆器轻巧坚固，色彩艳丽，是中国漆器中的精品。' },
+            { name: '木雕观音', category: 'lacquer', dynasty: '宋代', desc: '木雕观音是宋代木雕佛像的代表作，用整块木材雕刻而成。观音像面容慈祥，神态安详，衣纹流畅，姿态优美，是宋代木雕艺术的精品。宋代木雕佛像写实生动，注重人物内心世界的刻画，达到了很高的艺术水平。木雕观音是研究宋代佛教艺术和木雕工艺的重要资料。' },
+            { name: '木雕罗汉', category: 'lacquer', dynasty: '宋代', desc: '木雕罗汉是宋代木雕佛像的一种，用木材雕刻而成。罗汉像造型生动，神态各异，或沉思，或微笑，或威猛，个性鲜明。宋代木雕罗汉写实生动，注重人物性格的刻画，是宋代木雕艺术的精品，也是研究宋代佛教艺术和木雕工艺的重要资料。' },
+            { name: '木刻版画', category: 'lacquer', dynasty: '明代', desc: '木刻版画是中国传统版画的一种，用木材雕刻版面，然后印刷。明代是中国木刻版画发展的黄金时代，版画广泛应用于书籍插图、年画、画谱等。明代木刻版画题材丰富，雕刻精美，达到了很高的艺术水平。著名的有《十竹斋画谱》、《芥子园画传》等。' },
+            { name: '木刻经板', category: 'lacquer', dynasty: '宋代', desc: '木刻经板是古代用于刻印佛经的木雕版，用梨木或枣木雕刻而成。宋代是中国雕版印刷的黄金时代，佛经刻印非常发达，木刻经板的数量很多。木刻经板不仅是研究古代印刷史的重要资料，其本身也是精美的艺术品，具有很高的历史和艺术价值。' }
+        ];
+
+        // ===== 类别中文名映射 =====
+        const categoryNames = {
+            bronze: '青铜器',
+            pottery: '陶器',
+            stone: '石雕石刻',
+            jade: '玉器',
+            gold: '金银器',
+            porcelain: '瓷器',
+            calligraphy: '书画',
+            lacquer: '漆木器'
+        };
+
+        // ===== 图片映射逻辑 =====
+        // 精确图片优先使用 artifact.img
+        // 类别关键词匹配
+        const imageMap = {
+            bronze: {
+                '鼎': 'museum-type-ding.jpg',
+                '尊': 'bronze-vessel.jpg',
+                '钟': 'bronze-vessel.jpg',
+                '剑': 'bronze-vessel.jpg',
+                '灯': 'bronze-vessel.jpg',
+                '壶': 'bronze-vessel.jpg',
+                '面具': 'artifact-sanxingdui-mask.jpg',
+                '神树': 'bronze-vessel.jpg',
+                '立人': 'bronze-vessel.jpg',
+                '马': 'bronze-vessel.jpg',
+                '博山炉': 'bronze-vessel.jpg',
+                '宫灯': 'bronze-vessel.jpg'
+            },
+            pottery: {
+                '陶': 'ceramic-vessel.jpg',
+                '兵马俑': 'artifact-terracotta-general.jpg',
+                '唐三彩': 'artifact-tangsancai-horse.jpg',
+                '彩陶': 'artifact-banpo-pot.jpg'
+            },
+            stone: {
+                '佛': 'artifact-leshan-buddha.jpg',
+                '石窟': 'artifact-longmen-buddha.jpg',
+                '石刻': 'stone-carved.jpg',
+                '画像石': 'stone-carved.jpg'
+            },
+            jade: {
+                '龙': 'artifact-hongshan-dragon.jpg',
+                '琮': 'artifact-jade-cong.jpg',
+                '玉衣': 'jade.jpg',
+                '璧': 'jade.jpg'
+            },
+            gold: {
+                '面具': 'artifact-gold-mask.jpg',
+                '金': 'gold-silver.jpg',
+                '银': 'gold-silver.jpg'
+            },
+            porcelain: {
+                '汝窑': 'artifact-ru-porcelain.jpg',
+                '青瓷': 'porcelain.jpg',
+                '青花': 'porcelain.jpg',
+                '彩': 'porcelain.jpg',
+                '釉': 'porcelain.jpg',
+                '白瓷': 'porcelain.jpg'
+            },
+            calligraphy: {
+                '帖': 'calligraphy.jpg',
+                '图': 'landscape-painting.jpg',
+                '序': 'calligraphy.jpg',
+                '稿': 'scroll-calligraphy.jpg'
+            },
+            lacquer: {
+                '漆': 'heritage-craft.jpg',
+                '木': 'heritage-craft.jpg',
+                '雕': 'heritage-craft.jpg'
+            }
+        };
+
+        // 类别回退图片
+        const categoryFallback = {
+            bronze: 'bronze-vessel.jpg',
+            pottery: 'ceramic-vessel.jpg',
+            stone: 'stone-carved.jpg',
+            jade: 'jade.jpg',
+            gold: 'gold-silver.jpg',
+            porcelain: 'porcelain.jpg',
+            calligraphy: 'calligraphy.jpg',
+            lacquer: 'heritage-craft.jpg'
+        };
+
+        function getArtifactImage(artifact) {
+            // 优先使用精确图片
+            if (artifact.img) {
+                return 'images/' + artifact.img;
+            }
+            // 按类别+关键词匹配
+            const catMap = imageMap[artifact.category] || {};
+            for (const keyword in catMap) {
+                if (artifact.name.includes(keyword)) {
+                    return 'images/' + catMap[keyword];
+                }
+            }
+            // 类别回退
+            return 'images/' + (categoryFallback[artifact.category] || 'bronze-vessel.jpg');
+        }
+
+        // ===== 状态变量 =====
+        let currentCategory = 'all';
+        let searchKeyword = '';
+        let displayedCount = 0;
+        const itemsPerPage = 24;
+
+        // ===== DOM 元素 =====
+        const grid = document.getElementById('artifactGrid');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const searchInput = document.getElementById('searchInput');
+        const categoryButtons = document.getElementById('categoryButtons');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modal = document.getElementById('modal');
+        const modalClose = document.getElementById('modalClose');
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalTags = document.getElementById('modalTags');
+        const modalDesc = document.getElementById('modalDesc');
+        const modal3dBtn = document.getElementById('modal3dBtn');
+
+        // ===== 获取筛选后的文物列表 =====
+        function getFilteredArtifacts() {
+            return artifacts.filter(a => {
+                const matchCategory = currentCategory === 'all' || a.category === currentCategory;
+                const matchSearch = !searchKeyword || a.name.includes(searchKeyword) || 
+                                    categoryNames[a.category]?.includes(searchKeyword) ||
+                                    a.dynasty.includes(searchKeyword);
+                return matchCategory && matchSearch;
+            });
+        }
+
+        // ===== 创建文物卡片 =====
+        function createCard(artifact, index) {
+            const card = document.createElement('div');
+            card.className = 'artifact-card';
+            card.style.transitionDelay = (index % itemsPerPage) * 0.03 + 's';
+            
+            const imgSrc = getArtifactImage(artifact);
+            const categoryName = categoryNames[artifact.category] || artifact.category;
+            
+            card.innerHTML = `
+                <div class="artifact-img-wrap">
+                    <img src="${imgSrc}" alt="${artifact.name}" onerror="this.src='images/bronze-vessel.jpg'">
+                    ${artifact.has3d ? '<span class="badge-3d">3D</span>' : ''}
+                    <div class="artifact-hover-overlay">
+                        <span class="hover-text">${artifact.has3d ? '点击查看3D鉴赏' : '点击查看详情'}</span>
+                    </div>
+                </div>
+                <div class="artifact-card-body">
+                    <h3 class="artifact-name">${artifact.name}</h3>
+                    <div class="artifact-meta">
+                        <span class="artifact-dynasty">${artifact.dynasty}</span>
+                        <span class="artifact-meta-divider"></span>
+                        <span class="artifact-category">${categoryName}</span>
+                    </div>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => openModal(artifact));
+            
+            return card;
+        }
+
+        // ===== 渲染文物网格 =====
+        function renderGrid(reset = false) {
+            const filtered = getFilteredArtifacts();
+            
+            if (reset) {
+                grid.innerHTML = '';
+                displayedCount = 0;
+            }
+            
+            const start = displayedCount;
+            const end = Math.min(start + itemsPerPage, filtered.length);
+            
+            const fragment = document.createDocumentFragment();
+            for (let i = start; i < end; i++) {
+                const card = createCard(filtered[i], i);
+                fragment.appendChild(card);
+            }
+            grid.appendChild(fragment);
+            
+            displayedCount = end;
+            
+            // 更新加载更多按钮状态
+            if (displayedCount >= filtered.length) {
+                loadMoreBtn.textContent = '没有更多了';
+                loadMoreBtn.disabled = true;
+            } else {
+                loadMoreBtn.textContent = '加载更多文物';
+                loadMoreBtn.disabled = false;
+            }
+            
+            // 显示无结果
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="no-results">未找到相关文物，请尝试其他关键词或分类</div>';
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = '';
+            }
+            
+            // 触发卡片显示动画
+            requestAnimationFrame(() => {
+                const cards = grid.querySelectorAll('.artifact-card:not(.visible)');
+                cards.forEach(card => card.classList.add('visible'));
+            });
+        }
+
+        // ===== 打开模态框 =====
+        function openModal(artifact) {
+            const imgSrc = getArtifactImage(artifact);
+            const categoryName = categoryNames[artifact.category] || artifact.category;
+            
+            modalImage.src = imgSrc;
+            modalImage.alt = artifact.name;
+            modalImage.onerror = function() { this.src = 'images/bronze-vessel.jpg'; };
+            modalTitle.textContent = artifact.name;
+            
+            let tagsHtml = `<span class="modal-tag">${artifact.dynasty}</span>
+                           <span class="modal-tag">${categoryName}</span>`;
+            if (artifact.has3d) {
+                tagsHtml += `<span class="modal-tag model-tag">3D模型</span>`;
+            }
+            modalTags.innerHTML = tagsHtml;
+            
+            modalDesc.textContent = artifact.desc;
+            
+            if (artifact.has3d && artifact.url) {
+                modal3dBtn.style.display = 'inline-flex';
+                modal3dBtn.href = artifact.url;
+            } else {
+                modal3dBtn.style.display = 'none';
+            }
+            
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // ===== 关闭模态框 =====
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ===== 数字动画 =====
+        function animateNumber(element, target, duration = 1500) {
+            const start = 0;
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(start + (target - start) * easeOut);
+                element.textContent = current;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    element.textContent = target;
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        // ===== 统计数据 =====
+        function updateStats() {
+            const totalArtifacts = artifacts.length;
+            const categories = new Set(artifacts.map(a => a.category)).size;
+            const dynasties = new Set(artifacts.map(a => a.dynasty)).size;
+            
+            animateNumber(document.getElementById('stat-total'), totalArtifacts);
+            animateNumber(document.getElementById('stat-category'), categories);
+            animateNumber(document.getElementById('stat-dynasty'), dynasties);
+        }
+
+        // ===== 事件绑定 =====
+        
+        // 分类按钮
+        categoryButtons.addEventListener('click', (e) => {
+            if (e.target.classList.contains('category-btn')) {
+                categoryButtons.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                currentCategory = e.target.dataset.category;
+                renderGrid(true);
+            }
+        });
+
+        // 搜索框
+        let searchTimer;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                searchKeyword = e.target.value.trim();
+                renderGrid(true);
+            }, 200);
+        });
+
+        // 加载更多
+        loadMoreBtn.addEventListener('click', () => {
+            renderGrid(false);
+        });
+
+        // 关闭模态框
+        modalClose.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+
+        // ESC 关闭模态框
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+                closeModal();
+            }
+        });
+
+        // 3D按钮点击
+        modal3dBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const url = modal3dBtn.href;
+            if (url) {
+                window.open(url, '_blank');
+            }
+        });
+
+        // ===== 初始化 =====
+        document.addEventListener('DOMContentLoaded', () => {
+            renderGrid(true);
+            updateStats();
+        });
+    </script>
+</body>
+</html>
