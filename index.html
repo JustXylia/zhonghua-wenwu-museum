@@ -921,7 +921,7 @@
             .restoration-accordion-item { height: 200px; }
         }
 
-        /* ===== 陆 · 指尖博物馆 - 入口卡片 ===== */
+        /* ===== 博物馆入口卡片样式(数据统计等,互动体验卡片共用) ===== */
         .section-3d {
             background:
                 radial-gradient(ellipse at 50% 50%, rgba(201,169,98,0.04) 0%, transparent 50%),
@@ -1019,6 +1019,161 @@
             .museum-entry-title { font-size: 2rem; }
             .museum-entry-stats { gap: 1.5rem; }
             .museum-stat-num { font-size: 1.5rem; }
+        }
+
+        /* ===== 互动体验入口(指尖博物馆 + 宋画雅趣) ===== */
+        .interactive-label {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 3.5rem 0 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+        .interactive-label-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(201,169,98,0.45), transparent);
+        }
+        .interactive-label-text {
+            font-family: var(--font-display);
+            color: var(--color-primary);
+            font-size: 1.15rem;
+            letter-spacing: 0.35em;
+            white-space: nowrap;
+        }
+        .interactive-entries {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+        .interactive-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            min-height: 440px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            transition: all 0.5s ease;
+        }
+        .interactive-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(201,169,98,0.45);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+        }
+        .interactive-card-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .interactive-card:hover .interactive-card-bg { transform: scale(1.06); }
+        .game-card-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 75% 22%, rgba(201,169,98,0.15), transparent 55%),
+                radial-gradient(ellipse at 12% 88%, rgba(130,130,145,0.22), transparent 55%),
+                linear-gradient(160deg, #1c1c25 0%, #11111a 55%, #0b0b12 100%);
+        }
+        .game-card-char {
+            position: absolute;
+            right: -0.5rem;
+            top: -3rem;
+            font-family: var(--font-display);
+            font-size: 15rem;
+            line-height: 1;
+            color: rgba(201,169,98,0.08);
+            user-select: none;
+            transition: all 0.6s ease;
+        }
+        .interactive-card:hover .game-card-char {
+            color: rgba(201,169,98,0.17);
+            transform: scale(1.05) rotate(-2deg);
+        }
+        .interactive-card-overlay {
+            position: relative;
+            z-index: 2;
+            padding: 2rem;
+            background: linear-gradient(180deg, rgba(10,10,15,0.1) 0%, rgba(10,10,15,0.93) 88%);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .interactive-card-tag {
+            display: inline-block;
+            padding: 0.3rem 0.95rem;
+            border: 1px solid rgba(201,169,98,0.5);
+            border-radius: 20px;
+            font-size: 0.72rem;
+            letter-spacing: 0.12em;
+            color: var(--color-primary);
+            margin-bottom: 0.9rem;
+            background: rgba(201,169,98,0.08);
+        }
+        .interactive-card-title {
+            font-family: var(--font-display);
+            font-size: 1.9rem;
+            color: var(--color-primary);
+            margin-bottom: 0.6rem;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+        }
+        .interactive-card-desc {
+            font-size: 0.88rem;
+            color: var(--color-text);
+            line-height: 1.8;
+            margin-bottom: 1.2rem;
+        }
+        .interactive-card .museum-entry-stats {
+            margin-bottom: 1.5rem;
+            gap: 2.2rem;
+        }
+        .game-themes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .game-theme-chip {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            border: 1px solid var(--glass-border);
+            padding: 0.25rem 0.75rem;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.03);
+        }
+        .interactive-card-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 2.2rem;
+            background: var(--color-primary);
+            color: #0a0a0f;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .interactive-card:hover .interactive-card-btn {
+            background: var(--color-primary-light);
+            box-shadow: 0 4px 20px rgba(201,169,98,0.4);
+        }
+        @media (max-width: 768px) {
+            .interactive-entries { grid-template-columns: 1fr; }
+            .interactive-card { min-height: 380px; }
+            .interactive-card-title { font-size: 1.6rem; }
+            .interactive-card-overlay { padding: 1.5rem; }
+            .game-card-char { font-size: 10rem; top: -2rem; }
+            .interactive-label { margin: 2.5rem 0 1.2rem; }
         }
     </style>
 </head>
@@ -1377,47 +1532,56 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Section Divider: Promotion -> 3D Museum -->
-    <div class="section-divider">
-        <div class="divider-line"></div>
-        <div class="divider-diamond">&#9670;</div>
-        <div class="divider-line"></div>
-    </div>
-
-    <!-- ===== 陆 · 指尖博物馆 - 入口卡片 ===== -->
-    <section class="section section-3d slide-from-bottom" id="3d-museum">
-        <div class="section-inner">
-            <div class="section-header reveal-element">
-                <div class="gold-line-animated"></div>
-                <span class="section-number">陆 · 指尖博物馆</span>
-                <h2 class="section-title">3D文物鉴赏</h2>
-                <p class="section-subtitle">3D Artifact Exhibition</p>
+            <!-- 互动体验: 指尖博物馆 + 宋画雅趣小游戏 -->
+            <div class="interactive-label reveal-element">
+                <span class="interactive-label-line"></span>
+                <span class="interactive-label-text">互动体验</span>
+                <span class="interactive-label-line"></span>
             </div>
-            <a href="museum-3d.html" class="museum-entry reveal-element">
-                <img class="museum-entry-bg" src="images/hero-museum.jpg" alt="指尖博物馆" loading="lazy">
-                <div class="museum-entry-overlay">
-                    <h3 class="museum-entry-title">指尖博物馆</h3>
-                    <p class="museum-entry-desc">足不出户，触摸千年文明。三百余件珍贵文物的3D数字模型，在线鉴赏中华文明的璀璨瑰宝。</p>
-                    <div class="museum-entry-stats">
-                        <div class="museum-stat">
-                            <div class="museum-stat-num">320+</div>
-                            <div class="museum-stat-label">文物总数</div>
+            <div class="interactive-entries reveal-element">
+                <a href="museum-3d.html" class="interactive-card">
+                    <img class="interactive-card-bg" src="images/hero-museum.jpg" alt="指尖博物馆" loading="lazy">
+                    <div class="interactive-card-overlay">
+                        <span class="interactive-card-tag">3D沉浸 · 在线鉴赏</span>
+                        <h3 class="interactive-card-title">指尖博物馆</h3>
+                        <p class="interactive-card-desc">足不出户，触摸千年文明。三百余件珍贵文物的3D数字模型，在线鉴赏中华文明的璀璨瑰宝。</p>
+                        <div class="museum-entry-stats">
+                            <div class="museum-stat">
+                                <div class="museum-stat-num">320+</div>
+                                <div class="museum-stat-label">文物总数</div>
+                            </div>
+                            <div class="museum-stat">
+                                <div class="museum-stat-num">8</div>
+                                <div class="museum-stat-label">文物类别</div>
+                            </div>
+                            <div class="museum-stat">
+                                <div class="museum-stat-num">19</div>
+                                <div class="museum-stat-label">跨越朝代</div>
+                            </div>
                         </div>
-                        <div class="museum-stat">
-                            <div class="museum-stat-num">8</div>
-                            <div class="museum-stat-label">文物类别</div>
-                        </div>
-                        <div class="museum-stat">
-                            <div class="museum-stat-num">19</div>
-                            <div class="museum-stat-label">跨越朝代</div>
-                        </div>
+                        <span class="interactive-card-btn">进入指尖博物馆 →</span>
                     </div>
-                    <span class="museum-entry-btn">进入指尖博物馆 →</span>
-                </div>
-            </a>
+                </a>
+                <a href="song-painting.html" class="interactive-card">
+                    <div class="game-card-bg">
+                        <span class="game-card-char">画</span>
+                    </div>
+                    <div class="interactive-card-overlay">
+                        <span class="interactive-card-tag">互动小游戏 · 免费游玩</span>
+                        <h3 class="interactive-card-title">宋画雅趣</h3>
+                        <p class="interactive-card-desc">临摹成画，墨韵渐生。沿虚线勾勒梅兰竹菊，在笔墨流转之间，体验宋代文人的丹青雅趣。</p>
+                        <div class="game-themes">
+                            <span class="game-theme-chip">寒梅报春</span>
+                            <span class="game-theme-chip">幽兰空谷</span>
+                            <span class="game-theme-chip">墨竹清风</span>
+                            <span class="game-theme-chip">远山流云</span>
+                            <span class="game-theme-chip">荷塘清趣</span>
+                        </div>
+                        <span class="interactive-card-btn">开始临摹作画 →</span>
+                    </div>
+                </a>
+            </div>
         </div>
     </section>
 

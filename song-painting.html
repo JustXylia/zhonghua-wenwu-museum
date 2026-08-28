@@ -1,0 +1,3725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>「宋画雅趣」临摹成画</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink-black: #1a1a1a; --ink-gray: #4a4a4a; --paper-cream: #f5f0e8;
+            --paper-warm: #ebe5d9; --vermillion: #c45c48; --vermillion-light: #d97b6a;
+            --gold: #b8956a; --gold-light: #d4b896; --jade: #5a8a6e;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Noto Serif SC', serif; background: var(--paper-cream);
+            color: var(--ink-black); overflow-x: hidden; min-height: 100vh; touch-action: none;
+        }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 1000;
+        }
+
+        /* ===== 全局背景Canvas ===== */
+        #bgCanvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+        }
+
+        /* ===== 音乐控制 ===== */
+        .music-control {
+            position: fixed; top: 20px; right: 20px; z-index: 2000;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(26,26,26,0.7); border: 1.5px solid var(--gold);
+            color: var(--gold); font-size: 1.2rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease; backdrop-filter: blur(4px);
+        }
+        .music-control:hover { background: var(--gold); color: var(--ink-black); }
+        .music-control.playing { animation: musicPulse 2s ease infinite; }
+
+        /* ===== 返回中华文物主页 ===== */
+        .home-link {
+            position: fixed; top: 20px; left: 20px; z-index: 2000;
+            height: 44px; padding: 0 1.2rem; border-radius: 22px;
+            background: rgba(26,26,26,0.7); border: 1.5px solid var(--gold);
+            color: var(--gold); font-size: 0.95rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+            text-decoration: none; font-family: 'Noto Serif SC', serif; letter-spacing: 0.1em;
+            transition: all 0.3s ease; backdrop-filter: blur(4px);
+        }
+        .home-link:hover { background: var(--gold); color: var(--ink-black); }
+        @media (max-width: 600px) {
+            .home-link { top: 10px; left: 10px; height: 38px; padding: 0 0.9rem; font-size: 0.85rem; }
+        }
+        @keyframes musicPulse { 0%,100%{box-shadow:0 0 0 0 rgba(184,149,106,0.4)} 50%{box-shadow:0 0 0 10px rgba(184,149,106,0)} }
+
+        /* ===== 开场 ===== */
+        .intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 999; transition: opacity 1.5s ease, visibility 1.5s ease;
+        }
+        .intro-screen.hidden { opacity: 0; visibility: hidden; }
+        .intro-title { font-family: 'ZCOOL XiaoWei', serif; font-size: 3.5rem; color: var(--gold); letter-spacing: 0.6em; margin-bottom: 1rem; opacity: 0; animation: fadeInUp 2s ease forwards; animation-delay: 0.5s; text-shadow: 0 2px 20px rgba(184,149,106,0.3); }
+        .intro-subtitle { font-size: 1.1rem; color: var(--gold-light); letter-spacing: 0.4em; margin-bottom: 3rem; opacity: 0; animation: fadeInUp 2s ease forwards; animation-delay: 1.2s; }
+        .ink-brush { width: 100px; height: 100px; margin-bottom: 2rem; opacity: 0; animation: brushAppear 2s ease forwards; animation-delay: 0.3s; }
+        .ink-brush svg { width: 100%; height: 100%; }
+        @keyframes brushAppear { 0% { opacity: 0; transform: rotate(-30deg) scale(0.5); } 100% { opacity: 1; transform: rotate(0deg) scale(1); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .start-btn {
+            padding: 16px 55px; font-family: 'Noto Serif SC', serif; font-size: 1.05rem;
+            letter-spacing: 0.35em; background: transparent; border: 2px solid var(--gold);
+            color: var(--gold); cursor: pointer; transition: all 0.5s ease;
+            opacity: 0; animation: fadeInUp 2s ease forwards; animation-delay: 2s;
+            position: relative; overflow: hidden;
+        }
+        .start-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: var(--gold); transition: left 0.5s ease; z-index: -1;
+        }
+        .start-btn:hover::before { left: 0; }
+        .start-btn:hover { color: var(--ink-black); }
+
+        /* ===== 主题选择 ===== */
+        .theme-selection { display: none; max-width: 1000px; margin: 0 auto; padding: 40px 20px; min-height: 100vh; position: relative; z-index: 10; }
+        .theme-selection.active { display: block; animation: fadeIn 1s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .header { text-align: center; padding: 20px 0 40px; border-bottom: 1px solid rgba(184,149,106,0.3); margin-bottom: 40px; }
+        .header h1 { font-family: 'ZCOOL XiaoWei', serif; font-size: 2.2rem; letter-spacing: 0.35em; margin-bottom: 12px; color: var(--ink-black); }
+        .header p { color: var(--ink-gray); letter-spacing: 0.25em; font-size: 0.95rem; }
+        .theme-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        .theme-card {
+            background: linear-gradient(135deg, rgba(245,240,232,0.95) 0%, rgba(235,229,217,0.95) 100%);
+            border: 1.5px solid var(--gold-light); border-radius: 10px; padding: 30px 20px;
+            cursor: pointer; transition: all 0.4s ease; text-align: center; position: relative; overflow: hidden;
+            backdrop-filter: blur(2px);
+        }
+        .theme-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--vermillion), var(--gold), var(--jade));
+            transform: scaleX(0); transition: transform 0.4s ease;
+        }
+        .theme-card:hover::before { transform: scaleX(1); }
+        .theme-card:hover { transform: translateY(-8px); box-shadow: 0 12px 35px rgba(0,0,0,0.12); border-color: var(--gold); }
+        .theme-icon { font-size: 2.8rem; margin-bottom: 15px; }
+        .theme-card h3 { font-family: 'ZCOOL XiaoWei', serif; font-size: 1.3rem; margin-bottom: 10px; letter-spacing: 0.15em; }
+        .theme-card p { font-size: 0.82rem; color: var(--ink-gray); line-height: 1.8; }
+
+        /* ===== 绘画界面 ===== */
+        .paint-interface { display: none; min-height: 100vh; position: relative; z-index: 10; }
+        .paint-interface.active { display: block; animation: fadeIn 0.5s ease; }
+        .paint-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 20px; background: linear-gradient(135deg, rgba(235,229,217,0.95) 0%, rgba(245,240,232,0.95) 100%);
+            border-bottom: 1px solid var(--gold-light); position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(6px);
+        }
+        .paint-header h2 { font-family: 'ZCOOL XiaoWei', serif; font-size: 1.3rem; letter-spacing: 0.2em; }
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+        .header-btn {
+            padding: 7px 16px; font-family: 'Noto Serif SC', serif; font-size: 0.8rem;
+            background: transparent; border: 1px solid var(--gold-light); color: var(--ink-black);
+            cursor: pointer; transition: all 0.3s ease; border-radius: 4px; letter-spacing: 0.1em;
+        }
+        .header-btn:hover { background: var(--gold); border-color: var(--gold); color: white; }
+        .header-btn.primary { background: var(--vermillion); border-color: var(--vermillion); color: white; }
+        .header-btn.primary:hover { background: var(--vermillion-light); }
+        .header-btn.ai-btn { background: linear-gradient(135deg, var(--gold-light), var(--gold)); border-color: var(--gold); color: var(--ink-black); font-weight: 600; }
+        .header-btn.ai-btn:hover { background: linear-gradient(135deg, var(--gold), #a07a4a); color: white; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(184,149,106,0.4); }
+
+        .canvas-area { position: relative; display: flex; justify-content: center; padding: 15px; }
+        .canvas-wrapper { position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border-radius: 4px; overflow: hidden; background: #faf8f3; }
+        #paintCanvas, #guideCanvas, #revealCanvas { display: block; position: absolute; top: 0; left: 0; cursor: crosshair; }
+        #paintCanvas { position: relative; z-index: 10; background: transparent; }
+        #revealCanvas { z-index: 5; }
+        #guideCanvas { z-index: 8; pointer-events: none; }
+
+        .progress-wrap { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 8px 15px; background: rgba(245,240,232,0.9); }
+        .progress-track { width: 220px; height: 5px; background: var(--paper-warm); border-radius: 3px; overflow: hidden; border: 1px solid var(--gold-light); }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--vermillion), var(--gold), var(--jade)); width: 0%; transition: width 0.3s ease; border-radius: 3px; }
+        .progress-text { font-size: 0.8rem; color: var(--ink-gray); letter-spacing: 0.1em; min-width: 60px; text-align: center; }
+
+        .toolbar {
+            display: flex; justify-content: center; gap: 10px; padding: 10px 15px;
+            background: linear-gradient(135deg, rgba(235,229,217,0.95) 0%, rgba(245,240,232,0.95) 100%);
+            border-top: 1px solid var(--gold-light); position: sticky; bottom: 0; z-index: 100; flex-wrap: wrap;
+            backdrop-filter: blur(6px);
+        }
+        .tool-group { display: flex; align-items: center; gap: 6px; padding: 0 10px; border-right: 1px solid var(--gold-light); }
+        .tool-group:last-child { border-right: none; }
+        .tool-label { font-size: 0.75rem; color: var(--ink-gray); letter-spacing: 0.1em; white-space: nowrap; }
+        .color-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.3s ease; }
+        .color-btn:hover { transform: scale(1.15); }
+        .color-btn.active { border-color: var(--ink-black); transform: scale(1.2); }
+        .size-slider { width: 70px; -webkit-appearance: none; appearance: none; height: 4px; background: var(--gold-light); border-radius: 2px; outline: none; }
+        .size-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; background: var(--vermillion); border-radius: 50%; cursor: pointer; }
+        .size-val { font-size: 0.75rem; color: var(--ink-gray); min-width: 20px; text-align: center; }
+
+        /* ===== 完成画面 ===== */
+        .completion-screen { display: none; max-width: 800px; margin: 0 auto; padding: 40px 20px; text-align: center; position: relative; z-index: 10; }
+        .completion-screen.active { display: block; animation: fadeIn 1s ease; }
+        .completion-header { margin-bottom: 25px; }
+        .completion-header h2 { font-family: 'ZCOOL XiaoWei', serif; font-size: 2.2rem; color: var(--vermillion); letter-spacing: 0.2em; margin-bottom: 10px; }
+        .completion-header p { color: var(--ink-gray); letter-spacing: 0.15em; }
+        .final-painting { max-width: 600px; margin: 0 auto 25px; border: 12px solid var(--paper-warm); box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative; }
+        .final-painting::before { content: ''; position: absolute; top: -20px; left: -20px; right: -20px; bottom: -20px; border: 1px solid var(--gold-light); pointer-events: none; }
+        .final-painting img { width: 100%; display: block; }
+        .painting-info { background: linear-gradient(135deg, rgba(235,229,217,0.95) 0%, rgba(245,240,232,0.95) 100%); border: 1px solid var(--gold-light); border-radius: 8px; padding: 25px; margin-bottom: 25px; text-align: left; backdrop-filter: blur(4px); }
+        .painting-info h3 { font-family: 'ZCOOL XiaoWei', serif; font-size: 1.3rem; margin-bottom: 12px; letter-spacing: 0.15em; }
+        .painting-info p { line-height: 2; color: var(--ink-gray); font-size: 0.92rem; }
+        .action-btns { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .action-btn { padding: 11px 32px; font-family: 'Noto Serif SC', serif; font-size: 0.92rem; letter-spacing: 0.2em; cursor: pointer; transition: all 0.4s ease; border-radius: 4px; }
+        .action-btn.primary { background: var(--vermillion); border: none; color: white; }
+        .action-btn.primary:hover { background: var(--vermillion-light); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(196,92,72,0.3); }
+        .action-btn.secondary { background: transparent; border: 1.5px solid var(--gold); color: var(--ink-black); }
+        .action-btn.secondary:hover { background: var(--gold); color: white; }
+        .seal { display: inline-block; width: 55px; height: 55px; border: 3px solid var(--vermillion); border-radius: 4px; color: var(--vermillion); font-family: 'ZCOOL XiaoWei', serif; font-size: 0.85rem; line-height: 49px; text-align: center; transform: rotate(-5deg); opacity: 0.8; margin-top: 12px; }
+
+        .hint-toast {
+            position: fixed; top: 70px; left: 50%; transform: translateX(-50%) translateY(-80px);
+            background: var(--ink-black); color: var(--gold); padding: 11px 28px;
+            border-radius: 4px; font-size: 0.88rem; letter-spacing: 0.1em;
+            z-index: 200; transition: transform 0.4s ease; pointer-events: none;
+        }
+        .hint-toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ===== 补全特效覆盖层 ===== */
+        .ai-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.88); display: none; align-items: center; justify-content: center;
+            z-index: 500; flex-direction: column;
+        }
+        .ai-overlay.active { display: flex; }
+        .ai-overlay canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .ink-splash-text { color: var(--gold); font-family: 'ZCOOL XiaoWei', serif; font-size: 1.6rem; letter-spacing: 0.4em; z-index: 1; opacity: 0; }
+        .ink-splash-text.show { animation: splashFade 2.5s ease forwards; }
+        @keyframes splashFade { 0%{opacity:0;transform:scale(0.9)} 20%{opacity:1;transform:scale(1)} 80%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:scale(1.05)} }
+
+        @media (max-width: 768px) {
+            .intro-title { font-size: 2.2rem; letter-spacing: 0.3em; }
+            .header h1 { font-size: 1.6rem; }
+            .theme-grid { grid-template-columns: 1fr; }
+            .toolbar { gap: 6px; padding: 8px; }
+            .paint-header { flex-direction: column; gap: 8px; }
+            .paint-header h2 { font-size: 1.05rem; }
+            .header-btn { padding: 5px 12px; font-size: 0.75rem; }
+            .color-btn { width: 24px; height: 24px; }
+            .size-slider { width: 50px; }
+            .music-control { top: 10px; right: 10px; width: 38px; height: 38px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 全局动态背景Canvas -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- 音乐控制 -->
+<button class="music-control" id="musicBtn" onclick="toggleMusic()">🎵</button>
+
+<!-- 返回中华文物主页 -->
+<a href="index.html" class="home-link">← 中华文物</a>
+
+<!-- 开场 -->
+<div class="intro-screen" id="introScreen">
+    <div class="ink-brush">
+        <svg viewBox="0 0 120 120"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B7355"/><stop offset="100%" stop-color="#5C4A3A"/></linearGradient></defs>
+            <rect x="55" y="10" width="10" height="50" rx="2" fill="url(#bg)"/>
+            <path d="M55 60 Q60 58 65 60 Q70 75 60 95 Q50 75 55 60" fill="#1a1a1a"/>
+            <path d="M58 75 Q60 85 60 95 Q60 85 62 75" fill="#333" opacity="0.5"/>
+            <circle cx="60" cy="105" r="4" fill="#1a1a1a" opacity="0.8"/>
+        </svg>
+    </div>
+    <h1 class="intro-title">宋画雅趣</h1>
+    <p class="intro-subtitle">临摹成画 · 墨韵渐生</p>
+    <button class="start-btn" id="startBtn" style="display:none;">进入画坊</button>
+</div>
+
+<!-- 主题选择 -->
+<div class="theme-selection" id="themeSelection">
+    <div class="header">
+        <h1>选择画题</h1>
+        <p>沿虚线临摹，画作渐次显现</p>
+    </div>
+    <div class="theme-grid">
+        <div class="theme-card" onclick="selectTheme('plum')">
+            <div class="theme-icon">🌺</div>
+            <h3>寒梅报春</h3>
+            <p>疏影横斜，暗香浮动<br>临摹梅枝，渐成傲雪寒梅</p>
+        </div>
+        <div class="theme-card" onclick="selectTheme('orchid')">
+            <div class="theme-icon">🌿</div>
+            <h3>幽兰空谷</h3>
+            <p>素心幽芳，清雅绝尘<br>勾勒兰叶，绽放空谷雅韵</p>
+        </div>
+        <div class="theme-card" onclick="selectTheme('bamboo')">
+            <div class="theme-icon">🎋</div>
+            <h3>墨竹清风</h3>
+            <p>虚心劲节，潇洒临风<br>描摹竹枝，成就君子风骨</p>
+        </div>
+        <div class="theme-card" onclick="selectTheme('mountain')">
+            <div class="theme-icon">⛰️</div>
+            <h3>远山流云</h3>
+            <p>山色空濛，云水苍茫<br>勾勒山峦，绘就千里江山</p>
+        </div>
+        <div class="theme-card" onclick="selectTheme('chrysanthemum')">
+            <div class="theme-icon">🌼</div>
+            <h3>秋菊傲霜</h3>
+            <p>凌霜盛开，淡雅幽香<br>临摹菊瓣，绽放秋日风骨</p>
+        </div>
+        <div class="theme-card" onclick="selectTheme('peony')">
+            <div class="theme-icon">🌷</div>
+            <h3>国色天香</h3>
+            <p>花开富贵，雍容华贵<br>勾勒牡丹，尽显盛世芳华</p>
+        </div>
+        <div class="theme-card" onclick="selectTheme('lotus')">
+            <div class="theme-icon">🪷</div>
+            <h3>荷塘清趣</h3>
+            <p>出淤泥而不染，濯清涟而不妖<br>描摹荷花，绘就清雅之姿</p>
+        </div>
+        <div class="theme-card" onclick="selectTheme('pine')">
+            <div class="theme-icon">🌲</div>
+            <h3>苍松迎客</h3>
+            <p>千年不老，万古长青<br>勾勒松枝，展现坚韧风骨</p>
+        </div>
+        <div class="theme-card" style="opacity:0.6;cursor:default;border-style:dashed" onclick="showHint('更多精彩画题，敬请期待！')">
+            <div class="theme-icon">✨</div>
+            <h3>敬请期待</h3>
+            <p>更多画题正在创作中<br>山水花鸟，陆续上新</p>
+        </div>
+    </div>
+</div>
+
+<!-- 绘画界面 -->
+<div class="paint-interface" id="paintInterface">
+    <div class="paint-header">
+        <h2 id="paintTitle">寒梅报春</h2>
+        <div class="header-actions">
+            <button class="header-btn" onclick="clearCanvas()">清空</button>
+            <button class="header-btn" onclick="undo()">撤销</button>
+            <button class="header-btn ai-btn" onclick="aiGenerate(false)">AI生成</button>
+            <button class="header-btn primary" onclick="completePainting()">完成</button>
+        </div>
+    </div>
+    <div class="progress-wrap">
+        <span class="progress-text">临摹进度</span>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <span class="progress-text" id="progressPercent">0%</span>
+    </div>
+    <div class="canvas-area">
+        <div class="canvas-wrapper">
+            <canvas id="paintCanvas"></canvas>
+            <canvas id="guideCanvas"></canvas>
+            <canvas id="revealCanvas"></canvas>
+        </div>
+    </div>
+    <div class="toolbar">
+        <div class="tool-group">
+            <span class="tool-label">墨色</span>
+            <div class="color-btn active" style="background:#1a1a1a" onclick="setColor('#1a1a1a',this)" title="浓墨"></div>
+            <div class="color-btn" style="background:#5a5a5a" onclick="setColor('#5a5a5a',this)" title="淡墨"></div>
+            <div class="color-btn" style="background:#c45c48" onclick="setColor('#c45c48',this)" title="朱砂"></div>
+            <div class="color-btn" style="background:#5a8a6e" onclick="setColor('#5a8a6e',this)" title="石绿"></div>
+            <div class="color-btn" style="background:#4a5d7a" onclick="setColor('#4a5d7a',this)" title="花青"></div>
+        </div>
+        <div class="tool-group">
+            <span class="tool-label">粗细</span>
+            <input type="range" class="size-slider" id="brushSize" min="2" max="40" value="6" oninput="updateBrushSize(this.value)">
+            <span class="size-val" id="sizeValue">6</span>
+        </div>
+        <div class="tool-group">
+            <button class="tool-btn active" style="width:34px;height:34px;border:1.5px solid var(--gold-light);background:transparent;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center" id="brushTool" onclick="setTool('brush')">✏️</button>
+            <button class="tool-btn" style="width:34px;height:34px;border:1.5px solid var(--gold-light);background:transparent;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center" id="eraserTool" onclick="setTool('eraser')">🧹</button>
+        </div>
+    </div>
+</div>
+
+<!-- 完成画面 -->
+<div class="completion-screen" id="completionScreen">
+    <div class="completion-header"><h2>画作完成</h2><p>你的宋画雅趣之作</p></div>
+    <div class="final-painting"><img id="finalImage" src="" alt="画作"></div>
+    <div class="painting-info"><h3 id="finalTitle">画题</h3><p id="finalDescription">描述</p></div>
+    <div class="seal">雅趣</div>
+    <div class="action-btns" style="margin-top:25px">
+        <button class="action-btn secondary" onclick="downloadPainting()">保存画作</button>
+        <button class="action-btn primary" onclick="restart()">再画一幅</button>
+    </div>
+</div>
+
+<div class="hint-toast" id="hintToast"></div>
+<div class="ai-overlay" id="aiOverlay">
+    <div class="ink-splash-text" id="inkText">墨韵流转 · 意境渐生</div>
+    <canvas id="aiParticleCanvas"></canvas>
+</div>
+
+<script>
+    // ============================================================
+    //  1. 全局动态背景 (水墨粒子 + 飘雪/花瓣 + 山水远景)
+    // ============================================================
+    const bgCanvas = document.getElementById('bgCanvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    let bgParticles = [];
+    let bgType = 'ink'; // ink | snow | petal | cloud
+    let bgFrame = 0;
+
+    function resizeBg() {
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+    }
+    resizeBg();
+    window.addEventListener('resize', resizeBg);
+
+    function initBgParticles() {
+        bgParticles = [];
+        const count = window.innerWidth < 768 ? 30 : 60;
+        for (let i = 0; i < count; i++) {
+            bgParticles.push(createBgParticle());
+        }
+    }
+
+    function createBgParticle() {
+        const w = bgCanvas.width, h = bgCanvas.height;
+        if (bgType === 'ink') {
+            return {
+                x: Math.random() * w, y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+                size: Math.random() * 80 + 30, alpha: Math.random() * 0.04 + 0.01,
+                life: Math.random() * 200 + 100, type: 'ink'
+            };
+        } else if (bgType === 'snow') {
+            return {
+                x: Math.random() * w, y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.5, vy: Math.random() * 0.8 + 0.2,
+                size: Math.random() * 3 + 1, alpha: Math.random() * 0.5 + 0.2,
+                life: Math.random() * 300 + 100, type: 'snow'
+            };
+        } else if (bgType === 'petal') {
+            return {
+                x: Math.random() * w, y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.8 + 0.3, vy: Math.random() * 0.6 + 0.3,
+                size: Math.random() * 6 + 3, alpha: Math.random() * 0.4 + 0.15,
+                rotation: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.02,
+                life: Math.random() * 400 + 150, type: 'petal'
+            };
+        } else {
+            return {
+                x: Math.random() * w, y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.1,
+                size: Math.random() * 150 + 50, alpha: Math.random() * 0.03 + 0.01,
+                life: Math.random() * 300 + 100, type: 'cloud'
+            };
+        }
+    }
+
+    function drawBg() {
+        const w = bgCanvas.width, h = bgCanvas.height;
+        bgCtx.clearRect(0, 0, w, h);
+
+        // 底色 - 根据场景调整
+        if (bgType === 'snow') {
+            bgCtx.fillStyle = 'rgba(240,245,250,0.3)';
+            bgCtx.fillRect(0, 0, w, h);
+        } else if (bgType === 'petal') {
+            bgCtx.fillStyle = 'rgba(252,245,248,0.2)';
+            bgCtx.fillRect(0, 0, w, h);
+        }
+
+        bgParticles.forEach((p, i) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life--;
+
+            if (p.life <= 0 || p.x < -100 || p.x > w + 100 || p.y < -100 || p.y > h + 100) {
+                bgParticles[i] = createBgParticle();
+                return;
+            }
+
+            bgCtx.save();
+            bgCtx.globalAlpha = p.alpha * Math.min(1, p.life / 50);
+
+            if (p.type === 'ink') {
+                // 水墨晕染效果
+                const grad = bgCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+                grad.addColorStop(0, 'rgba(80,80,80,0.15)');
+                grad.addColorStop(0.5, 'rgba(120,100,80,0.05)');
+                grad.addColorStop(1, 'rgba(0,0,0,0)');
+                bgCtx.fillStyle = grad;
+                bgCtx.fillRect(p.x - p.size, p.y - p.size, p.size * 2, p.size * 2);
+            } else if (p.type === 'snow') {
+                bgCtx.fillStyle = 'rgba(200,210,220,0.8)';
+                bgCtx.beginPath();
+                bgCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                bgCtx.fill();
+            } else if (p.type === 'petal') {
+                p.rotation += p.rotSpeed;
+                bgCtx.translate(p.x, p.y);
+                bgCtx.rotate(p.rotation);
+                bgCtx.fillStyle = `rgba(220,160,170,${p.alpha})`;
+                bgCtx.beginPath();
+                bgCtx.ellipse(0, 0, p.size, p.size * 0.6, 0, 0, Math.PI * 2);
+                bgCtx.fill();
+            } else if (p.type === 'cloud') {
+                const grad = bgCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+                grad.addColorStop(0, 'rgba(180,170,150,0.08)');
+                grad.addColorStop(1, 'rgba(0,0,0,0)');
+                bgCtx.fillStyle = grad;
+                bgCtx.fillRect(p.x - p.size, p.y - p.size, p.size * 2, p.size * 2);
+            }
+            bgCtx.restore();
+        });
+
+        // 远景山峦剪影
+        drawDistantMountains();
+
+        bgFrame++;
+        requestAnimationFrame(drawBg);
+    }
+
+    function drawDistantMountains() {
+        const w = bgCanvas.width, h = bgCanvas.height;
+        // 远景山
+        bgCtx.save();
+        bgCtx.globalAlpha = 0.04;
+        bgCtx.fillStyle = '#6a7a8a';
+        bgCtx.beginPath();
+        bgCtx.moveTo(0, h * 0.6);
+        for (let x = 0; x <= w; x += 20) {
+            const y = h * 0.6 - Math.sin(x * 0.003 + bgFrame * 0.0005) * 40 - Math.sin(x * 0.007) * 20;
+            bgCtx.lineTo(x, y);
+        }
+        bgCtx.lineTo(w, h);
+        bgCtx.lineTo(0, h);
+        bgCtx.closePath();
+        bgCtx.fill();
+        bgCtx.restore();
+
+        // 近景山
+        bgCtx.save();
+        bgCtx.globalAlpha = 0.03;
+        bgCtx.fillStyle = '#4a5a6a';
+        bgCtx.beginPath();
+        bgCtx.moveTo(0, h * 0.75);
+        for (let x = 0; x <= w; x += 15) {
+            const y = h * 0.75 - Math.sin(x * 0.005 + bgFrame * 0.0003 + 2) * 30 - Math.sin(x * 0.01) * 15;
+            bgCtx.lineTo(x, y);
+        }
+        bgCtx.lineTo(w, h);
+        bgCtx.lineTo(0, h);
+        bgCtx.closePath();
+        bgCtx.fill();
+        bgCtx.restore();
+    }
+
+    initBgParticles();
+    drawBg();
+
+    // ============================================================
+    //  2. 古风背景音乐 (Web Audio API 生成)
+    // ============================================================
+    let audioCtx = null;
+    let musicPlaying = false;
+    let musicInterval = null;
+    let currentNote = 0;
+
+    // 古风五声音阶: C D E G A (简谱 1 2 3 5 6)
+    // 实际频率
+    const SCALE = {
+        'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'G4': 392.00, 'A4': 440.00,
+        'C5': 523.25, 'D5': 587.33, 'E5': 659.25, 'G5': 783.99, 'A5': 880.00,
+        'C3': 130.81, 'G3': 196.00, 'A3': 220.00
+    };
+
+    // 古风小曲 - 《梅花三弄》风格简化版
+    const MELODY = [
+        {n:'C4',d:800},{n:'D4',d:400},{n:'E4',d:400},{n:'G4',d:600},{n:'E4',d:400},{n:'D4',d:400},
+        {n:'C4',d:800},{n:'G3',d:400},{n:'A3',d:400},{n:'C4',d:600},{n:'D4',d:400},{n:'E4',d:400},
+        {n:'G4',d:800},{n:'A4',d:400},{n:'G4',d:400},{n:'E4',d:600},{n:'D4',d:400},{n:'C4',d:400},
+        {n:'D4',d:800},{n:'E4',d:400},{n:'G4',d:400},{n:'A4',d:600},{n:'G4',d:400},{n:'E4',d:400},
+        {n:'C5',d:800},{n:'A4',d:400},{n:'G4',d:400},{n:'E4',d:600},{n:'G4',d:400},{n:'A4',d:400},
+        {n:'G4',d:1200},{n:'E4',d:400},{n:'D4',d:400},{n:'C4',d:800},
+        {n:'G4',d:600},{n:'E4',d:400},{n:'D4',d:400},{n:'C4',d:600},{n:'D4',d:400},{n:'E4',d:400},
+        {n:'G4',d:800},{n:'A4',d:400},{n:'G4',d:400},{n:'E4',d:600},{n:'D4',d:400},{n:'C4',d:400},
+        {n:'C4',d:1600}
+    ];
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
+
+    function playGuqinNote(freq, duration) {
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+
+        // 主音
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+
+        // 古琴音色 - 带一点方波谐波
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(freq * 2, now);
+        gain2.gain.setValueAtTime(0.08, now);
+
+        // 滤波器模拟共鸣
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, now);
+        filter.frequency.exponentialRampToValueAtTime(400, now + duration / 1000);
+
+        // 包络
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.15, now + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.08, now + duration / 1000 * 0.5);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration / 1000);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        osc2.connect(gain2);
+        gain2.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc2.start(now);
+        osc.stop(now + duration / 1000 + 0.1);
+        osc2.stop(now + duration / 1000 + 0.1);
+
+        // 泛音
+        const harm = audioCtx.createOscillator();
+        const harmGain = audioCtx.createGain();
+        harm.type = 'sine';
+        harm.frequency.setValueAtTime(freq * 1.5, now);
+        harmGain.gain.setValueAtTime(0, now);
+        harmGain.gain.linearRampToValueAtTime(0.03, now + 0.02);
+        harmGain.gain.exponentialRampToValueAtTime(0.001, now + duration / 1000 * 0.3);
+        harm.connect(harmGain);
+        harmGain.connect(audioCtx.destination);
+        harm.start(now);
+        harm.stop(now + duration / 1000);
+    }
+
+    function playNextNote() {
+        if (!musicPlaying) return;
+        const note = MELODY[currentNote % MELODY.length];
+        playGuqinNote(SCALE[note.n], note.d);
+        currentNote++;
+        musicInterval = setTimeout(playNextNote, note.d);
+    }
+
+    function toggleMusic() {
+        initAudio();
+        const btn = document.getElementById('musicBtn');
+        if (musicPlaying) {
+            musicPlaying = false;
+            clearTimeout(musicInterval);
+            btn.classList.remove('playing');
+            btn.textContent = '🔇';
+        } else {
+            musicPlaying = true;
+            btn.classList.add('playing');
+            btn.textContent = '🎵';
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            playNextNote();
+        }
+    }
+
+    // ============================================================
+    //  3. 画作模板数据
+    // ============================================================
+    const T = {
+        plum: {
+            title: '寒梅报春',
+            desc: '此画以寒梅为主题，疏影横斜的梅枝与傲雪绽放的花朵相映成趣。宋代院体画注重写生，梅花的高洁坚贞历来为文人所推崇。沿虚线临摹，一幅傲雪寒梅便在你笔下渐次绽放。',
+            guides: [
+                { pts: [[0.15,0.85],[0.2,0.7],[0.28,0.55],[0.4,0.48],[0.55,0.4],[0.7,0.35],[0.82,0.32],[0.9,0.3]] },
+                { pts: [[0.28,0.55],[0.25,0.42],[0.22,0.32]] },
+                { pts: [[0.55,0.4],[0.58,0.28],[0.62,0.2]] },
+                { pts: [[0.7,0.35],[0.75,0.25],[0.78,0.18]] },
+                { pts: [[0.22,0.32],[0.24,0.28],[0.28,0.26],[0.3,0.28],[0.28,0.32],[0.24,0.32],[0.22,0.3]], closed: true },
+                { pts: [[0.62,0.2],[0.64,0.16],[0.68,0.14],[0.7,0.16],[0.68,0.2],[0.64,0.2],[0.62,0.18]], closed: true },
+                { pts: [[0.78,0.18],[0.8,0.15],[0.83,0.14],[0.84,0.16],[0.82,0.19],[0.79,0.19]], closed: true },
+                { pts: [[0.25,0.42],[0.26,0.38],[0.28,0.37]], closed: true },
+                { pts: [[0.58,0.28],[0.6,0.25],[0.61,0.26]], closed: true },
+            ]
+        },
+        orchid: {
+            title: '幽兰空谷',
+            desc: '此画以幽兰为主题，飘逸的兰叶与素雅的花朵相得益彰。宋代文人以兰喻君子，空谷幽兰象征着高洁不染的品格。跟随虚线勾勒，让幽兰在你笔下吐露芬芳。',
+            guides: [
+                { pts: [[0.3,0.85],[0.28,0.7],[0.25,0.58],[0.2,0.45],[0.15,0.35],[0.1,0.28]] },
+                { pts: [[0.35,0.85],[0.38,0.68],[0.42,0.55],[0.48,0.42],[0.55,0.32],[0.6,0.25]] },
+                { pts: [[0.32,0.85],[0.33,0.65],[0.35,0.48],[0.38,0.35],[0.42,0.25],[0.48,0.18]] },
+                { pts: [[0.28,0.85],[0.22,0.72],[0.18,0.62],[0.12,0.52],[0.08,0.45]] },
+                { pts: [[0.37,0.85],[0.45,0.7],[0.5,0.58],[0.58,0.48],[0.65,0.4]] },
+                { pts: [[0.12,0.3],[0.14,0.26],[0.18,0.24],[0.2,0.26],[0.18,0.3],[0.14,0.3]], closed: true },
+                { pts: [[0.58,0.28],[0.6,0.24],[0.64,0.22],[0.66,0.24],[0.64,0.28],[0.6,0.28]], closed: true },
+                { pts: [[0.48,0.2],[0.5,0.16],[0.54,0.14],[0.56,0.16],[0.54,0.2],[0.5,0.2]], closed: true },
+            ]
+        },
+        bamboo: {
+            title: '墨竹清风',
+            desc: '此画以墨竹为主题，竹竿劲节挺拔，竹叶疏密有致。宋代文同画竹讲究"胸有成竹"，竹之虚心劲节正是君子品格的写照。循着虚线描摹，清风墨竹跃然纸上。',
+            guides: [
+                { pts: [[0.25,0.9],[0.24,0.78],[0.25,0.65],[0.24,0.52],[0.25,0.4],[0.24,0.28],[0.25,0.15]] },
+                { pts: [[0.5,0.92],[0.5,0.8],[0.49,0.68],[0.5,0.55],[0.49,0.42],[0.5,0.3]] },
+                { pts: [[0.72,0.88],[0.73,0.76],[0.72,0.62],[0.73,0.5]] },
+                { pts: [[0.25,0.28],[0.18,0.22],[0.14,0.18]] },
+                { pts: [[0.25,0.28],[0.2,0.25],[0.18,0.28]] },
+                { pts: [[0.25,0.28],[0.3,0.22],[0.34,0.18]] },
+                { pts: [[0.5,0.42],[0.42,0.36],[0.38,0.32]] },
+                { pts: [[0.5,0.42],[0.46,0.38],[0.44,0.34]] },
+                { pts: [[0.5,0.42],[0.56,0.36],[0.6,0.32]] },
+                { pts: [[0.72,0.62],[0.65,0.56],[0.6,0.52]] },
+                { pts: [[0.72,0.62],[0.7,0.58],[0.68,0.55]] },
+                { pts: [[0.72,0.62],[0.78,0.56],[0.82,0.52]] },
+                { pts: [[0.25,0.15],[0.18,0.1],[0.15,0.06]] },
+                { pts: [[0.25,0.15],[0.22,0.1],[0.2,0.07]] },
+                { pts: [[0.25,0.15],[0.3,0.1],[0.35,0.06]] },
+                { pts: [[0.22,0.78],[0.27,0.78]] },
+                { pts: [[0.22,0.65],[0.28,0.65]] },
+                { pts: [[0.22,0.52],[0.27,0.52]] },
+                { pts: [[0.22,0.4],[0.28,0.4]] },
+                { pts: [[0.47,0.8],[0.53,0.8]] },
+                { pts: [[0.47,0.68],[0.53,0.68]] },
+                { pts: [[0.47,0.55],[0.53,0.55]] },
+                { pts: [[0.47,0.42],[0.53,0.42]] },
+            ]
+        },
+        mountain: {
+            title: '远山流云',
+            desc: '此画以山水为主题，远山层峦叠嶂，云雾缭绕其间。宋代山水画讲究"可游可居"，范宽的《溪山行旅图》便是典范。勾勒山峦轮廓，绘就你心中的千里江山。',
+            guides: [
+                { pts: [[0.05,0.5],[0.12,0.35],[0.2,0.28],[0.28,0.25],[0.35,0.22],[0.4,0.24],[0.48,0.2],[0.55,0.22],[0.62,0.18],[0.7,0.2],[0.78,0.16],[0.85,0.18],[0.92,0.15],[0.98,0.22]] },
+                { pts: [[0.05,0.5],[0.98,0.22]], style: 'bottom' },
+                { pts: [[0.0,0.6],[0.08,0.45],[0.15,0.38],[0.22,0.35],[0.3,0.32],[0.38,0.35],[0.45,0.3],[0.52,0.32],[0.6,0.28],[0.68,0.3],[0.75,0.28],[0.85,0.32],[0.92,0.35],[1.0,0.4]] },
+                { pts: [[0.0,0.6],[1.0,0.4]], style: 'bottom' },
+                { pts: [[0.0,0.75],[0.06,0.6],[0.12,0.55],[0.2,0.5],[0.28,0.52],[0.35,0.48],[0.42,0.5],[0.5,0.45],[0.58,0.48],[0.65,0.42],[0.72,0.45],[0.8,0.4],[0.88,0.42],[0.95,0.38],[1.0,0.45]] },
+                { pts: [[1.0,0.45],[1.0,0.75]], style: 'bottom' },
+                { pts: [[0.0,0.75],[0.0,0.85],[1.0,0.85],[1.0,0.75]], style: 'bottom' },
+                { pts: [[0.1,0.48],[0.2,0.45],[0.3,0.5],[0.4,0.46],[0.5,0.5],[0.6,0.47],[0.7,0.52],[0.8,0.48],[0.9,0.5]] },
+                { pts: [[0.0,0.55],[0.1,0.52],[0.2,0.56],[0.3,0.54],[0.4,0.58],[0.5,0.55],[0.6,0.57],[0.7,0.54],[0.8,0.58],[0.9,0.55],[1.0,0.58]] },
+                { pts: [[0.78,0.42],[0.76,0.35],[0.73,0.28],[0.7,0.22],[0.68,0.18]] },
+                { pts: [[0.73,0.28],[0.68,0.3],[0.65,0.28]] },
+                { pts: [[0.73,0.28],[0.78,0.3],[0.82,0.28]] },
+                { pts: [[0.15,0.54],[0.18,0.52],[0.22,0.52],[0.24,0.54],[0.22,0.56],[0.18,0.56],[0.15,0.54]], closed: true },
+            ]
+        },
+        chrysanthemum: {
+            title: '秋菊傲霜',
+            desc: '此画以秋菊为主题，菊花凌霜盛开，花瓣层叠如丝，象征着高洁不屈的品格。宋代花鸟画注重写生，菊花的淡雅与坚韧正是文人精神的写照。沿虚线临摹，让秋菊在笔下傲然绽放。',
+            guides: [
+                // 主茎
+                { pts: [[0.3,0.9],[0.32,0.75],[0.3,0.6],[0.28,0.45],[0.3,0.3]] },
+                // 侧茎1
+                { pts: [[0.3,0.6],[0.22,0.52],[0.15,0.45]] },
+                // 侧茎2
+                { pts: [[0.3,0.45],[0.38,0.38],[0.45,0.32]] },
+                // 侧茎3
+                { pts: [[0.28,0.3],[0.22,0.22],[0.18,0.15]] },
+                // 菊花1（左上）
+                { pts: [[0.15,0.45],[0.13,0.4],[0.15,0.35],[0.2,0.35],[0.22,0.4],[0.2,0.45],[0.18,0.48]], closed: true },
+                // 菊花2（右上）
+                { pts: [[0.45,0.32],[0.43,0.27],[0.45,0.22],[0.5,0.22],[0.52,0.27],[0.5,0.32],[0.48,0.35]], closed: true },
+                // 菊花3（顶部）
+                { pts: [[0.18,0.15],[0.16,0.1],[0.18,0.05],[0.23,0.05],[0.25,0.1],[0.23,0.15],[0.21,0.18]], closed: true },
+                // 菊花4（中间）
+                { pts: [[0.3,0.3],[0.28,0.25],[0.3,0.2],[0.35,0.2],[0.37,0.25],[0.35,0.3],[0.33,0.33]], closed: true },
+                // 叶子1
+                { pts: [[0.32,0.75],[0.38,0.7],[0.42,0.72],[0.4,0.76],[0.36,0.78]], closed: true },
+                // 叶子2
+                { pts: [[0.28,0.45],[0.22,0.42],[0.2,0.45],[0.24,0.48]], closed: true },
+            ]
+        },
+        peony: {
+            title: '国色天香',
+            desc: '此画以牡丹为主题，牡丹花大色艳，雍容华贵，被誉为"花中之王"。宋代画家徐崇嗣创"没骨花"法，牡丹正是其代表题材。沿虚线临摹，让国色天香在笔下绽放。',
+            guides: [
+                // 主茎
+                { pts: [[0.5,0.92],[0.52,0.8],[0.5,0.65],[0.48,0.5],[0.5,0.38]] },
+                // 左侧花朵茎
+                { pts: [[0.48,0.5],[0.38,0.45],[0.3,0.4]] },
+                // 右侧花苞茎
+                { pts: [[0.5,0.65],[0.58,0.58],[0.65,0.52]] },
+                // 主花朵（中心大花）
+                { pts: [[0.5,0.38],[0.46,0.32],[0.5,0.26],[0.56,0.26],[0.6,0.32],[0.56,0.38],[0.52,0.42]], closed: true },
+                // 左侧花朵
+                { pts: [[0.3,0.4],[0.26,0.35],[0.3,0.3],[0.36,0.3],[0.4,0.35],[0.36,0.4],[0.33,0.43]], closed: true },
+                // 右侧花苞
+                { pts: [[0.65,0.52],[0.63,0.48],[0.65,0.44],[0.69,0.44],[0.71,0.48],[0.69,0.52]], closed: true },
+                // 叶子1（左下）
+                { pts: [[0.52,0.8],[0.44,0.74],[0.42,0.78],[0.48,0.84]], closed: true },
+                // 叶子2（右下）
+                { pts: [[0.5,0.65],[0.58,0.6],[0.6,0.64],[0.54,0.68]], closed: true },
+                // 叶子3（左上）
+                { pts: [[0.48,0.5],[0.4,0.45],[0.38,0.49],[0.44,0.53]], closed: true },
+            ]
+        },
+        lotus: {
+            title: '荷塘清趣',
+            desc: '此画以荷花为主题，荷花出淤泥而不染，濯清涟而不妖，是宋代花鸟画的经典题材。荷叶田田，荷花亭亭，蜻蜓点水，一派夏日清趣。沿虚线临摹，让荷塘生机跃然纸上。',
+            guides: [
+                // 荷梗1（主梗）
+                { pts: [[0.35,0.9],[0.36,0.75],[0.35,0.6],[0.34,0.45],[0.35,0.32]] },
+                // 荷梗2
+                { pts: [[0.55,0.88],[0.54,0.72],[0.55,0.58],[0.56,0.45]] },
+                // 荷叶1（大荷叶）
+                { pts: [[0.35,0.6],[0.22,0.55],[0.18,0.62],[0.22,0.7],[0.35,0.68],[0.48,0.7],[0.52,0.62],[0.48,0.55]], closed: true },
+                // 荷叶2
+                { pts: [[0.55,0.58],[0.45,0.52],[0.42,0.58],[0.46,0.64],[0.55,0.62],[0.64,0.64],[0.68,0.58],[0.64,0.52]], closed: true },
+                // 荷花（主花）
+                { pts: [[0.35,0.32],[0.3,0.26],[0.35,0.2],[0.42,0.2],[0.47,0.26],[0.42,0.32],[0.38,0.36]], closed: true },
+                // 花苞
+                { pts: [[0.56,0.45],[0.54,0.4],[0.56,0.35],[0.6,0.35],[0.62,0.4],[0.6,0.45]], closed: true },
+                // 蜻蜓
+                { pts: [[0.6,0.35],[0.58,0.3],[0.6,0.26],[0.64,0.26],[0.66,0.3],[0.64,0.35]], closed: true },
+                // 水面波纹
+                { pts: [[0.1,0.82],[0.2,0.82],[0.3,0.82]] },
+                { pts: [[0.6,0.82],[0.7,0.82],[0.8,0.82]] },
+            ]
+        },
+        pine: {
+            title: '苍松迎客',
+            desc: '此画以松树为主题，松树千年不老，万古长青，是宋代山水画中的常客。松针如芒，树干苍劲，象征着坚韧不拔的品格。沿虚线临摹，让苍松在笔下挺立。',
+            guides: [
+                // 主干
+                { pts: [[0.5,0.95],[0.48,0.82],[0.52,0.68],[0.48,0.55],[0.52,0.42],[0.5,0.3],[0.52,0.18]] },
+                // 侧枝1（左下伸）
+                { pts: [[0.48,0.55],[0.38,0.5],[0.28,0.48],[0.18,0.5]] },
+                // 侧枝2（右上伸）
+                { pts: [[0.52,0.42],[0.62,0.38],[0.72,0.35],[0.82,0.38]] },
+                // 侧枝3（左上伸）
+                { pts: [[0.5,0.3],[0.4,0.26],[0.32,0.24],[0.25,0.26]] },
+                // 松针组1（左上）
+                { pts: [[0.25,0.26],[0.2,0.2],[0.22,0.14]] },
+                { pts: [[0.25,0.26],[0.28,0.18],[0.32,0.14]] },
+                { pts: [[0.25,0.26],[0.3,0.22],[0.35,0.2]] },
+                // 松针组2（右上）
+                { pts: [[0.82,0.38],[0.78,0.32],[0.8,0.26]] },
+                { pts: [[0.82,0.38],[0.86,0.3],[0.88,0.26]] },
+                { pts: [[0.82,0.38],[0.88,0.34],[0.92,0.32]] },
+                // 松针组3（左下）
+                { pts: [[0.18,0.5],[0.14,0.44],[0.16,0.38]] },
+                { pts: [[0.18,0.5],[0.22,0.42],[0.24,0.38]] },
+                { pts: [[0.18,0.5],[0.24,0.46],[0.28,0.44]] },
+                // 松针组4（顶部）
+                { pts: [[0.52,0.18],[0.48,0.12],[0.5,0.06]] },
+                { pts: [[0.52,0.18],[0.54,0.1],[0.58,0.06]] },
+                { pts: [[0.52,0.18],[0.56,0.14],[0.6,0.12]] },
+                // 树皮纹理
+                { pts: [[0.48,0.82],[0.52,0.82]] },
+                { pts: [[0.48,0.68],[0.52,0.68]] },
+                { pts: [[0.48,0.55],[0.52,0.55]] },
+                { pts: [[0.48,0.42],[0.52,0.42]] },
+            ]
+        }
+    };
+
+    // ============================================================
+    //  4. 游戏状态
+    // ============================================================
+    let currentTheme = 'plum';
+    let currentColor = '#1a1a1a';
+    let currentSize = 6;
+    let currentTool = 'brush';
+    let isDrawing = false;
+    let canvas, ctx, gCanvas, gCtx, rCanvas, rCtx;
+    let undoStack = [], undoIndex = -1;
+    let tracedMask = [];
+    let totalGuideLength = 0;
+    let tracedLength = 0;
+    let completedPaintingData = null;
+    let w = 800, h = 600;
+
+    const intro = document.getElementById('introScreen');
+    const startBtn = document.getElementById('startBtn');
+    const themeSel = document.getElementById('themeSelection');
+    const paintUI = document.getElementById('paintInterface');
+    const compScreen = document.getElementById('completionScreen');
+    const paintTitle = document.getElementById('paintTitle');
+    const hint = document.getElementById('hintToast');
+    const progressFill = document.getElementById('progressFill');
+    const progressPercent = document.getElementById('progressPercent');
+    const aiOverlay = document.getElementById('aiOverlay');
+    const aiCanvas = document.getElementById('aiParticleCanvas');
+    const finalImg = document.getElementById('finalImage');
+    const finalTitle = document.getElementById('finalTitle');
+    const finalDesc = document.getElementById('finalDescription');
+
+    setTimeout(() => { startBtn.style.display = 'inline-block'; }, 2500);
+    startBtn.addEventListener('click', () => {
+        intro.classList.add('hidden');
+        setTimeout(() => themeSel.classList.add('active'), 1200);
+    });
+
+    function selectTheme(theme) {
+        currentTheme = theme;
+        // 切换背景类型
+        if (theme === 'plum') { bgType = 'snow'; }
+        else if (theme === 'orchid') { bgType = 'petal'; }
+        else if (theme === 'bamboo') { bgType = 'ink'; }
+        else if (theme === 'mountain') { bgType = 'cloud'; }
+        else if (theme === 'chrysanthemum') { bgType = 'petal'; }
+        else if (theme === 'peony') { bgType = 'petal'; }
+        else if (theme === 'lotus') { bgType = 'petal'; }
+        else if (theme === 'pine') { bgType = 'snow'; }
+        else { bgType = 'cloud'; }
+        initBgParticles();
+
+        themeSel.classList.remove('active');
+        paintUI.classList.add('active');
+        paintTitle.textContent = T[theme].title;
+        initCanvas();
+        showHint('✍️ 沿着虚线描摹，画作将渐次显现');
+    }
+
+    // ============================================================
+    //  5. Canvas 初始化
+    // ============================================================
+    function initCanvas() {
+        canvas = document.getElementById('paintCanvas');
+        ctx = canvas.getContext('2d');
+        gCanvas = document.getElementById('guideCanvas');
+        gCtx = gCanvas.getContext('2d');
+        rCanvas = document.getElementById('revealCanvas');
+        rCtx = rCanvas.getContext('2d');
+
+        w = Math.min(window.innerWidth - 40, 800);
+        h = Math.min(window.innerHeight - 280, 600);
+        [canvas, gCanvas, rCanvas].forEach(c => { c.width = w; c.height = h; });
+
+        totalGuideLength = 0;
+        const gs = T[currentTheme].guides;
+        tracedMask = gs.map(() => 0);
+        gs.forEach(g => {
+            let segLen = 0;
+            for (let i = 1; i < g.pts.length; i++) {
+                const dx = (g.pts[i][0] - g.pts[i-1][0]) * w;
+                const dy = (g.pts[i][1] - g.pts[i-1][1]) * h;
+                segLen += Math.sqrt(dx*dx + dy*dy);
+            }
+            totalGuideLength += segLen;
+        });
+        tracedLength = 0;
+        updateProgress(0);
+
+        renderCompletePainting();
+        drawGuides();
+        ctx.clearRect(0,0,w,h);
+        rCtx.fillStyle = '#faf8f3';
+        rCtx.fillRect(0,0,w,h);
+        rCtx.globalCompositeOperation = 'source-over';
+
+        undoStack = [];
+        undoIndex = -1;
+        saveState();
+        bindEvents();
+    }
+
+    // ============================================================
+    //  6. 渲染完成画作（高质量宋画风格，支持动画）
+    // ============================================================
+
+    // 存储所有绘画步骤，用于动画逐步绘制
+    let paintingSteps = [];
+
+    function renderCompletePainting() {
+        // 生成完整画作（无动画，用于初始化蒙版）
+        const oc = document.createElement('canvas');
+        oc.width = w; oc.height = h;
+        const octx = oc.getContext('2d');
+        octx.fillStyle = '#faf8f3';
+        octx.fillRect(0, 0, w, h);
+        paintingSteps = [];
+        renderCompletePaintingAnimated(octx, 1.0);
+        completedPaintingData = octx.getImageData(0, 0, w, h);
+        rCtx.putImageData(completedPaintingData, 0, 0);
+        applyRevealMask();
+    }
+
+    // ==================== 背景氛围元素 ====================
+    function drawBackgroundElements(ctx, theme, w, h) {
+        ctx.save();
+        if (theme === 'plum') {
+            // 梅花背景：淡墨远山 + 飘落的雪点
+            ctx.globalAlpha = 0.06;
+            ctx.fillStyle = '#4a5a6a';
+            ctx.beginPath();
+            ctx.moveTo(0, h * 0.45);
+            ctx.quadraticCurveTo(w * 0.3, h * 0.35, w * 0.6, h * 0.4);
+            ctx.quadraticCurveTo(w * 0.8, h * 0.42, w, h * 0.38);
+            ctx.lineTo(w, h);
+            ctx.lineTo(0, h);
+            ctx.fill();
+            // 雪点
+            ctx.globalAlpha = 0.15;
+            ctx.fillStyle = '#ccc';
+            for (let i = 0; i < 15; i++) {
+                const sx = (0.1 + Math.random() * 0.8) * w;
+                const sy = (0.1 + Math.random() * 0.5) * h;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 1.5 + Math.random(), 0, Math.PI * 2);
+                ctx.fill();
+            }
+        } else if (theme === 'orchid') {
+            // 兰花背景：淡墨岩石 + 雾气
+            ctx.globalAlpha = 0.08;
+            ctx.fillStyle = '#5a5a4a';
+            ctx.beginPath();
+            ctx.moveTo(0, h * 0.7);
+            ctx.quadraticCurveTo(w * 0.2, h * 0.6, w * 0.4, h * 0.65);
+            ctx.quadraticCurveTo(w * 0.6, h * 0.7, w * 0.8, h * 0.62);
+            ctx.lineTo(w, h * 0.68);
+            ctx.lineTo(w, h);
+            ctx.lineTo(0, h);
+            ctx.fill();
+            // 雾气
+            ctx.globalAlpha = 0.04;
+            ctx.fillStyle = '#aaa';
+            for (let i = 0; i < 5; i++) {
+                ctx.beginPath();
+                ctx.ellipse((0.2 + i * 0.15) * w, (0.3 + Math.random() * 0.2) * h, 40, 15, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        } else if (theme === 'bamboo') {
+            // 竹林背景：淡墨远景竹 + 地面
+            ctx.globalAlpha = 0.05;
+            ctx.strokeStyle = '#3a5a3a';
+            ctx.lineWidth = 3;
+            for (let i = 0; i < 3; i++) {
+                const bx = (0.2 + i * 0.3) * w;
+                ctx.beginPath();
+                ctx.moveTo(bx, h * 0.5);
+                ctx.lineTo(bx + (Math.random() - 0.5) * 10, h * 0.15);
+                ctx.stroke();
+            }
+            // 地面
+            ctx.globalAlpha = 0.06;
+            ctx.fillStyle = '#4a5a3a';
+            ctx.fillRect(0, h * 0.88, w, h * 0.12);
+        } else if (theme === 'mountain') {
+            // 山水背景：太阳/霞光 + 远景飞鸟
+            ctx.globalAlpha = 0.08;
+            ctx.fillStyle = '#c4a070';
+            ctx.beginPath();
+            ctx.arc(w * 0.85, h * 0.15, 25, 0, Math.PI * 2);
+            ctx.fill();
+            // 霞光
+            const sunGrad = ctx.createRadialGradient(w * 0.85, h * 0.15, 5, w * 0.85, h * 0.15, 60);
+            sunGrad.addColorStop(0, 'rgba(200,160,100,0.1)');
+            sunGrad.addColorStop(1, 'rgba(200,160,100,0)');
+            ctx.fillStyle = sunGrad;
+            ctx.fillRect(w * 0.6, 0, w * 0.4, h * 0.4);
+            // 远景飞鸟
+            ctx.globalAlpha = 0.2;
+            ctx.strokeStyle = '#4a4a4a';
+            ctx.lineWidth = 1.5;
+            for (let i = 0; i < 3; i++) {
+                const fx = (0.6 + i * 0.12) * w;
+                const fy = (0.12 + i * 0.03) * h;
+                ctx.beginPath();
+                ctx.moveTo(fx, fy);
+                ctx.quadraticCurveTo(fx + 6, fy - 4, fx + 12, fy);
+                ctx.stroke();
+            }
+        } else if (theme === 'chrysanthemum') {
+            // 菊花背景：淡墨篱笆 + 秋意
+            ctx.globalAlpha = 0.06;
+            ctx.strokeStyle = '#6a5a4a';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 4; i++) {
+                const lx = (0.15 + i * 0.25) * w;
+                ctx.beginPath();
+                ctx.moveTo(lx, h * 0.6);
+                ctx.lineTo(lx, h * 0.9);
+                ctx.stroke();
+            }
+            ctx.beginPath();
+            ctx.moveTo(0, h * 0.75);
+            ctx.lineTo(w, h * 0.75);
+            ctx.stroke();
+        } else if (theme === 'peony') {
+            // 牡丹背景：淡墨太湖石 + 蝴蝶
+            ctx.globalAlpha = 0.07;
+            ctx.fillStyle = '#6a6a5a';
+            ctx.beginPath();
+            ctx.moveTo(w * 0.1, h * 0.85);
+            ctx.quadraticCurveTo(w * 0.15, h * 0.6, w * 0.25, h * 0.55);
+            ctx.quadraticCurveTo(w * 0.3, h * 0.7, w * 0.2, h * 0.9);
+            ctx.fill();
+            // 蝴蝶
+            ctx.globalAlpha = 0.15;
+            ctx.fillStyle = '#d4a030';
+            const bfx = w * 0.75, bfy = h * 0.25;
+            ctx.beginPath();
+            ctx.ellipse(bfx - 5, bfy, 6, 4, -0.3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(bfx + 5, bfy, 6, 4, 0.3, 0, Math.PI * 2);
+            ctx.fill();
+        } else if (theme === 'lotus') {
+            // 荷花背景：水面 + 远荷叶
+            ctx.globalAlpha = 0.05;
+            ctx.fillStyle = '#5a8a7a';
+            ctx.beginPath();
+            ctx.ellipse(w * 0.2, h * 0.7, 30, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(w * 0.8, h * 0.75, 25, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            // 水面反光
+            ctx.globalAlpha = 0.08;
+            ctx.fillStyle = '#8ab8c8';
+            for (let i = 0; i < 8; i++) {
+                ctx.fillRect((0.1 + i * 0.12) * w, h * 0.82, 20 + Math.random() * 15, 1);
+            }
+        } else if (theme === 'pine') {
+            // 松树背景：远山 + 云雾
+            ctx.globalAlpha = 0.06;
+            ctx.fillStyle = '#4a5a6a';
+            ctx.beginPath();
+            ctx.moveTo(0, h * 0.5);
+            ctx.quadraticCurveTo(w * 0.25, h * 0.35, w * 0.5, h * 0.4);
+            ctx.quadraticCurveTo(w * 0.75, h * 0.38, w, h * 0.42);
+            ctx.lineTo(w, h);
+            ctx.lineTo(0, h);
+            ctx.fill();
+            // 云雾
+            ctx.globalAlpha = 0.08;
+            ctx.fillStyle = '#aaa';
+            ctx.beginPath();
+            ctx.ellipse(w * 0.3, h * 0.35, 50, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+    }
+
+    // ==================== 题款印章 ====================
+    function drawSealAndSignature(ctx, w, h, title, p) {
+        ctx.save();
+        ctx.globalAlpha = p * 0.7;
+
+        // 题款文字（竖排）
+        ctx.font = `${Math.round(h * 0.035)}px 'ZCOOL XiaoWei', serif`;
+        ctx.fillStyle = '#3a3a3a';
+        ctx.textAlign = 'center';
+        const tx = w * 0.88, ty = h * 0.55;
+        const chars = title.split('');
+        chars.forEach((ch, i) => {
+            ctx.fillText(ch, tx, ty + i * h * 0.05);
+        });
+
+        // 小字落款
+        ctx.font = `${Math.round(h * 0.018)}px 'Noto Serif SC', serif`;
+        ctx.fillStyle = '#5a5a5a';
+        ctx.fillText('宋画雅趣', tx, ty + chars.length * h * 0.05 + h * 0.02);
+
+        // 印章
+        const sx = w * 0.88, sy = h * 0.82;
+        const size = h * 0.045;
+        ctx.strokeStyle = '#c45c48';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(sx - size/2, sy - size/2, size, size);
+        ctx.fillStyle = `rgba(196,92,72,${0.6 * p})`;
+        ctx.font = `bold ${Math.round(size * 0.5)}px 'ZCOOL XiaoWei', serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('雅', sx, sy - size * 0.12);
+        ctx.fillText('趣', sx, sy + size * 0.12);
+
+        ctx.restore();
+    }
+
+    function renderCompletePaintingAnimated(context, progress) {
+        // progress: 0~1，控制绘画进度
+        const theme = currentTheme;
+        const guides = T[theme].guides;
+
+        context.save();
+
+        if (theme === 'plum') {
+            renderPlum(context, progress, guides);
+        } else if (theme === 'orchid') {
+            renderOrchid(context, progress, guides);
+        } else if (theme === 'bamboo') {
+            renderBamboo(context, progress, guides);
+        } else if (theme === 'mountain') {
+            renderMountain(context, progress, guides);
+        } else if (theme === 'chrysanthemum') {
+            renderChrysanthemum(context, progress, guides);
+        } else if (theme === 'peony') {
+            renderPeony(context, progress, guides);
+        } else if (theme === 'lotus') {
+            renderLotus(context, progress, guides);
+        } else if (theme === 'pine') {
+            renderPine(context, progress, guides);
+        }
+
+        context.restore();
+    }
+
+    // ==================== 寒梅报春 ====================
+    function renderPlum(ctx, progress, guides) {
+        const w = ctx.canvas.width, h = ctx.canvas.height;
+
+        // === 阶段1：梅枝（progress 0~0.35）===
+        if (progress > 0) {
+            const p1 = Math.min(1, progress / 0.35);
+            drawPlumBranches(ctx, w, h, p1);
+        }
+
+        // === 阶段2：苔点（progress 0.3~0.4）===
+        if (progress > 0.3) {
+            const p2 = Math.min(1, (progress - 0.3) / 0.1);
+            drawMossDots(ctx, w, h, p2);
+        }
+
+        // === 阶段3：梅花（progress 0.35~0.7）===
+        if (progress > 0.35) {
+            const p3 = Math.min(1, (progress - 0.35) / 0.35);
+            drawPlumBlossoms(ctx, w, h, p3);
+        }
+
+        // === 阶段4：花苞（progress 0.65~0.8）===
+        if (progress > 0.65) {
+            const p4 = Math.min(1, (progress - 0.65) / 0.15);
+            drawPlumBuds(ctx, w, h, p4);
+        }
+
+        // === 阶段5：飘落花瓣（progress 0.8~1.0）===
+        if (progress > 0.8) {
+            const p5 = Math.min(1, (progress - 0.8) / 0.2);
+            drawFallingPetals(ctx, w, h, p5);
+        }
+
+        // 阶段6：题款印章（progress 0.9~1.0）
+        if (progress > 0.9) {
+            const p6 = Math.min(1, (progress - 0.9) / 0.1);
+            drawSealAndSignature(ctx, w, h, '寒梅', p6);
+        }
+    }
+
+    function drawPlumBranches(ctx, w, h, p) {
+        // 主干 - 多层墨色叠加
+        const mainBranch = [
+            [0.15, 0.85], [0.18, 0.78], [0.2, 0.7], [0.24, 0.6],
+            [0.28, 0.55], [0.34, 0.48], [0.4, 0.45], [0.5, 0.4],
+            [0.6, 0.37], [0.7, 0.35], [0.8, 0.33], [0.88, 0.31], [0.92, 0.3]
+        ];
+        const pts = mainBranch.map(v => [v[0] * w, v[1] * h]);
+        const drawCount = Math.ceil(pts.length * p);
+
+        // 底层粗线（深墨）
+        if (drawCount >= 2) {
+            ctx.save();
+            ctx.strokeStyle = '#0a0a0a';
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            for (let i = 0; i < drawCount - 1; i++) {
+                const t = i / (pts.length - 1);
+                const lw = 14 * (1 - t * 0.6);
+                ctx.lineWidth = lw;
+                ctx.beginPath();
+                ctx.moveTo(pts[i][0], pts[i][1]);
+                ctx.lineTo(pts[i + 1][0], pts[i + 1][1]);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        // 中层（中墨）
+        if (drawCount >= 2) {
+            ctx.save();
+            ctx.strokeStyle = '#2a2a2a';
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            for (let i = 0; i < drawCount - 1; i++) {
+                const t = i / (pts.length - 1);
+                const lw = 10 * (1 - t * 0.6);
+                ctx.lineWidth = lw;
+                ctx.beginPath();
+                ctx.moveTo(pts[i][0] - 1, pts[i][1]);
+                ctx.lineTo(pts[i + 1][0] - 1, pts[i + 1][1]);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        // 皴法纹理（树皮短横线）
+        if (drawCount >= 3) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+            ctx.lineWidth = 1.5;
+            for (let i = 1; i < drawCount - 1; i += 1) {
+                const t = i / (pts.length - 1);
+                const branchWidth = 12 * (1 - t * 0.6);
+                const numCun = Math.floor(branchWidth / 3);
+                for (let k = 0; k < numCun; k++) {
+                    const offset = (k - numCun / 2) * 3;
+                    const angle = Math.atan2(pts[i + 1][1] - pts[i][1], pts[i + 1][0] - pts[i][0]) + Math.PI / 2;
+                    const cx = pts[i][0] + Math.cos(angle) * offset;
+                    const cy = pts[i][1] + Math.sin(angle) * offset;
+                    const cunLen = 3 + Math.random() * 4;
+                    ctx.beginPath();
+                    ctx.moveTo(cx - cunLen / 2, cy);
+                    ctx.lineTo(cx + cunLen / 2, cy);
+                    ctx.stroke();
+                }
+            }
+            ctx.restore();
+        }
+
+        // 分枝1
+        if (p > 0.3) {
+            const bp1 = Math.min(1, (p - 0.3) / 0.3);
+            const branch1 = [[0.28, 0.55], [0.26, 0.48], [0.25, 0.42], [0.23, 0.36], [0.22, 0.32]];
+            const b1pts = branch1.map(v => [v[0] * w, v[1] * h]);
+            const b1count = Math.ceil(b1pts.length * bp1);
+            ctx.save();
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineCap = 'round';
+            for (let i = 0; i < b1count - 1; i++) {
+                const t = i / (b1pts.length - 1);
+                ctx.lineWidth = 7 * (1 - t * 0.5);
+                ctx.beginPath();
+                ctx.moveTo(b1pts[i][0], b1pts[i][1]);
+                ctx.lineTo(b1pts[i + 1][0], b1pts[i + 1][1]);
+                ctx.stroke();
+            }
+            // 皴法
+            ctx.strokeStyle = 'rgba(60,50,40,0.25)';
+            ctx.lineWidth = 1;
+            for (let i = 1; i < b1count - 1; i++) {
+                for (let k = 0; k < 2; k++) {
+                    const ox = (Math.random() - 0.5) * 6;
+                    ctx.beginPath();
+                    ctx.moveTo(b1pts[i][0] + ox, b1pts[i][1] - 2);
+                    ctx.lineTo(b1pts[i][0] + ox + 3, b1pts[i][1] + 2);
+                    ctx.stroke();
+                }
+            }
+            ctx.restore();
+        }
+
+        // 分枝2
+        if (p > 0.45) {
+            const bp2 = Math.min(1, (p - 0.45) / 0.25);
+            const branch2 = [[0.55, 0.4], [0.57, 0.34], [0.59, 0.28], [0.61, 0.22], [0.62, 0.18]];
+            const b2pts = branch2.map(v => [v[0] * w, v[1] * h]);
+            const b2count = Math.ceil(b2pts.length * bp2);
+            ctx.save();
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineCap = 'round';
+            for (let i = 0; i < b2count - 1; i++) {
+                const t = i / (b2pts.length - 1);
+                ctx.lineWidth = 6 * (1 - t * 0.5);
+                ctx.beginPath();
+                ctx.moveTo(b2pts[i][0], b2pts[i][1]);
+                ctx.lineTo(b2pts[i + 1][0], b2pts[i + 1][1]);
+                ctx.stroke();
+            }
+            ctx.strokeStyle = 'rgba(60,50,40,0.2)';
+            ctx.lineWidth = 1;
+            for (let i = 1; i < b2count - 1; i++) {
+                for (let k = 0; k < 2; k++) {
+                    const ox = (Math.random() - 0.5) * 5;
+                    ctx.beginPath();
+                    ctx.moveTo(b2pts[i][0] + ox, b2pts[i][1] - 1);
+                    ctx.lineTo(b2pts[i][0] + ox + 2, b2pts[i][1] + 2);
+                    ctx.stroke();
+                }
+            }
+            ctx.restore();
+        }
+
+        // 分枝3
+        if (p > 0.6) {
+            const bp3 = Math.min(1, (p - 0.6) / 0.25);
+            const branch3 = [[0.7, 0.35], [0.73, 0.3], [0.76, 0.24], [0.78, 0.2], [0.79, 0.17]];
+            const b3pts = branch3.map(v => [v[0] * w, v[1] * h]);
+            const b3count = Math.ceil(b3pts.length * bp3);
+            ctx.save();
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineCap = 'round';
+            for (let i = 0; i < b3count - 1; i++) {
+                const t = i / (b3pts.length - 1);
+                ctx.lineWidth = 5 * (1 - t * 0.5);
+                ctx.beginPath();
+                ctx.moveTo(b3pts[i][0], b3pts[i][1]);
+                ctx.lineTo(b3pts[i + 1][0], b3pts[i + 1][1]);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        // 小分枝
+        if (p > 0.75) {
+            const bp4 = Math.min(1, (p - 0.75) / 0.25);
+            const branch4 = [[0.25, 0.42], [0.26, 0.38], [0.27, 0.36]];
+            const b4pts = branch4.map(v => [v[0] * w, v[1] * h]);
+            const b4count = Math.ceil(b4pts.length * bp4);
+            ctx.save();
+            ctx.strokeStyle = '#2a2a2a';
+            ctx.lineCap = 'round';
+            for (let i = 0; i < b4count - 1; i++) {
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(b4pts[i][0], b4pts[i][1]);
+                ctx.lineTo(b4pts[i + 1][0], b4pts[i + 1][1]);
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            const branch5 = [[0.58, 0.28], [0.59, 0.25], [0.6, 0.23]];
+            const b5pts = branch5.map(v => [v[0] * w, v[1] * h]);
+            const b5count = Math.ceil(b5pts.length * bp4);
+            ctx.save();
+            ctx.strokeStyle = '#2a2a2a';
+            ctx.lineCap = 'round';
+            for (let i = 0; i < b5count - 1; i++) {
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(b5pts[i][0], b5pts[i][1]);
+                ctx.lineTo(b5pts[i + 1][0], b5pts[i + 1][1]);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+    }
+
+    function drawMossDots(ctx, w, h, p) {
+        // 苔点 - 枝干上的小墨点
+        ctx.save();
+        const dots = [
+            [0.22, 0.72], [0.3, 0.52], [0.35, 0.46], [0.45, 0.42],
+            [0.55, 0.38], [0.65, 0.36], [0.75, 0.33], [0.82, 0.31],
+            [0.26, 0.45], [0.24, 0.38], [0.58, 0.26], [0.72, 0.28]
+        ];
+        const count = Math.ceil(dots.length * p);
+        for (let i = 0; i < count; i++) {
+            const d = dots[i];
+            const x = d[0] * w, y = d[1] * h;
+            const size = 2 + Math.random() * 3;
+            ctx.fillStyle = `rgba(20,20,20,${0.4 + Math.random() * 0.3})`;
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+    }
+
+    function drawPlumBlossoms(ctx, w, h, p) {
+        // 梅花 - 5瓣花用贝塞尔曲线
+        const blossoms = [
+            { x: 0.22, y: 0.30, size: 14, rot: 0.2 },
+            { x: 0.62, y: 0.17, size: 13, rot: 0.8 },
+            { x: 0.78, y: 0.16, size: 12, rot: 1.5 },
+            { x: 0.26, y: 0.36, size: 11, rot: 0.5 },
+            { x: 0.59, y: 0.24, size: 10, rot: 1.2 },
+            { x: 0.83, y: 0.28, size: 9, rot: 2.0 },
+            { x: 0.48, y: 0.38, size: 8, rot: 0.7 },
+        ];
+        const count = Math.ceil(blossoms.length * p);
+
+        for (let i = 0; i < count; i++) {
+            const b = blossoms[i];
+            const cx = b.x * w, cy = b.y * h;
+            const r = b.size;
+            const alpha = Math.min(1, (p * blossoms.length - i) * 2);
+
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.translate(cx, cy);
+            ctx.rotate(b.rot);
+
+            // 5片花瓣（贝塞尔曲线画圆润花瓣）
+            for (let j = 0; j < 5; j++) {
+                const angle = (j / 5) * Math.PI * 2 - Math.PI / 2;
+                const nextAngle = ((j + 1) / 5) * Math.PI * 2 - Math.PI / 2;
+
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                const cp1x = Math.cos(angle + 0.3) * r * 0.8;
+                const cp1y = Math.sin(angle + 0.3) * r * 0.8;
+                const tipX = Math.cos((angle + nextAngle) / 2) * r;
+                const tipY = Math.sin((angle + nextAngle) / 2) * r;
+                const cp2x = Math.cos(nextAngle - 0.3) * r * 0.8;
+                const cp2y = Math.sin(nextAngle - 0.3) * r * 0.8;
+
+                ctx.bezierCurveTo(cp1x, cp1y, tipX - Math.cos((angle + nextAngle) / 2) * r * 0.1, tipY - Math.sin((angle + nextAngle) / 2) * r * 0.1, tipX, tipY);
+                ctx.bezierCurveTo(tipX + Math.cos((angle + nextAngle) / 2) * r * 0.1, tipY + Math.sin((angle + nextAngle) / 2) * r * 0.1, cp2x, cp2y, 0, 0);
+
+                // 花瓣渐变填充
+                const petalGrad = ctx.createRadialGradient(0, 0, 0, tipX * 0.5, tipY * 0.5, r);
+                petalGrad.addColorStop(0, '#f0e8e0');
+                petalGrad.addColorStop(0.4, '#e8c8c0');
+                petalGrad.addColorStop(0.7, '#d4a0a0');
+                petalGrad.addColorStop(1, '#c08080');
+                ctx.fillStyle = petalGrad;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(150,100,90,0.3)';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            }
+
+            // 花心渐变
+            const centerGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, r * 0.35);
+            centerGrad.addColorStop(0, '#f5e8c0');
+            centerGrad.addColorStop(0.5, '#e8c860');
+            centerGrad.addColorStop(1, '#c4a030');
+            ctx.fillStyle = centerGrad;
+            ctx.beginPath();
+            ctx.arc(0, 0, r * 0.3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 花蕊 - 细线+小圆点
+            for (let j = 0; j < 7; j++) {
+                const angle = (j / 7) * Math.PI * 2 + 0.3;
+                const len = r * 0.5 + Math.random() * r * 0.2;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(Math.cos(angle) * len, Math.sin(angle) * len);
+                ctx.strokeStyle = '#8a6a3a';
+                ctx.lineWidth = 0.8;
+                ctx.stroke();
+                // 花蕊顶端小圆点
+                ctx.beginPath();
+                ctx.arc(Math.cos(angle) * len, Math.sin(angle) * len, 1.5, 0, Math.PI * 2);
+                ctx.fillStyle = '#d4a030';
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+    }
+
+    function drawPlumBuds(ctx, w, h, p) {
+        // 花苞 - 渐变色小椭圆
+        const buds = [
+            { x: 0.27, y: 0.34, angle: -0.8, size: 5 },
+            { x: 0.6, y: 0.22, angle: -0.5, size: 4 },
+            { x: 0.76, y: 0.2, angle: -0.3, size: 4 },
+            { x: 0.85, y: 0.3, angle: 0.2, size: 3 },
+            { x: 0.4, y: 0.44, angle: -0.6, size: 3 },
+        ];
+        const count = Math.ceil(buds.length * p);
+
+        for (let i = 0; i < count; i++) {
+            const b = buds[i];
+            const bx = b.x * w, by = b.y * h;
+            ctx.save();
+            ctx.translate(bx, by);
+            ctx.rotate(b.angle);
+
+            // 花苞渐变
+            const budGrad = ctx.createLinearGradient(-b.size, 0, b.size, 0);
+            budGrad.addColorStop(0, '#8a5a4a');
+            budGrad.addColorStop(0.5, '#c08070');
+            budGrad.addColorStop(1, '#d4a090');
+            ctx.fillStyle = budGrad;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, b.size, b.size * 1.8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#6a3a2a';
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+
+            // 花萼
+            ctx.fillStyle = '#3a5a2a';
+            ctx.beginPath();
+            ctx.ellipse(0, -b.size * 1.5, b.size * 0.6, b.size * 0.8, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+    }
+
+    function drawFallingPetals(ctx, w, h, p) {
+        // 飘落的花瓣
+        const petals = [
+            { x: 0.35, y: 0.5, size: 5, rot: 0.5, vy: 0.02 },
+            { x: 0.5, y: 0.55, size: 4, rot: 1.2, vy: 0.015 },
+            { x: 0.65, y: 0.45, size: 6, rot: 2.0, vy: 0.025 },
+            { x: 0.75, y: 0.6, size: 4, rot: 0.8, vy: 0.018 },
+            { x: 0.4, y: 0.7, size: 5, rot: 1.5, vy: 0.02 },
+        ];
+        const count = Math.ceil(petals.length * p);
+
+        for (let i = 0; i < count; i++) {
+            const pe = petals[i];
+            const px = pe.x * w, py = (pe.y + pe.vy * p * 10) * h;
+            ctx.save();
+            ctx.translate(px, py);
+            ctx.rotate(pe.rot + p * 2);
+            ctx.globalAlpha = 0.6 * (1 - p * 0.3);
+
+            // 花瓣形状
+            ctx.beginPath();
+            ctx.ellipse(0, 0, pe.size, pe.size * 0.5, 0, 0, Math.PI * 2);
+            const petalGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, pe.size);
+            petalGrad.addColorStop(0, '#f0d8d0');
+            petalGrad.addColorStop(1, '#d4a0a0');
+            ctx.fillStyle = petalGrad;
+            ctx.fill();
+
+            ctx.restore();
+        }
+    }
+
+    // ==================== 幽兰空谷 ====================
+    function renderOrchid(ctx, progress, guides) {
+        const w = ctx.canvas.width, h = ctx.canvas.height;
+
+        // === 阶段1：兰叶（progress 0~0.4）===
+        if (progress > 0) {
+            const p1 = Math.min(1, progress / 0.4);
+            drawOrchidLeaves(ctx, w, h, p1);
+        }
+
+        // === 阶段2：草叶点缀（progress 0.35~0.5）===
+        if (progress > 0.35) {
+            const p2 = Math.min(1, (progress - 0.35) / 0.15);
+            drawGrassAccents(ctx, w, h, p2);
+        }
+
+        // === 阶段3：兰花（progress 0.45~0.75）===
+        if (progress > 0.45) {
+            const p3 = Math.min(1, (progress - 0.45) / 0.3);
+            drawOrchidFlowers(ctx, w, h, p3);
+        }
+
+        // === 阶段4：露珠（progress 0.75~1.0）===
+        if (progress > 0.75) {
+            const p4 = Math.min(1, (progress - 0.75) / 0.25);
+            drawDewdrops(ctx, w, h, p4);
+        }
+
+        if (progress > 0.9) {
+            const p6 = Math.min(1, (progress - 0.9) / 0.1);
+            drawSealAndSignature(ctx, w, h, '幽兰', p6);
+        }
+    }
+
+    function drawOrchidLeaves(ctx, w, h, p) {
+        // 兰叶 - 贝塞尔曲线画有弧度的宽叶
+        const leaves = [
+            { start: [0.3, 0.85], cp1: [0.26, 0.65], cp2: [0.18, 0.45], end: [0.1, 0.28], width: 10, color: '#2a5a2a' },
+            { start: [0.35, 0.85], cp1: [0.4, 0.62], cp2: [0.5, 0.45], end: [0.6, 0.25], width: 9, color: '#3a6a3a' },
+            { start: [0.32, 0.85], cp1: [0.34, 0.6], cp2: [0.38, 0.38], end: [0.48, 0.18], width: 8, color: '#2a4a2a' },
+            { start: [0.28, 0.85], cp1: [0.22, 0.68], cp2: [0.15, 0.55], end: [0.08, 0.45], width: 7, color: '#4a7a4a' },
+            { start: [0.37, 0.85], cp1: [0.45, 0.65], cp2: [0.55, 0.5], end: [0.65, 0.4], width: 7, color: '#3a5a3a' },
+        ];
+        const count = Math.ceil(leaves.length * p);
+
+        for (let i = 0; i < count; i++) {
+            const leaf = leaves[i];
+            const sx = leaf.start[0] * w, sy = leaf.start[1] * h;
+            const c1x = leaf.cp1[0] * w, c1y = leaf.cp1[1] * h;
+            const c2x = leaf.cp2[0] * w, c2y = leaf.cp2[1] * h;
+            const ex = leaf.end[0] * w, ey = leaf.end[1] * h;
+
+            ctx.save();
+
+            // 叶片主体（宽叶用两条贝塞尔曲线围成）
+            const angle = Math.atan2(ey - sy, ex - sx);
+            const perpAngle = angle + Math.PI / 2;
+            const halfW = leaf.width / 2;
+
+            // 上边缘
+            ctx.beginPath();
+            ctx.moveTo(sx + Math.cos(perpAngle) * halfW, sy + Math.sin(perpAngle) * halfW);
+            ctx.bezierCurveTo(
+                c1x + Math.cos(perpAngle) * halfW * 0.8, c1y + Math.sin(perpAngle) * halfW * 0.8,
+                c2x + Math.cos(perpAngle) * halfW * 0.3, c2y + Math.sin(perpAngle) * halfW * 0.3,
+                ex, ey
+            );
+            // 下边缘（反向）
+            ctx.bezierCurveTo(
+                c2x - Math.cos(perpAngle) * halfW * 0.3, c2y - Math.sin(perpAngle) * halfW * 0.3,
+                c1x - Math.cos(perpAngle) * halfW * 0.8, c1y - Math.sin(perpAngle) * halfW * 0.8,
+                sx - Math.cos(perpAngle) * halfW, sy - Math.sin(perpAngle) * halfW
+            );
+            ctx.closePath();
+
+            // 叶色渐变（深浅变化）
+            const leafGrad = ctx.createLinearGradient(sx, sy, ex, ey);
+            leafGrad.addColorStop(0, leaf.color);
+            leafGrad.addColorStop(0.5, leaf.color.replace('a', 'b').replace(/[2-4]a/g, m => String(parseInt(m[0]) + 1) + 'a'));
+            leafGrad.addColorStop(1, '#1a3a1a');
+            ctx.fillStyle = leafGrad;
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(20,40,20,0.4)';
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+
+            // 叶脉（细线）
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            ctx.bezierCurveTo(c1x, c1y, c2x, c2y, ex, ey);
+            ctx.strokeStyle = 'rgba(20,40,20,0.25)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // 侧叶脉
+            for (let t = 0.2; t < 0.9; t += 0.15) {
+                const bx = bezierPoint(sx, c1x, c2x, ex, t);
+                const by = bezierPoint(sy, c1y, c2y, ey, t);
+                const ba = Math.atan2(
+                    bezierPoint(sy, c1y, c2y, ey, t + 0.01) - by,
+                    bezierPoint(sx, c1x, c2x, ex, t + 0.01) - bx
+                ) + Math.PI / 2;
+                ctx.beginPath();
+                ctx.moveTo(bx, by);
+                ctx.lineTo(bx + Math.cos(ba) * 6, by + Math.sin(ba) * 6);
+                ctx.strokeStyle = 'rgba(20,40,20,0.15)';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(bx, by);
+                ctx.lineTo(bx - Math.cos(ba) * 6, by - Math.sin(ba) * 6);
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+    }
+
+    function drawGrassAccents(ctx, w, h, p) {
+        // 草叶点缀
+        const grasses = [
+            { x: 0.2, y: 0.85, angle: -0.4, len: 30 },
+            { x: 0.4, y: 0.87, angle: -0.2, len: 25 },
+            { x: 0.6, y: 0.86, angle: 0.1, len: 20 },
+            { x: 0.15, y: 0.88, angle: -0.6, len: 22 },
+            { x: 0.55, y: 0.88, angle: 0.3, len: 18 },
+        ];
+        const count = Math.ceil(grasses.length * p);
+
+        for (let i = 0; i < count; i++) {
+            const g = grasses[i];
+            const gx = g.x * w, gy = g.y * h;
+            ctx.save();
+            ctx.translate(gx, gy);
+            ctx.rotate(g.angle);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.quadraticCurveTo(g.len * 0.5, -g.len * 0.3, g.len, -g.len * 0.1);
+            ctx.strokeStyle = 'rgba(60,100,50,0.4)';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            ctx.restore();
+        }
+    }
+
+    function drawOrchidFlowers(ctx, w, h, p) {
+        // 兰花 - 3片花瓣用贝塞尔曲线
+        const flowers = [
+            { x: 0.12, y: 0.28, size: 16, rot: -0.3 },
+            { x: 0.58, y: 0.26, size: 14, rot: 0.2 },
+            { x: 0.48, y: 0.18, size: 13, rot: 0.5 },
+        ];
+        const count = Math.ceil(flowers.length * p);
+
+        for (let i = 0; i < count; i++) {
+            const f = flowers[i];
+            const fx = f.x * w, fy = f.y * h;
+            const alpha = Math.min(1, (p * flowers.length - i) * 2);
+
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.translate(fx, fy);
+            ctx.rotate(f.rot);
+
+            // 花茎
+            ctx.beginPath();
+            ctx.moveTo(0, f.size * 1.5);
+            ctx.quadraticCurveTo(3, f.size * 0.8, 0, 0);
+            ctx.strokeStyle = '#3a5a2a';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 3片主花瓣
+            const petalAngles = [-0.8, 0, 0.8];
+            for (let j = 0; j < 3; j++) {
+                const pa = petalAngles[j];
+                ctx.save();
+                ctx.rotate(pa);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(
+                    -f.size * 0.4, -f.size * 0.3,
+                    -f.size * 0.2, -f.size * 0.8,
+                    0, -f.size
+                );
+                ctx.bezierCurveTo(
+                    f.size * 0.2, -f.size * 0.8,
+                    f.size * 0.4, -f.size * 0.3,
+                    0, 0
+                );
+
+                // 花心渐变
+                const fGrad = ctx.createRadialGradient(0, -f.size * 0.4, 0, 0, -f.size * 0.4, f.size * 0.8);
+                fGrad.addColorStop(0, '#f8f5f0');
+                fGrad.addColorStop(0.3, '#e8e0d0');
+                fGrad.addColorStop(0.6, '#d4c8b0');
+                fGrad.addColorStop(1, '#b8a890');
+                ctx.fillStyle = fGrad;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(80,100,60,0.3)';
+                ctx.lineWidth = 0.8;
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            // 花心
+            const cGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, f.size * 0.25);
+            cGrad.addColorStop(0, '#e8d060');
+            cGrad.addColorStop(0.5, '#c4a030');
+            cGrad.addColorStop(1, '#8a6a20');
+            ctx.fillStyle = cGrad;
+            ctx.beginPath();
+            ctx.arc(0, 0, f.size * 0.2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 花心斑点
+            for (let k = 0; k < 5; k++) {
+                const da = (k / 5) * Math.PI * 2;
+                ctx.beginPath();
+                ctx.arc(Math.cos(da) * f.size * 0.12, Math.sin(da) * f.size * 0.12, 1.2, 0, Math.PI * 2);
+                ctx.fillStyle = '#8a4030';
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+    }
+
+    function drawDewdrops(ctx, w, h, p) {
+        // 露珠效果（小圆+高光）
+        const drops = [
+            { x: 0.22, y: 0.5, size: 4 },
+            { x: 0.45, y: 0.35, size: 3 },
+            { x: 0.55, y: 0.55, size: 3.5 },
+            { x: 0.35, y: 0.65, size: 2.5 },
+        ];
+        const count = Math.ceil(drops.length * p);
+
+        for (let i = 0; i < count; i++) {
+            const d = drops[i];
+            const dx = d.x * w, dy = d.y * h;
+            ctx.save();
+
+            // 露珠主体
+            const dGrad = ctx.createRadialGradient(dx - d.size * 0.3, dy - d.size * 0.3, 0, dx, dy, d.size);
+            dGrad.addColorStop(0, 'rgba(255,255,255,0.9)');
+            dGrad.addColorStop(0.5, 'rgba(200,220,240,0.5)');
+            dGrad.addColorStop(1, 'rgba(150,180,200,0.2)');
+            ctx.fillStyle = dGrad;
+            ctx.beginPath();
+            ctx.arc(dx, dy, d.size, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 高光
+            ctx.fillStyle = 'rgba(255,255,255,0.95)';
+            ctx.beginPath();
+            ctx.arc(dx - d.size * 0.25, dy - d.size * 0.25, d.size * 0.3, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+    }
+
+    // ==================== 墨竹清风 ====================
+    function renderBamboo(ctx, progress, guides) {
+        const w = ctx.canvas.width, h = ctx.canvas.height;
+
+        // === 阶段1：竹竿（progress 0~0.35）===
+        if (progress > 0) {
+            const p1 = Math.min(1, progress / 0.35);
+            drawBambooStalks(ctx, w, h, p1);
+        }
+
+        // === 阶段2：竹叶（progress 0.3~0.7）===
+        if (progress > 0.3) {
+            const p2 = Math.min(1, (progress - 0.3) / 0.4);
+            drawBambooLeaves(ctx, w, h, p2);
+        }
+
+        // === 阶段3：地面碎石和小草（progress 0.65~0.85）===
+        if (progress > 0.65) {
+            const p3 = Math.min(1, (progress - 0.65) / 0.2);
+            drawBambooGround(ctx, w, h, p3);
+        }
+
+        // === 阶段4：竹笋（progress 0.85~1.0）===
+        if (progress > 0.85) {
+            const p4 = Math.min(1, (progress - 0.85) / 0.15);
+            drawBambooShoots(ctx, w, h, p4);
+        }
+
+        if (progress > 0.9) {
+            const p6 = Math.min(1, (progress - 0.9) / 0.1);
+            drawSealAndSignature(ctx, w, h, '墨竹', p6);
+        }
+    }
+
+    function drawBambooStalks(ctx, w, h, p) {
+        // 竹竿 - 圆柱感（渐变），竹节明显
+        const stalks = [
+            { x: 0.25, top: 0.12, bottom: 0.92, width: 14 },
+            { x: 0.5, top: 0.25, bottom: 0.94, width: 11 },
+            { x: 0.72, top: 0.45, bottom: 0.9, width: 9 },
+        ];
+        const count = Math.ceil(stalks.length * p);
+
+        for (let i = 0; i < count; i++) {
+            const s = stalks[i];
+            const sx = s.x * w;
+            const sy = s.top * h;
+            const ey = s.bottom * h;
+            const stalkH = ey - sy;
+
+            ctx.save();
+
+            // 竹竿主体（圆柱感渐变）
+            const stalkGrad = ctx.createLinearGradient(sx - s.width / 2, 0, sx + s.width / 2, 0);
+            stalkGrad.addColorStop(0, '#2a4a2a');
+            stalkGrad.addColorStop(0.3, '#4a7a4a');
+            stalkGrad.addColorStop(0.5, '#5a9a5a');
+            stalkGrad.addColorStop(0.7, '#4a7a4a');
+            stalkGrad.addColorStop(1, '#2a4a2a');
+            ctx.fillStyle = stalkGrad;
+            ctx.fillRect(sx - s.width / 2, sy, s.width, stalkH);
+
+            // 竹节（双横线+环）
+            const numNodes = Math.floor(stalkH / 60);
+            for (let n = 1; n <= numNodes; n++) {
+                const ny = sy + (stalkH / (numNodes + 1)) * n;
+
+                // 竹节环
+                ctx.beginPath();
+                ctx.ellipse(sx, ny, s.width / 2 + 2, 4, 0, 0, Math.PI * 2);
+                ctx.fillStyle = '#3a6a3a';
+                ctx.fill();
+                ctx.strokeStyle = '#1a3a1a';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // 双横线
+                ctx.beginPath();
+                ctx.moveTo(sx - s.width / 2 - 1, ny - 2);
+                ctx.lineTo(sx + s.width / 2 + 1, ny - 2);
+                ctx.strokeStyle = '#1a3a1a';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(sx - s.width / 2 - 1, ny + 2);
+                ctx.lineTo(sx + s.width / 2 + 1, ny + 2);
+                ctx.stroke();
+            }
+
+            // 高光线
+            ctx.beginPath();
+            ctx.moveTo(sx - s.width * 0.15, sy);
+            ctx.lineTo(sx - s.width * 0.15, ey);
+            ctx.strokeStyle = 'rgba(150,200,150,0.2)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    }
+
+    function drawBambooLeaves(ctx, w, h, p) {
+        // 竹叶 - "个"字和"介"字组合，有浓淡变化
+        const leafGroups = [
+            // "个"字组合
+            { cx: 0.25, cy: 0.28, leaves: [
+                { angle: -0.5, len: 35, width: 6, color: '#2a5a2a' },
+                { angle: 0.3, len: 30, width: 5, color: '#3a6a3a' },
+                { angle: -1.2, len: 28, width: 5, color: '#4a7a4a' },
+            ]},
+            { cx: 0.5, cy: 0.42, leaves: [
+                { angle: -0.4, len: 32, width: 5, color: '#2a5a2a' },
+                { angle: 0.5, len: 28, width: 5, color: '#3a6a3a' },
+                { angle: -1.0, len: 25, width: 4, color: '#4a7a4a' },
+            ]},
+            { cx: 0.72, cy: 0.62, leaves: [
+                { angle: -0.3, len: 30, width: 5, color: '#2a5a2a' },
+                { angle: 0.6, len: 26, width: 4, color: '#3a6a3a' },
+                { angle: -1.1, len: 24, width: 4, color: '#4a7a4a' },
+            ]},
+            // "介"字组合
+            { cx: 0.25, cy: 0.15, leaves: [
+                { angle: -0.6, len: 28, width: 5, color: '#3a6a3a' },
+                { angle: 0.2, len: 25, width: 4, color: '#4a7a4a' },
+                { angle: -1.3, len: 22, width: 4, color: '#5a8a5a' },
+                { angle: 1.0, len: 20, width: 4, color: '#3a5a3a' },
+            ]},
+            { cx: 0.5, cy: 0.3, leaves: [
+                { angle: -0.7, len: 26, width: 4, color: '#3a6a3a' },
+                { angle: 0.4, len: 22, width: 4, color: '#4a7a4a' },
+                { angle: -1.4, len: 20, width: 3, color: '#5a8a5a' },
+                { angle: 1.2, len: 18, width: 3, color: '#3a5a3a' },
+            ]},
+            // 额外散叶
+            { cx: 0.15, cy: 0.35, leaves: [
+                { angle: -0.8, len: 20, width: 4, color: '#4a7a4a' },
+                { angle: 0.6, len: 18, width: 3, color: '#5a8a5a' },
+            ]},
+            { cx: 0.82, cy: 0.52, leaves: [
+                { angle: -0.2, len: 22, width: 4, color: '#3a6a3a' },
+                { angle: 0.8, len: 18, width: 3, color: '#4a7a4a' },
+            ]},
+        ];
+        const count = Math.ceil(leafGroups.length * p);
+
+        for (let i = 0; i < count; i++) {
+            const group = leafGroups[i];
+            const gcx = group.cx * w, gcy = group.cy * h;
+            const alpha = Math.min(1, (p * leafGroups.length - i) * 1.5);
+
+            ctx.save();
+            ctx.globalAlpha = alpha;
+
+            group.leaves.forEach(leaf => {
+                ctx.save();
+                ctx.translate(gcx, gcy);
+                ctx.rotate(leaf.angle);
+
+                // 竹叶形状（贝塞尔曲线）
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(
+                    leaf.len * 0.3, -leaf.width / 2,
+                    leaf.len * 0.7, -leaf.width / 3,
+                    leaf.len, 0
+                );
+                ctx.bezierCurveTo(
+                    leaf.len * 0.7, leaf.width / 3,
+                    leaf.len * 0.3, leaf.width / 2,
+                    0, 0
+                );
+
+                // 浓淡渐变
+                const lGrad = ctx.createLinearGradient(0, 0, leaf.len, 0);
+                lGrad.addColorStop(0, leaf.color);
+                lGrad.addColorStop(0.6, leaf.color);
+                lGrad.addColorStop(1, leaf.color.replace(/[2-5]a/g, m => String(parseInt(m[0]) + 2) + 'a'));
+                ctx.fillStyle = lGrad;
+                ctx.fill();
+
+                // 叶脉
+                ctx.beginPath();
+                ctx.moveTo(2, 0);
+                ctx.lineTo(leaf.len - 2, 0);
+                ctx.strokeStyle = 'rgba(20,40,20,0.2)';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+
+                ctx.restore();
+            });
+
+            ctx.restore();
+        }
+    }
+
+    function drawBambooGround(ctx, w, h, p) {
+        // 地面碎石
+        ctx.save();
+        const stones = [
+            { x: 0.1, y: 0.92, rx: 8, ry: 5 },
+            { x: 0.3, y: 0.94, rx: 6, ry: 4 },
+            { x: 0.55, y: 0.93, rx: 10, ry: 6 },
+            { x: 0.75, y: 0.92, rx: 7, ry: 4 },
+            { x: 0.9, y: 0.94, rx: 5, ry: 3 },
+            { x: 0.45, y: 0.95, rx: 4, ry: 3 },
+        ];
+        const stoneCount = Math.ceil(stones.length * p);
+
+        for (let i = 0; i < stoneCount; i++) {
+            const s = stones[i];
+            ctx.beginPath();
+            ctx.ellipse(s.x * w, s.y * h, s.rx, s.ry, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(100,90,80,0.3)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(60,50,40,0.2)';
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+        }
+
+        // 小草
+        const grasses = [
+            { x: 0.15, y: 0.93, angle: -0.3, len: 15 },
+            { x: 0.4, y: 0.95, angle: -0.1, len: 12 },
+            { x: 0.65, y: 0.93, angle: 0.2, len: 14 },
+            { x: 0.85, y: 0.94, angle: -0.4, len: 10 },
+        ];
+        const grassCount = Math.ceil(grasses.length * p);
+        for (let i = 0; i < grassCount; i++) {
+            const g = grasses[i];
+            ctx.beginPath();
+            ctx.moveTo(g.x * w, g.y * h);
+            ctx.quadraticCurveTo(
+                (g.x + 0.02) * w, (g.y - 0.02) * h,
+                (g.x + 0.03) * w, (g.y - 0.04) * h
+            );
+            ctx.strokeStyle = 'rgba(60,100,50,0.4)';
+            ctx.lineWidth = 1.5;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+        }
+
+        ctx.restore();
+    }
+
+    function drawBambooShoots(ctx, w, h, p) {
+        // 竹笋
+        const shoots = [
+            { x: 0.35, y: 0.88, size: 12 },
+            { x: 0.6, y: 0.9, size: 10 },
+        ];
+        const count = Math.ceil(shoots.length * p);
+
+        for (let i = 0; i < count; i++) {
+            const s = shoots[i];
+            const sx = s.x * w, sy = s.y * h;
+            ctx.save();
+
+            // 竹笋形状（锥形）
+            ctx.beginPath();
+            ctx.moveTo(sx, sy - s.size * 2);
+            ctx.bezierCurveTo(sx - s.size * 0.5, sy - s.size, sx - s.size * 0.6, sy - s.size * 0.3, sx - s.size * 0.4, sy);
+            ctx.lineTo(sx + s.size * 0.4, sy);
+            ctx.bezierCurveTo(sx + s.size * 0.6, sy - s.size * 0.3, sx + s.size * 0.5, sy - s.size, sx, sy - s.size * 2);
+            ctx.closePath();
+
+            const sGrad = ctx.createLinearGradient(sx, sy - s.size * 2, sx, sy);
+            sGrad.addColorStop(0, '#8aaa60');
+            sGrad.addColorStop(0.5, '#6a8a40');
+            sGrad.addColorStop(1, '#4a6a30');
+            ctx.fillStyle = sGrad;
+            ctx.fill();
+            ctx.strokeStyle = '#3a5a2a';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // 竹笋环纹
+            for (let r = 0; r < 3; r++) {
+                const ry = sy - s.size * 2 + (s.size * 2 / 3) * (r + 0.5);
+                ctx.beginPath();
+                ctx.ellipse(sx, ry, s.size * (0.3 + r * 0.08), 2, 0, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(40,60,30,0.3)';
+                ctx.lineWidth = 0.8;
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+    }
+
+    // ==================== 远山流云 ====================
+    function renderMountain(ctx, progress, guides) {
+        const w = ctx.canvas.width, h = ctx.canvas.height;
+
+        // === 阶段1：远山（progress 0~0.3）===
+        if (progress > 0) {
+            const p1 = Math.min(1, progress / 0.3);
+            drawDistantMountainLayers(ctx, w, h, p1);
+        }
+
+        // === 阶段2：中景山体+皴法（progress 0.25~0.5）===
+        if (progress > 0.25) {
+            const p2 = Math.min(1, (progress - 0.25) / 0.25);
+            drawMidMountainLayers(ctx, w, h, p2);
+        }
+
+        // === 阶段3：近景+松树（progress 0.45~0.65）===
+        if (progress > 0.45) {
+            const p3 = Math.min(1, (progress - 0.45) / 0.2);
+            drawForegroundAndPines(ctx, w, h, p3);
+        }
+
+        // === 阶段4：云雾（progress 0.55~0.75）===
+        if (progress > 0.55) {
+            const p4 = Math.min(1, (progress - 0.55) / 0.2);
+            drawCloudsAndMist(ctx, w, h, p4);
+        }
+
+        // === 阶段5：水面+倒影+飞鸟+瀑布（progress 0.7~1.0）===
+        if (progress > 0.7) {
+            const p5 = Math.min(1, (progress - 0.7) / 0.3);
+            drawWaterAndDetails(ctx, w, h, p5);
+        }
+
+        if (progress > 0.9) {
+            const p6 = Math.min(1, (progress - 0.9) / 0.1);
+            drawSealAndSignature(ctx, w, h, '山水', p6);
+        }
+    }
+
+    function drawDistantMountainLayers(ctx, w, h, p) {
+        // 远山 - 多层渐变填充
+        const layers = [
+            { y: 0.15, color1: 'rgba(140,160,180,0.15)', color2: 'rgba(120,140,160,0.08)', points: [
+                [0.05,0.22],[0.12,0.18],[0.2,0.2],[0.28,0.16],[0.35,0.19],[0.4,0.17],
+                [0.48,0.14],[0.55,0.16],[0.62,0.13],[0.7,0.15],[0.78,0.12],[0.85,0.14],[0.92,0.11],[0.98,0.15]
+            ]},
+            { y: 0.22, color1: 'rgba(120,140,130,0.2)', color2: 'rgba(100,120,110,0.1)', points: [
+                [0.0,0.28],[0.08,0.22],[0.15,0.25],[0.22,0.2],[0.3,0.23],[0.38,0.21],
+                [0.45,0.18],[0.52,0.2],[0.6,0.17],[0.68,0.19],[0.75,0.16],[0.85,0.2],[0.92,0.22],[1.0,0.25]
+            ]},
+        ];
+        const count = Math.ceil(layers.length * p);
+
+        for (let i = 0; i < count; i++) {
+            const layer = layers[i];
+            ctx.save();
+
+            ctx.beginPath();
+            ctx.moveTo(0, layer.y * h);
+            layer.points.forEach(pt => ctx.lineTo(pt[0] * w, pt[1] * h));
+            ctx.lineTo(w, layer.y * h + 80);
+            ctx.lineTo(0, layer.y * h + 80);
+            ctx.closePath();
+
+            const mGrad = ctx.createLinearGradient(0, layer.y * h, 0, layer.y * h + 80);
+            mGrad.addColorStop(0, layer.color1);
+            mGrad.addColorStop(1, layer.color2);
+            ctx.fillStyle = mGrad;
+            ctx.fill();
+
+            // 山顶雾气
+            ctx.beginPath();
+            layer.points.forEach((pt, idx) => {
+                idx === 0 ? ctx.moveTo(pt[0] * w, pt[1] * h - 5) : ctx.lineTo(pt[0] * w, pt[1] * h - 5);
+            });
+            ctx.strokeStyle = 'rgba(200,210,220,0.1)';
+            ctx.lineWidth = 8;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    }
+
+    function drawMidMountainLayers(ctx, w, h, p) {
+        // 中景山体 + 皴法纹理
+        ctx.save();
+
+        // 中景山填充
+        const midPoints = [
+            [0.0,0.45],[0.06,0.38],[0.12,0.35],[0.2,0.32],[0.28,0.34],[0.35,0.3],
+            [0.42,0.33],[0.5,0.28],[0.58,0.31],[0.65,0.27],[0.72,0.3],[0.8,0.26],
+            [0.88,0.29],[0.95,0.32],[1.0,0.38]
+        ];
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0.45 * h);
+        midPoints.forEach(pt => ctx.lineTo(pt[0] * w, pt[1] * h));
+        ctx.lineTo(w, 0.55 * h);
+        ctx.lineTo(0, 0.55 * h);
+        ctx.closePath();
+
+        const mGrad = ctx.createLinearGradient(0, 0.25 * h, 0, 0.55 * h);
+        mGrad.addColorStop(0, 'rgba(100,120,100,0.25)');
+        mGrad.addColorStop(0.5, 'rgba(80,100,80,0.2)');
+        mGrad.addColorStop(1, 'rgba(60,80,60,0.15)');
+        ctx.fillStyle = mGrad;
+        ctx.fill();
+
+        // 皴法纹理（短线条）
+        ctx.strokeStyle = 'rgba(50,60,50,0.15)';
+        ctx.lineWidth = 1;
+        for (let i = 1; i < midPoints.length - 1; i += 1) {
+            const px = midPoints[i][0] * w;
+            const py = midPoints[i][1] * h;
+            for (let k = 0; k < 5; k++) {
+                const ox = (Math.random() - 0.5) * 30;
+                const oy = Math.random() * 20 + 5;
+                ctx.beginPath();
+                ctx.moveTo(px + ox, py + oy);
+                ctx.lineTo(px + ox + 6 + Math.random() * 8, py + oy - 4 - Math.random() * 8);
+                ctx.stroke();
+            }
+        }
+
+        // 山体轮廓线
+        ctx.beginPath();
+        midPoints.forEach((pt, idx) => {
+            idx === 0 ? ctx.moveTo(pt[0] * w, pt[1] * h) : ctx.lineTo(pt[0] * w, pt[1] * h);
+        });
+        ctx.strokeStyle = 'rgba(60,80,60,0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
+    function drawForegroundAndPines(ctx, w, h, p) {
+        // 近景山体
+        ctx.save();
+        const fgPoints = [
+            [0.0,0.6],[0.06,0.55],[0.12,0.52],[0.2,0.5],[0.28,0.53],[0.35,0.48],
+            [0.42,0.51],[0.5,0.46],[0.58,0.49],[0.65,0.44],[0.72,0.47],[0.8,0.43],
+            [0.88,0.46],[0.95,0.42],[1.0,0.48]
+        ];
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0.6 * h);
+        fgPoints.forEach(pt => ctx.lineTo(pt[0] * w, pt[1] * h));
+        ctx.lineTo(w, 0.75 * h);
+        ctx.lineTo(0, 0.75 * h);
+        ctx.closePath();
+
+        const fgGrad = ctx.createLinearGradient(0, 0.42 * h, 0, 0.75 * h);
+        fgGrad.addColorStop(0, 'rgba(80,100,70,0.3)');
+        fgGrad.addColorStop(1, 'rgba(60,80,50,0.15)');
+        ctx.fillStyle = fgGrad;
+        ctx.fill();
+
+        // 松树
+        if (p > 0.3) {
+            const pp = Math.min(1, (p - 0.3) / 0.7);
+            drawPineTree(ctx, w, h, 0.78, 0.42, 0.35, pp);
+            if (p > 0.5) {
+                drawPineTree(ctx, w, h, 0.18, 0.52, 0.25, Math.min(1, (p - 0.5) / 0.5));
+            }
+        }
+
+        ctx.restore();
+    }
+
+    function drawPineTree(ctx, w, h, x, y, size, p) {
+        const tx = x * w, ty = y * h;
+        const s = size * Math.min(w, h);
+
+        ctx.save();
+        ctx.globalAlpha = p;
+
+        // 树干
+        ctx.beginPath();
+        ctx.moveTo(tx, ty);
+        ctx.bezierCurveTo(tx - s * 0.02, ty + s * 0.3, tx - s * 0.03, ty + s * 0.5, tx - s * 0.02, ty + s * 0.7);
+        ctx.lineTo(tx + s * 0.02, ty + s * 0.7);
+        ctx.bezierCurveTo(tx + s * 0.03, ty + s * 0.5, tx + s * 0.02, ty + s * 0.3, tx, ty);
+        ctx.closePath();
+        const trunkGrad = ctx.createLinearGradient(tx - s * 0.03, 0, tx + s * 0.03, 0);
+        trunkGrad.addColorStop(0, '#3a2a1a');
+        trunkGrad.addColorStop(0.5, '#5a4a3a');
+        trunkGrad.addColorStop(1, '#3a2a1a');
+        ctx.fillStyle = trunkGrad;
+        ctx.fill();
+
+        // 树皮纹理
+        ctx.strokeStyle = 'rgba(30,20,10,0.3)';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i < 5; i++) {
+            const ny = ty + s * 0.15 * (i + 1);
+            ctx.beginPath();
+            ctx.moveTo(tx - s * 0.015, ny);
+            ctx.lineTo(tx + s * 0.015, ny + 2);
+            ctx.stroke();
+        }
+
+        // 针叶层（多层椭圆）
+        const foliageLayers = [
+            { dy: -0.05, rx: 0.12, ry: 0.06 },
+            { dy: 0.05, rx: 0.1, ry: 0.05 },
+            { dy: 0.12, rx: 0.08, ry: 0.04 },
+            { dy: -0.12, rx: 0.09, ry: 0.04 },
+        ];
+        foliageLayers.forEach(fl => {
+            const fy = ty + fl.dy * s;
+            const frx = fl.rx * s;
+            const fry = fl.ry * s;
+            ctx.beginPath();
+            ctx.ellipse(tx, fy, frx, fry, 0, 0, Math.PI * 2);
+            const fGrad = ctx.createRadialGradient(tx, fy, 0, tx, fy, frx);
+            fGrad.addColorStop(0, 'rgba(30,60,30,0.6)');
+            fGrad.addColorStop(0.5, 'rgba(40,70,40,0.4)');
+            fGrad.addColorStop(1, 'rgba(50,80,50,0.1)');
+            ctx.fillStyle = fGrad;
+            ctx.fill();
+        });
+
+        ctx.restore();
+    }
+
+    function drawCloudsAndMist(ctx, w, h, p) {
+        // 云雾 - 多层半透明白色椭圆叠加
+        ctx.save();
+        const clouds = [
+            { x: 0.2, y: 0.25, rx: 80, ry: 20 },
+            { x: 0.5, y: 0.2, rx: 100, ry: 18 },
+            { x: 0.75, y: 0.28, rx: 70, ry: 15 },
+            { x: 0.35, y: 0.35, rx: 90, ry: 22 },
+            { x: 0.6, y: 0.32, rx: 85, ry: 16 },
+            { x: 0.15, y: 0.4, rx: 60, ry: 12 },
+            { x: 0.85, y: 0.35, rx: 65, ry: 14 },
+            { x: 0.45, y: 0.45, rx: 75, ry: 18 },
+        ];
+        const count = Math.ceil(clouds.length * p);
+
+        for (let i = 0; i < count; i++) {
+            const c = clouds[i];
+            const alpha = 0.06 + Math.random() * 0.04;
+            ctx.fillStyle = `rgba(220,225,230,${alpha})`;
+            ctx.beginPath();
+            ctx.ellipse(c.x * w, c.y * h, c.rx, c.ry, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // 山间雾气
+        ctx.fillStyle = 'rgba(230,235,240,0.05)';
+        ctx.fillRect(0, 0.3 * h, w, 0.15 * h);
+
+        ctx.restore();
+    }
+
+    function drawWaterAndDetails(ctx, w, h, p) {
+        // 水面
+        ctx.save();
+        const waterY = 0.75 * h;
+        const waterGrad = ctx.createLinearGradient(0, waterY, 0, h);
+        waterGrad.addColorStop(0, 'rgba(150,170,190,0.15)');
+        waterGrad.addColorStop(0.3, 'rgba(130,150,170,0.1)');
+        waterGrad.addColorStop(1, 'rgba(100,120,140,0.05)');
+        ctx.fillStyle = waterGrad;
+        ctx.fillRect(0, waterY, w, h - waterY);
+
+        // 水面波纹
+        ctx.strokeStyle = 'rgba(150,170,190,0.08)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 8; i++) {
+            const wy = waterY + 10 + i * 8;
+            ctx.beginPath();
+            for (let x = 0; x < w; x += 3) {
+                const y = wy + Math.sin(x * 0.03 + i) * 2;
+                x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        // 水面倒影（模糊的山体倒影）
+        if (p > 0.3) {
+            ctx.save();
+            ctx.globalAlpha = 0.06;
+            ctx.translate(0, waterY * 2);
+            ctx.scale(1, -1);
+            // 简化的倒影山体
+            ctx.beginPath();
+            ctx.moveTo(0, 0.5 * h);
+            ctx.lineTo(0.2 * w, 0.42 * h);
+            ctx.lineTo(0.4 * w, 0.48 * h);
+            ctx.lineTo(0.6 * w, 0.44 * h);
+            ctx.lineTo(0.8 * w, 0.46 * h);
+            ctx.lineTo(w, 0.5 * h);
+            ctx.lineTo(w, 0.6 * h);
+            ctx.lineTo(0, 0.6 * h);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(80,100,120,0.3)';
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // 飞鸟（V形）
+        if (p > 0.5) {
+            const birds = [
+                { x: 0.3, y: 0.12, size: 8 },
+                { x: 0.35, y: 0.1, size: 6 },
+                { x: 0.4, y: 0.13, size: 7 },
+                { x: 0.55, y: 0.08, size: 5 },
+            ];
+            ctx.strokeStyle = 'rgba(40,40,40,0.4)';
+            ctx.lineWidth = 1.2;
+            ctx.lineCap = 'round';
+            birds.forEach(b => {
+                const bx = b.x * w, by = b.y * h;
+                ctx.beginPath();
+                ctx.moveTo(bx - b.size, by + b.size * 0.4);
+                ctx.quadraticCurveTo(bx - b.size * 0.3, by - b.size * 0.2, bx, by);
+                ctx.quadraticCurveTo(bx + b.size * 0.3, by - b.size * 0.2, bx + b.size, by + b.size * 0.4);
+                ctx.stroke();
+            });
+        }
+
+        // 瀑布/溪流
+        if (p > 0.7) {
+            const fx = 0.62 * w;
+            const fy1 = 0.35 * h;
+            const fy2 = 0.75 * h;
+
+            // 瀑布主体
+            ctx.save();
+            ctx.globalAlpha = 0.15;
+            const fallGrad = ctx.createLinearGradient(fx, fy1, fx, fy2);
+            fallGrad.addColorStop(0, 'rgba(200,210,220,0.6)');
+            fallGrad.addColorStop(0.5, 'rgba(180,200,220,0.4)');
+            fallGrad.addColorStop(1, 'rgba(160,180,200,0.2)');
+            ctx.strokeStyle = fallGrad;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(fx, fy1);
+            ctx.bezierCurveTo(fx - 3, fy1 + (fy2 - fy1) * 0.3, fx + 3, fy1 + (fy2 - fy1) * 0.6, fx, fy2);
+            ctx.stroke();
+
+            // 水花
+            ctx.globalAlpha = 0.1;
+            for (let i = 0; i < 5; i++) {
+                const sy = fy2 - 5 + Math.random() * 10;
+                const sx = fx + (Math.random() - 0.5) * 15;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 2 + Math.random() * 3, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(200,220,240,0.3)';
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        ctx.restore();
+    }
+
+    // ==================== 辅助函数 ====================
+    function bezierPoint(p0, p1, p2, p3, t) {
+        const mt = 1 - t;
+        return mt * mt * mt * p0 + 3 * mt * mt * t * p1 + 3 * mt * t * t * p2 + t * t * t * p3;
+    }
+
+    function drawInkLine(context, pts, color, width, taper) {
+        if (pts.length < 2) return;
+        context.save();
+        context.strokeStyle = color;
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
+        for (let i = 0; i < pts.length - 1; i++) {
+            const segWidth = taper ? width * (1 - i / pts.length * 0.4) : width;
+            context.lineWidth = segWidth;
+            context.beginPath();
+            context.moveTo(pts[i][0], pts[i][1]);
+            context.lineTo(pts[i + 1][0], pts[i + 1][1]);
+            context.stroke();
+        }
+        context.restore();
+    }
+
+    // ============================================================
+    //  7. 引导线绘制
+    // ============================================================
+    function drawGuides() {
+        gCtx.clearRect(0,0,w,h);
+        const guides = T[currentTheme].guides;
+        guides.forEach((g, idx) => {
+            const pts = g.pts.map(p => [p[0]*w, p[1]*h]);
+            if (pts.length < 2) return;
+            const alpha = Math.max(0.1, 1 - tracedMask[idx]);
+
+            gCtx.save();
+            gCtx.strokeStyle = `rgba(120,100,80,${alpha})`;
+            gCtx.lineWidth = 1.5;
+            gCtx.setLineDash([6, 6]);
+            gCtx.lineCap = 'round';
+            gCtx.lineJoin = 'round';
+
+            if (g.closed || g.style === 'bottom') {
+                gCtx.beginPath();
+                gCtx.moveTo(pts[0][0],pts[0][1]);
+                for(let i=1;i<pts.length;i++) gCtx.lineTo(pts[i][0],pts[i][1]);
+                gCtx.closePath();
+            } else {
+                gCtx.beginPath();
+                gCtx.moveTo(pts[0][0],pts[0][1]);
+                for(let i=1;i<pts.length;i++) gCtx.lineTo(pts[i][0],pts[i][1]);
+            }
+            gCtx.stroke();
+
+            if (alpha > 0.3) {
+                gCtx.setLineDash([]);
+                gCtx.fillStyle = `rgba(196,92,72,${alpha * 0.6})`;
+                gCtx.beginPath();
+                gCtx.arc(pts[0][0],pts[0][1],4,0,Math.PI*2);
+                gCtx.fill();
+            }
+            gCtx.restore();
+        });
+    }
+
+    // ============================================================
+    //  8. 蒙版系统
+    // ============================================================
+    function applyRevealMask() {
+        if (!completedPaintingData) return;
+        rCtx.clearRect(0,0,w,h);
+        rCtx.fillStyle = '#faf8f3';
+        rCtx.fillRect(0,0,w,h);
+        rCtx.putImageData(completedPaintingData,0,0);
+        rCtx.globalCompositeOperation = 'destination-in';
+        const userData = ctx.getImageData(0,0,w,h);
+        const maskData = rCtx.getImageData(0,0,w,h);
+        for(let i=3;i<maskData.data.length;i+=4) {
+            maskData.data[i] = userData.data[i];
+        }
+        rCtx.putImageData(maskData,0,0);
+        rCtx.globalCompositeOperation = 'source-over';
+        drawGuides();
+    }
+
+    // ============================================================
+    //  9. 追踪用户绘画
+    // ============================================================
+    function traceUserStroke(x, y) {
+        const guides = T[currentTheme].guides;
+        let newTraced = 0;
+        guides.forEach((g, idx) => {
+            if (tracedMask[idx] >= 1) return;
+            const pts = g.pts.map(p => [p[0]*w, p[1]*h]);
+            let minDist = 999;
+            for (let i = 0; i < pts.length - 1; i++) {
+                const d = pointToSegDist(x, y, pts[i][0], pts[i][1], pts[i+1][0], pts[i+1][1]);
+                if (d < minDist) minDist = d;
+            }
+            if (g.closed) {
+                pts.forEach(p => {
+                    const d = Math.sqrt((x-p[0])**2 + (y-p[1])**2);
+                    if (d < minDist) minDist = d;
+                });
+            }
+            if (minDist < currentSize * 2 + 15) {
+                const segLen = calcPathLen(pts);
+                if (tracedMask[idx] < 1) {
+                    const old = tracedMask[idx];
+                    tracedMask[idx] = Math.min(1, tracedMask[idx] + 0.03);
+                    const added = (tracedMask[idx] - old) * segLen;
+                    newTraced += added;
+                }
+            }
+        });
+
+        if (newTraced > 0) {
+            tracedLength += newTraced;
+            const pct = Math.min(100, Math.round(tracedLength / totalGuideLength * 100));
+            updateProgress(pct);
+            applyRevealMask();
+            if (pct >= 100) showHint('🎉 临摹完成！点击"完成"查看画作');
+        }
+    }
+
+    function pointToSegDist(px, py, x1, y1, x2, y2) {
+        const dx = x2 - x1, dy = y2 - y1;
+        const lenSq = dx*dx + dy*dy;
+        if (lenSq === 0) return Math.sqrt((px-x1)**2 + (py-y1)**2);
+        let t = ((px-x1)*dx + (py-y1)*dy) / lenSq;
+        t = Math.max(0, Math.min(1, t));
+        const nx = x1 + t*dx, ny = y1 + t*dy;
+        return Math.sqrt((px-nx)**2 + (py-ny)**2);
+    }
+
+    function calcPathLen(pts) {
+        let len = 0;
+        for(let i=1;i<pts.length;i++) {
+            const dx = pts[i][0]-pts[i-1][0], dy = pts[i][1]-pts[i-1][1];
+            len += Math.sqrt(dx*dx+dy*dy);
+        }
+        return len;
+    }
+
+    function updateProgress(pct) {
+        progressFill.style.width = pct + '%';
+        progressPercent.textContent = pct + '%';
+    }
+
+    // ============================================================
+    //  10. 绘画事件
+    // ============================================================
+    function bindEvents() {
+        ['mousedown','touchstart'].forEach(e => canvas.addEventListener(e, startD, {passive:false}));
+        ['mousemove','touchmove'].forEach(e => canvas.addEventListener(e, drawD, {passive:false}));
+        ['mouseup','touchend','mouseout'].forEach(e => canvas.addEventListener(e, stopD));
+    }
+
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        if (e.touches) return {x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top};
+        return {x: e.clientX - rect.left, y: e.clientY - rect.top};
+    }
+
+    function startD(e) {
+        e.preventDefault();
+        isDrawing = true;
+        const p = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        updateBrushStyle();
+    }
+
+    function drawD(e) {
+        e.preventDefault();
+        if (!isDrawing) return;
+        const p = getPos(e);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+        traceUserStroke(p.x, p.y);
+    }
+
+    function stopD() {
+        if (isDrawing) {
+            isDrawing = false;
+            ctx.closePath();
+            saveState();
+            applyRevealMask();
+        }
+    }
+
+    function updateBrushStyle() {
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = currentSize;
+        if (currentTool === 'eraser') {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.strokeStyle = 'rgba(0,0,0,1)';
+        } else {
+            ctx.globalCompositeOperation = 'source-over';
+            const r = parseInt(currentColor.slice(1,3),16);
+            const g = parseInt(currentColor.slice(3,5),16);
+            const b = parseInt(currentColor.slice(5,7),16);
+            ctx.strokeStyle = `rgba(${r},${g},${b},0.85)`;
+        }
+    }
+
+    function setColor(c, btn) {
+        currentColor = c; currentTool = 'brush'; updateBrushStyle();
+        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('brushTool').classList.add('active');
+        document.getElementById('eraserTool').classList.remove('active');
+    }
+    function updateBrushSize(v) { currentSize = parseInt(v); document.getElementById('sizeValue').textContent = v; }
+    function setTool(t) {
+        currentTool = t; updateBrushStyle();
+        document.getElementById('brushTool').classList.toggle('active', t==='brush');
+        document.getElementById('eraserTool').classList.toggle('active', t==='eraser');
+    }
+
+    function saveState() {
+        undoIndex++;
+        if (undoIndex < undoStack.length) undoStack.length = undoIndex;
+        undoStack.push(canvas.toDataURL());
+        if (undoStack.length > 20) { undoStack.shift(); undoIndex--; }
+    }
+
+    function undo() {
+        if (undoIndex > 0) {
+            undoIndex--;
+            const img = new Image();
+            img.onload = () => {
+                ctx.clearRect(0,0,w,h);
+                ctx.drawImage(img,0,0);
+                applyRevealMask();
+            };
+            img.src = undoStack[undoIndex];
+            showHint('已撤销');
+        } else showHint('没有可撤销的操作');
+    }
+
+    function clearCanvas() {
+        ctx.clearRect(0,0,w,h);
+        tracedMask = T[currentTheme].guides.map(()=>0);
+        tracedLength = 0;
+        updateProgress(0);
+        applyRevealMask();
+        saveState();
+        showHint('画布已清空');
+    }
+
+    // ============================================================
+    //  11. 完成画作 - AI生成动画效果
+    // ============================================================
+
+    // --- 辅助函数：用户笔画与AI画作的智能融合 ---
+
+    // 检查像素是否在用户笔画的边缘
+    function checkEdge(data, x, y, w, h) {
+        const idx = (y * w + x) * 4;
+        const alpha = data.data[idx + 3];
+        const neighbors = [[x-1,y],[x+1,y],[x,y-1],[x,y+1]];
+        for (const [nx, ny] of neighbors) {
+            if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
+            const nIdx = (ny * w + nx) * 4;
+            if (Math.abs(data.data[nIdx + 3] - alpha) > 50) return true;
+        }
+        return false;
+    }
+
+    // 计算像素到最近用户笔画的距离（简化版，采样搜索）
+    function distToNearestStroke(data, x, y, w, h) {
+        const searchRadius = 25;
+        const step = 3;
+        let minDist = searchRadius;
+        for (let dy = -searchRadius; dy <= searchRadius; dy += step) {
+            for (let dx = -searchRadius; dx <= searchRadius; dx += step) {
+                const nx = x + dx, ny = y + dy;
+                if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
+                const nIdx = (ny * w + nx) * 4;
+                if (data.data[nIdx + 3] > 10) {
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < minDist) minDist = dist;
+                }
+            }
+        }
+        return minDist;
+    }
+
+    // 添加宣纸纹理
+    function addPaperTexture(context) {
+        context.save();
+        context.globalAlpha = 0.03;
+        context.globalCompositeOperation = 'multiply';
+        for (let i = 0; i < 2000; i++) {
+            const x = Math.random() * w;
+            const y = Math.random() * h;
+            const size = Math.random() * 2 + 0.5;
+            context.fillStyle = Math.random() > 0.5 ? '#8a7a6a' : '#6a5a4a';
+            context.fillRect(x, y, size, size);
+        }
+        context.restore();
+    }
+
+    // AI生成动画状态
+    let aiAnimating = false;
+    let finalMode = 'ai'; // 'ai' = AI精美画作, 'user' = 用户原作
+
+    function aiGenerate(goToComplete) {
+        // AI生成效果，生成精美的AI优化画作
+        if (aiAnimating) return;
+        aiAnimating = true;
+        finalMode = 'ai';
+
+        // 显示墨迹扩散特效覆盖层
+        aiOverlay.classList.add('active');
+        aiCanvas.width = window.innerWidth;
+        aiCanvas.height = window.innerHeight;
+        const actx = aiCanvas.getContext('2d');
+        const inkText = document.getElementById('inkText');
+        inkText.classList.add('show');
+
+        // 强制全部显现蒙版
+        tracedMask = T[currentTheme].guides.map(() => 1);
+        tracedLength = totalGuideLength;
+        updateProgress(100);
+        applyRevealMask();
+
+        // 墨迹粒子
+        const particles = [];
+        const numP = 80;
+        const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+        for (let i = 0; i < numP; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.random() * 200;
+            particles.push({
+                x: cx + Math.cos(angle) * dist,
+                y: cy + Math.sin(angle) * dist,
+                vx: (Math.random() - 0.5) * 3,
+                vy: (Math.random() - 0.5) * 3,
+                life: 1,
+                size: Math.random() * 12 + 5,
+                color: ['#1a1a1a', '#4a4a4a', '#6a5a4a', '#8a7a6a'][Math.floor(Math.random() * 4)]
+            });
+        }
+
+        // 画布上的墨滴粒子
+        const inkDrops = [];
+
+        // 动画参数：总时长约3.5秒（210帧@60fps）
+        const totalFrames = 210;
+        let frame = 0;
+
+        // 保存用户原始笔迹快照（用于淡出效果）
+        const userSnapshotCanvas = document.createElement('canvas');
+        userSnapshotCanvas.width = w;
+        userSnapshotCanvas.height = h;
+        const userSnapshotCtx = userSnapshotCanvas.getContext('2d');
+        userSnapshotCtx.drawImage(canvas, 0, 0);
+
+        // 创建临时画布用于逐步绘制AI画作
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = w;
+        tempCanvas.height = h;
+        const tempCtx = tempCanvas.getContext('2d');
+
+        // 计算用户当前完成进度
+        const userProgress = Math.min(1, tracedLength / totalGuideLength);
+
+        function animateAI() {
+            frame++;
+            const animProgress = Math.min(1, frame / totalFrames);
+            // AI从用户已完成的进度开始生成，已画部分立即呈现，未画部分逐步补全
+            const progress = userProgress + (1 - userProgress) * animProgress;
+
+            // === 1. 绘制aiOverlay上的墨迹粒子 ===
+            actx.clearRect(0, 0, aiCanvas.width, aiCanvas.height);
+
+            // 深色背景渐变（逐渐变淡）
+            const fadeOut = progress > 0.7 ? (1 - (progress - 0.7) / 0.3) : 1;
+            const grad = actx.createRadialGradient(cx, cy, 10, cx, cy, 350);
+            grad.addColorStop(0, `rgba(245,240,232,${0.05 * fadeOut})`);
+            grad.addColorStop(0.4, `rgba(40,35,30,${0.6 * fadeOut})`);
+            grad.addColorStop(1, `rgba(10,10,10,${0.95 * fadeOut})`);
+            actx.fillStyle = grad;
+            actx.fillRect(0, 0, aiCanvas.width, aiCanvas.height);
+
+            // 更新墨迹粒子
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vx *= 0.97;
+                p.vy *= 0.97;
+                p.life = Math.max(0, p.life - 0.008);
+
+                actx.save();
+                actx.globalAlpha = p.life * 0.7 * fadeOut;
+                const inkGrad = actx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * p.life);
+                inkGrad.addColorStop(0, p.color);
+                inkGrad.addColorStop(0.5, 'rgba(80,70,60,0.3)');
+                inkGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                actx.fillStyle = inkGrad;
+                actx.beginPath();
+                actx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                actx.fill();
+                actx.restore();
+            });
+
+            // === 2. 在画布上逐步绘制完整画作 ===
+            tempCtx.clearRect(0, 0, w, h);
+            tempCtx.fillStyle = '#faf8f3';
+            tempCtx.fillRect(0, 0, w, h);
+
+            // 画背景氛围元素（始终显示，不随进度变化）
+            drawBackgroundElements(tempCtx, currentTheme, w, h);
+
+            renderCompletePaintingAnimated(tempCtx, progress);
+
+            // 添加墨滴粒子效果到画布
+            if (Math.random() < 0.3 && progress < 0.9) {
+                // 根据当前绘制进度确定墨滴位置
+                const dropX = Math.random() * w;
+                const dropY = Math.random() * h * progress;
+                inkDrops.push({
+                    x: dropX, y: dropY,
+                    size: 1 + Math.random() * 3,
+                    life: 1,
+                    color: `rgba(30,30,30,${0.2 + Math.random() * 0.3})`
+                });
+            }
+
+            // 绘制墨滴
+            inkDrops.forEach((d, idx) => {
+                d.life -= 0.02;
+                if (d.life <= 0) return;
+                tempCtx.save();
+                tempCtx.globalAlpha = d.life;
+                tempCtx.fillStyle = d.color;
+                tempCtx.beginPath();
+                tempCtx.arc(d.x, d.y, d.size * d.life, 0, Math.PI * 2);
+                tempCtx.fill();
+                tempCtx.restore();
+            });
+
+            // 清理已消失的墨滴
+            for (let i = inkDrops.length - 1; i >= 0; i--) {
+                if (inkDrops[i].life <= 0) inkDrops.splice(i, 1);
+            }
+
+            // === 3. 用户笔迹淡出 + AI画面显现 ===
+            // 用户笔迹逐渐淡出（paintCanvas）
+            ctx.clearRect(0, 0, w, h);
+            const userFadeAlpha = Math.max(0, 1 - progress * 1.5); // 1.5倍速淡出，确保完全消失
+            if (userFadeAlpha > 0) {
+                ctx.globalAlpha = userFadeAlpha;
+                ctx.drawImage(userSnapshotCanvas, 0, 0);
+                ctx.globalAlpha = 1;
+            }
+
+            // AI修复画面逐渐显现（revealCanvas）
+            rCtx.clearRect(0, 0, w, h);
+            // 先画AI生成内容
+            rCtx.drawImage(tempCanvas, 0, 0);
+            // 在AI画面上叠加用户笔迹（逐步淡出）
+            rCtx.globalCompositeOperation = 'source-atop';
+            rCtx.globalAlpha = userFadeAlpha * 0.4; // 用户笔迹在AI画面上逐渐变淡
+            rCtx.drawImage(userSnapshotCanvas, 0, 0);
+            rCtx.globalCompositeOperation = 'source-over';
+            rCtx.globalAlpha = 1;
+
+            if (frame < totalFrames) {
+                requestAnimationFrame(animateAI);
+            } else {
+                // 动画完成 - 用户笔迹已淡出，保存最终的AI修复画面
+                setTimeout(() => {
+                    aiOverlay.classList.remove('active');
+                    inkText.classList.remove('show');
+                    aiAnimating = false;
+
+                    // 清空用户画布（笔迹已完全淡出消失）
+                    ctx.clearRect(0, 0, w, h);
+
+                    // 获取AI生成的完整画作
+                    const aiImageData = tempCtx.getImageData(0, 0, w, h);
+
+                    // 创建最终画布
+                    const finalCanvas = document.createElement('canvas');
+                    finalCanvas.width = w; finalCanvas.height = h;
+                    const finalCtx = finalCanvas.getContext('2d');
+
+                    // 画AI修复后的完整画作
+                    finalCtx.putImageData(aiImageData, 0, 0);
+
+                    // 添加宣纸纹理
+                    addPaperTexture(finalCtx);
+
+                    // 保存最终画作
+                    completedPaintingData = finalCtx.getImageData(0, 0, w, h);
+                    rCtx.putImageData(completedPaintingData, 0, 0);
+
+                    if (goToComplete) {
+                        showFinal();
+                    } else {
+                        showHint('AI修复完成！你的画作已焕然一新');
+                    }
+                }, 400);
+            }
+        }
+        animateAI();
+    }
+
+    function completePainting() {
+        // 点击"完成"按钮 - 保留用户原笔迹，轻量美化生成用户个人画作
+        finalMode = 'user';
+
+        // 强制全部显现蒙版
+        tracedMask = T[currentTheme].guides.map(() => 1);
+        tracedLength = totalGuideLength;
+        updateProgress(100);
+        applyRevealMask();
+
+        // 创建最终画布：保留用户笔迹 + 轻量美化
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = w; finalCanvas.height = h;
+        const fctx = finalCanvas.getContext('2d');
+
+        // 画宣纸底色
+        fctx.fillStyle = '#faf8f3';
+        fctx.fillRect(0, 0, w, h);
+
+        // 添加背景氛围（淡墨远山、雾气等，不遮挡用户笔迹）
+        drawBackgroundElements(fctx, currentTheme, w, h);
+
+        // 绘制用户虚线引导路径（作为淡淡的参考底纹，15%透明度）
+        fctx.save();
+        fctx.globalAlpha = 0.15;
+        fctx.strokeStyle = '#9a9a9a';
+        fctx.setLineDash([4, 6]);
+        fctx.lineWidth = 1;
+        T[currentTheme].guides.forEach(path => {
+            if (path.length < 2) return;
+            fctx.beginPath();
+            fctx.moveTo(path[0][0], path[0][1]);
+            for (let i = 1; i < path.length; i++) {
+                fctx.lineTo(path[i][0], path[i][1]);
+            }
+            fctx.stroke();
+        });
+        fctx.restore();
+
+        // 叠加用户原始笔迹（保留用户真实笔触）
+        fctx.drawImage(canvas, 0, 0);
+
+        // 添加宣纸纹理
+        addPaperTexture(fctx);
+
+        // 添加题款印章
+        drawSealAndSignature(fctx, w, h, T[currentTheme].title.replace(/^.·/, '').substring(0, 2), 1);
+
+        // 保存最终画作
+        completedPaintingData = fctx.getImageData(0, 0, w, h);
+
+        // 将revealCanvas也更新为用户画作（保持界面一致）
+        rCtx.clearRect(0, 0, w, h);
+        rCtx.putImageData(completedPaintingData, 0, 0);
+
+        showFinal();
+    }
+
+    function showFinal() {
+        paintUI.classList.remove('active');
+        compScreen.classList.add('active');
+
+        // 获取 completion-header 元素
+        const compHeader = compScreen.querySelector('.completion-header');
+        const compH2 = compHeader.querySelector('h2');
+        const compP = compHeader.querySelector('p');
+
+        const combo = document.createElement('canvas');
+        combo.width = w; combo.height = h;
+        const cctx = combo.getContext('2d');
+
+        // 画背景
+        cctx.fillStyle = '#faf8f3';
+        cctx.fillRect(0,0,w,h);
+
+        // 画最终画作
+        if (completedPaintingData) {
+            cctx.putImageData(completedPaintingData, 0, 0);
+        }
+
+        finalImg.src = combo.toDataURL('image/png');
+
+        if (finalMode === 'ai') {
+            // AI生成模式：展示AI精美优化画作
+            compH2.textContent = 'AI 妙笔生花';
+            compP.textContent = '墨韵流转间，AI为你演绎宋画意境';
+            finalTitle.textContent = T[currentTheme].title + ' · AI雅绘';
+            finalDesc.textContent = '此画以你的笔迹为引，经AI润色补全，重现宋人画意。你的勾勒化作骨，AI添墨成韵，共成此雅趣之作。';
+        } else {
+            // 用户完成模式：展示用户原作风采
+            compH2.textContent = '您的丹青之作';
+            compP.textContent = '笔随心动，墨留真情';
+            finalTitle.textContent = T[currentTheme].title + ' · 手书';
+            finalDesc.textContent = '此画尽出君手，一笔一墨皆是你心迹。虽有虚线引导，然浓淡干湿、快慢缓急，全由你定，此乃真我之作也。';
+        }
+    }
+
+    function downloadPainting() {
+        const link = document.createElement('a');
+        link.download = `宋画雅趣_${T[currentTheme].title}.png`;
+        link.href = finalImg.src;
+        link.click();
+        showHint('画作已保存');
+    }
+
+    function restart() {
+        compScreen.classList.remove('active');
+        themeSel.classList.add('active');
+        undoStack = []; undoIndex = -1;
+    }
+
+    function showHint(msg) {
+        hint.textContent = msg;
+        hint.classList.add('show');
+        setTimeout(() => hint.classList.remove('show'), 2500);
+    }
+
+    // ==================== 秋菊傲霜 ====================
+    function renderChrysanthemum(ctx, progress, guides) {
+        const w = ctx.canvas.width, h = ctx.canvas.height;
+        // 阶段1：茎（progress 0~0.3）
+        if (progress > 0) {
+            const p1 = Math.min(1, progress / 0.3);
+            drawChrysanthemumStems(ctx, w, h, p1);
+        }
+        // 阶段2：叶子（progress 0.25~0.5）
+        if (progress > 0.25) {
+            const p2 = Math.min(1, (progress - 0.25) / 0.25);
+            drawChrysanthemumLeaves(ctx, w, h, p2);
+        }
+        // 阶段3：菊花（progress 0.4~0.8）
+        if (progress > 0.4) {
+            const p3 = Math.min(1, (progress - 0.4) / 0.4);
+            drawChrysanthemumFlowers(ctx, w, h, p3);
+        }
+        // 阶段4：细节（progress 0.75~1.0）
+        if (progress > 0.75) {
+            const p4 = Math.min(1, (progress - 0.75) / 0.25);
+            drawChrysanthemumDetails(ctx, w, h, p4);
+        }
+
+        if (progress > 0.9) {
+            const p6 = Math.min(1, (progress - 0.9) / 0.1);
+            drawSealAndSignature(ctx, w, h, '秋菊', p6);
+        }
+    }
+
+    function drawChrysanthemumStems(ctx, w, h, p) {
+        const stems = [
+            [[0.3,0.9],[0.32,0.75],[0.3,0.6],[0.28,0.45],[0.3,0.3]],
+            [[0.3,0.6],[0.22,0.52],[0.15,0.45]],
+            [[0.3,0.45],[0.38,0.38],[0.45,0.32]],
+            [[0.28,0.3],[0.22,0.22],[0.18,0.15]]
+        ];
+        ctx.save();
+        ctx.strokeStyle = '#3a5a3a';
+        ctx.lineCap = 'round';
+        stems.forEach((stem, idx) => {
+            if (p < idx * 0.2) return;
+            const sp = Math.min(1, (p - idx * 0.2) / 0.3);
+            const pts = stem.map(v => [v[0]*w, v[1]*h]);
+            const count = Math.ceil(pts.length * sp);
+            if (count < 2) return;
+            for (let i = 0; i < count - 1; i++) {
+                ctx.lineWidth = 3 - idx * 0.3;
+                ctx.beginPath();
+                ctx.moveTo(pts[i][0], pts[i][1]);
+                ctx.lineTo(pts[i+1][0], pts[i+1][1]);
+                ctx.stroke();
+            }
+        });
+        ctx.restore();
+    }
+
+    function drawChrysanthemumLeaves(ctx, w, h, p) {
+        const leaves = [
+            [[0.32,0.75],[0.38,0.7],[0.42,0.72],[0.4,0.76],[0.36,0.78]],
+            [[0.28,0.45],[0.22,0.42],[0.2,0.45],[0.24,0.48]],
+            [[0.3,0.6],[0.36,0.55],[0.38,0.58],[0.34,0.62]]
+        ];
+        ctx.save();
+        leaves.forEach((leaf, idx) => {
+            if (p < idx * 0.25) return;
+            const lp = Math.min(1, (p - idx * 0.25) / 0.3);
+            const pts = leaf.map(v => [v[0]*w, v[1]*h]);
+            const count = Math.ceil(pts.length * lp);
+            if (count < 3) return;
+            ctx.beginPath();
+            ctx.moveTo(pts[0][0], pts[0][1]);
+            for (let i = 1; i < count; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+            ctx.closePath();
+            ctx.fillStyle = `rgba(80,120,60,${0.5 * lp})`;
+            ctx.fill();
+            ctx.strokeStyle = `rgba(60,100,40,${0.7 * lp})`;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            // 叶脉
+            const cx = pts.reduce((s,p) => s+p[0], 0) / pts.length;
+            const cy = pts.reduce((s,p) => s+p[1], 0) / pts.length;
+            ctx.strokeStyle = `rgba(50,90,30,${0.4 * lp})`;
+            ctx.lineWidth = 0.8;
+            for (let i = 0; i < count; i += 2) {
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(pts[i][0], pts[i][1]);
+                ctx.stroke();
+            }
+        });
+        ctx.restore();
+    }
+
+    function drawChrysanthemumFlowers(ctx, w, h, p) {
+        const flowers = [
+            { cx: 0.15, cy: 0.45, r: 28, color: '#d4a030' },
+            { cx: 0.45, cy: 0.32, r: 24, color: '#e0b040' },
+            { cx: 0.18, cy: 0.15, r: 22, color: '#c49020' },
+            { cx: 0.30, cy: 0.30, r: 26, color: '#d8a838' }
+        ];
+        ctx.save();
+        flowers.forEach((f, idx) => {
+            if (p < idx * 0.2) return;
+            const fp = Math.min(1, (p - idx * 0.2) / 0.25);
+            const fx = f.cx * w, fy = f.cy * h;
+            // 花瓣 - 多层放射状
+            const petalCount = 12;
+            for (let i = 0; i < Math.floor(petalCount * fp); i++) {
+                const angle = (i / petalCount) * Math.PI * 2;
+                const plen = f.r * (0.8 + Math.sin(i * 1.5) * 0.3);
+                ctx.beginPath();
+                ctx.moveTo(fx, fy);
+                ctx.quadraticCurveTo(
+                    fx + Math.cos(angle - 0.15) * plen * 0.6,
+                    fy + Math.sin(angle - 0.15) * plen * 0.6,
+                    fx + Math.cos(angle) * plen,
+                    fy + Math.sin(angle) * plen
+                );
+                ctx.quadraticCurveTo(
+                    fx + Math.cos(angle + 0.15) * plen * 0.6,
+                    fy + Math.sin(angle + 0.15) * plen * 0.6,
+                    fx, fy
+                );
+                ctx.fillStyle = `rgba(220,180,60,${0.7 * fp})`;
+                ctx.fill();
+                ctx.strokeStyle = `rgba(180,140,30,${0.5 * fp})`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            }
+            // 花心
+            ctx.beginPath();
+            ctx.arc(fx, fy, f.r * 0.2, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(160,120,20,${0.8 * fp})`;
+            ctx.fill();
+        });
+        ctx.restore();
+    }
+
+    function drawChrysanthemumDetails(ctx, w, h, p) {
+        // 添加一些飘落的花瓣
+        ctx.save();
+        for (let i = 0; i < 5; i++) {
+            if (p < i * 0.15) continue;
+            const x = (0.1 + i * 0.18) * w;
+            const y = (0.5 + Math.sin(i * 2) * 0.15) * h;
+            const rot = i * 0.8;
+            ctx.translate(x, y);
+            ctx.rotate(rot);
+            ctx.fillStyle = `rgba(210,170,50,${0.4 * p})`;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 6, 3, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.rotate(-rot);
+            ctx.translate(-x, -y);
+        }
+        ctx.restore();
+    }
+
+    // ==================== 国色天香 ====================
+    function renderPeony(ctx, progress, guides) {
+        const w = ctx.canvas.width, h = ctx.canvas.height;
+        if (progress > 0) {
+            const p1 = Math.min(1, progress / 0.3);
+            drawPeonyStems(ctx, w, h, p1);
+        }
+        if (progress > 0.25) {
+            const p2 = Math.min(1, (progress - 0.25) / 0.25);
+            drawPeonyLeaves(ctx, w, h, p2);
+        }
+        if (progress > 0.4) {
+            const p3 = Math.min(1, (progress - 0.4) / 0.4);
+            drawPeonyFlowers(ctx, w, h, p3);
+        }
+        if (progress > 0.8) {
+            const p4 = Math.min(1, (progress - 0.8) / 0.2);
+            drawPeonyDetails(ctx, w, h, p4);
+        }
+
+        if (progress > 0.9) {
+            const p6 = Math.min(1, (progress - 0.9) / 0.1);
+            drawSealAndSignature(ctx, w, h, '牡丹', p6);
+        }
+    }
+
+    function drawPeonyStems(ctx, w, h, p) {
+        const stems = [
+            [[0.5,0.92],[0.52,0.8],[0.5,0.65],[0.48,0.5],[0.5,0.38]],
+            [[0.48,0.5],[0.38,0.45],[0.3,0.4]],
+            [[0.5,0.65],[0.58,0.58],[0.65,0.52]]
+        ];
+        ctx.save();
+        ctx.strokeStyle = '#4a7a3a';
+        ctx.lineCap = 'round';
+        stems.forEach((stem, idx) => {
+            if (p < idx * 0.2) return;
+            const sp = Math.min(1, (p - idx * 0.2) / 0.3);
+            const pts = stem.map(v => [v[0]*w, v[1]*h]);
+            const count = Math.ceil(pts.length * sp);
+            if (count < 2) return;
+            for (let i = 0; i < count - 1; i++) {
+                ctx.lineWidth = 4 - idx * 0.5;
+                ctx.beginPath();
+                ctx.moveTo(pts[i][0], pts[i][1]);
+                ctx.lineTo(pts[i+1][0], pts[i+1][1]);
+                ctx.stroke();
+            }
+        });
+        ctx.restore();
+    }
+
+    function drawPeonyLeaves(ctx, w, h, p) {
+        const leaves = [
+            [[0.52,0.8],[0.44,0.74],[0.42,0.78],[0.48,0.84]],
+            [[0.5,0.65],[0.58,0.6],[0.6,0.64],[0.54,0.68]],
+            [[0.48,0.5],[0.4,0.45],[0.38,0.49],[0.44,0.53]]
+        ];
+        ctx.save();
+        leaves.forEach((leaf, idx) => {
+            if (p < idx * 0.25) return;
+            const lp = Math.min(1, (p - idx * 0.25) / 0.3);
+            const pts = leaf.map(v => [v[0]*w, v[1]*h]);
+            const count = Math.ceil(pts.length * lp);
+            if (count < 3) return;
+            ctx.beginPath();
+            ctx.moveTo(pts[0][0], pts[0][1]);
+            for (let i = 1; i < count; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+            ctx.closePath();
+            ctx.fillStyle = `rgba(60,110,50,${0.5 * lp})`;
+            ctx.fill();
+            ctx.strokeStyle = `rgba(40,90,30,${0.7 * lp})`;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+        });
+        ctx.restore();
+    }
+
+    function drawPeonyFlowers(ctx, w, h, p) {
+        const flowers = [
+            { cx: 0.5, cy: 0.38, r: 40, color: '#c45c68', layers: 3 },
+            { cx: 0.3, cy: 0.4, r: 30, color: '#d46a78', layers: 2 },
+            { cx: 0.65, cy: 0.52, r: 16, color: '#e08090', layers: 1 }
+        ];
+        ctx.save();
+        flowers.forEach((f, idx) => {
+            if (p < idx * 0.25) return;
+            const fp = Math.min(1, (p - idx * 0.25) / 0.3);
+            const fx = f.cx * w, fy = f.cy * h;
+            // 多层花瓣
+            for (let layer = 0; layer < f.layers; layer++) {
+                const lr = f.r * (1 - layer * 0.25);
+                const petalCount = 8 + layer * 4;
+                const alpha = 0.6 - layer * 0.1;
+                for (let i = 0; i < Math.floor(petalCount * fp); i++) {
+                    const angle = (i / petalCount) * Math.PI * 2 + layer * 0.3;
+                    const plen = lr * (0.9 + Math.sin(i * 2 + layer) * 0.2);
+                    ctx.beginPath();
+                    ctx.moveTo(fx, fy);
+                    ctx.quadraticCurveTo(
+                        fx + Math.cos(angle - 0.2) * plen * 0.5,
+                        fy + Math.sin(angle - 0.2) * plen * 0.5,
+                        fx + Math.cos(angle) * plen,
+                        fy + Math.sin(angle) * plen
+                    );
+                    ctx.quadraticCurveTo(
+                        fx + Math.cos(angle + 0.2) * plen * 0.5,
+                        fy + Math.sin(angle + 0.2) * plen * 0.5,
+                        fx, fy
+                    );
+                    const r = 196 + layer * 10;
+                    const g = 92 + layer * 5;
+                    const b = 104 - layer * 5;
+                    ctx.fillStyle = `rgba(${r},${g},${b},${alpha * fp})`;
+                    ctx.fill();
+                }
+            }
+            // 花心
+            ctx.beginPath();
+            ctx.arc(fx, fy, f.r * 0.15, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(220,180,40,${0.8 * fp})`;
+            ctx.fill();
+            // 花蕊
+            for (let i = 0; i < 6; i++) {
+                const angle = i * Math.PI / 3;
+                ctx.beginPath();
+                ctx.moveTo(fx, fy);
+                ctx.lineTo(fx + Math.cos(angle) * f.r * 0.2, fy + Math.sin(angle) * f.r * 0.2);
+                ctx.strokeStyle = `rgba(200,160,30,${0.6 * fp})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        });
+        ctx.restore();
+    }
+
+    function drawPeonyDetails(ctx, w, h, p) {
+        ctx.save();
+        // 添加一些光泽效果
+        ctx.globalAlpha = 0.1 * p;
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(0.5 * w, 0.38 * h, 30, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    // ==================== 荷塘清趣 ====================
+    function renderLotus(ctx, progress, guides) {
+        const w = ctx.canvas.width, h = ctx.canvas.height;
+        if (progress > 0) {
+            const p1 = Math.min(1, progress / 0.3);
+            drawLotusStems(ctx, w, h, p1);
+        }
+        if (progress > 0.2) {
+            const p2 = Math.min(1, (progress - 0.2) / 0.3);
+            drawLotusLeaves(ctx, w, h, p2);
+        }
+        if (progress > 0.4) {
+            const p3 = Math.min(1, (progress - 0.4) / 0.35);
+            drawLotusFlower(ctx, w, h, p3);
+        }
+        if (progress > 0.7) {
+            const p4 = Math.min(1, (progress - 0.7) / 0.3);
+            drawLotusDetails(ctx, w, h, p4);
+        }
+
+        if (progress > 0.9) {
+            const p6 = Math.min(1, (progress - 0.9) / 0.1);
+            drawSealAndSignature(ctx, w, h, '荷花', p6);
+        }
+    }
+
+    function drawLotusStems(ctx, w, h, p) {
+        const stems = [
+            [[0.35,0.9],[0.36,0.75],[0.35,0.6],[0.34,0.45],[0.35,0.32]],
+            [[0.55,0.88],[0.54,0.72],[0.55,0.58],[0.56,0.45]]
+        ];
+        ctx.save();
+        ctx.strokeStyle = '#4a7a4a';
+        ctx.lineCap = 'round';
+        stems.forEach((stem, idx) => {
+            if (p < idx * 0.3) return;
+            const sp = Math.min(1, (p - idx * 0.3) / 0.4);
+            const pts = stem.map(v => [v[0]*w, v[1]*h]);
+            const count = Math.ceil(pts.length * sp);
+            if (count < 2) return;
+            for (let i = 0; i < count - 1; i++) {
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(pts[i][0], pts[i][1]);
+                ctx.lineTo(pts[i+1][0], pts[i+1][1]);
+                ctx.stroke();
+            }
+        });
+        ctx.restore();
+    }
+
+    function drawLotusLeaves(ctx, w, h, p) {
+        const leaves = [
+            [[0.35,0.6],[0.22,0.55],[0.18,0.62],[0.22,0.7],[0.35,0.68],[0.48,0.7],[0.52,0.62],[0.48,0.55]],
+            [[0.55,0.58],[0.45,0.52],[0.42,0.58],[0.46,0.64],[0.55,0.62],[0.64,0.64],[0.68,0.58],[0.64,0.52]]
+        ];
+        ctx.save();
+        leaves.forEach((leaf, idx) => {
+            if (p < idx * 0.3) return;
+            const lp = Math.min(1, (p - idx * 0.3) / 0.4);
+            const pts = leaf.map(v => [v[0]*w, v[1]*h]);
+            const count = Math.ceil(pts.length * lp);
+            if (count < 3) return;
+            ctx.beginPath();
+            ctx.moveTo(pts[0][0], pts[0][1]);
+            for (let i = 1; i < count; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+            ctx.closePath();
+            ctx.fillStyle = `rgba(60,120,70,${0.5 * lp})`;
+            ctx.fill();
+            ctx.strokeStyle = `rgba(40,100,50,${0.7 * lp})`;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            // 叶脉
+            const cx = pts.reduce((s,p) => s+p[0], 0) / pts.length;
+            const cy = pts.reduce((s,p) => s+p[1], 0) / pts.length;
+            ctx.strokeStyle = `rgba(80,140,90,${0.5 * lp})`;
+            ctx.lineWidth = 1;
+            for (let i = 0; i < count; i += 2) {
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(pts[i][0], pts[i][1]);
+                ctx.stroke();
+            }
+        });
+        ctx.restore();
+    }
+
+    function drawLotusFlower(ctx, w, h, p) {
+        // 主荷花
+        const fx = 0.35 * w, fy = 0.32 * h, r = 35;
+        ctx.save();
+        const petalCount = 10;
+        for (let i = 0; i < Math.floor(petalCount * p); i++) {
+            const angle = (i / petalCount) * Math.PI * 2 - Math.PI / 2;
+            const plen = r * (0.9 + Math.sin(i * 1.2) * 0.2);
+            ctx.beginPath();
+            ctx.moveTo(fx, fy);
+            ctx.quadraticCurveTo(
+                fx + Math.cos(angle - 0.15) * plen * 0.5,
+                fy + Math.sin(angle - 0.15) * plen * 0.5,
+                fx + Math.cos(angle) * plen,
+                fy + Math.sin(angle) * plen
+            );
+            ctx.quadraticCurveTo(
+                fx + Math.cos(angle + 0.15) * plen * 0.5,
+                fy + Math.sin(angle + 0.15) * plen * 0.5,
+                fx, fy
+            );
+            ctx.fillStyle = `rgba(240,200,220,${0.7 * p})`;
+            ctx.fill();
+            ctx.strokeStyle = `rgba(220,160,180,${0.5 * p})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+        }
+        // 花心
+        ctx.beginPath();
+        ctx.arc(fx, fy, r * 0.2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(220,180,60,${0.8 * p})`;
+        ctx.fill();
+        // 花苞
+        const bx = 0.56 * w, by = 0.45 * h;
+        ctx.beginPath();
+        ctx.moveTo(bx, by);
+        ctx.quadraticCurveTo(bx - 8, by - 12, bx, by - 20);
+        ctx.quadraticCurveTo(bx + 8, by - 12, bx, by);
+        ctx.fillStyle = `rgba(230,190,210,${0.6 * p})`;
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function drawLotusDetails(ctx, w, h, p) {
+        ctx.save();
+        // 蜻蜓
+        const dx = 0.6 * w, dy = 0.35 * h;
+        ctx.strokeStyle = `rgba(40,60,40,${0.6 * p})`;
+        ctx.lineWidth = 1.5;
+        // 身体
+        ctx.beginPath();
+        ctx.moveTo(dx - 10, dy);
+        ctx.lineTo(dx + 10, dy);
+        ctx.stroke();
+        // 翅膀
+        ctx.beginPath();
+        ctx.ellipse(dx - 3, dy - 5, 8, 3, -0.3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200,220,230,${0.4 * p})`;
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(dx + 3, dy + 5, 8, 3, 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        // 水面波纹
+        ctx.strokeStyle = `rgba(100,140,160,${0.3 * p})`;
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 3; i++) {
+            ctx.beginPath();
+            ctx.ellipse((0.2 + i * 0.3) * w, 0.82 * h, 20 + i * 5, 3, 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    // ==================== 苍松迎客 ====================
+    function renderPine(ctx, progress, guides) {
+        const w = ctx.canvas.width, h = ctx.canvas.height;
+        if (progress > 0) {
+            const p1 = Math.min(1, progress / 0.3);
+            drawPineTrunk(ctx, w, h, p1);
+        }
+        if (progress > 0.25) {
+            const p2 = Math.min(1, (progress - 0.25) / 0.3);
+            drawPineBranches(ctx, w, h, p2);
+        }
+        if (progress > 0.45) {
+            const p3 = Math.min(1, (progress - 0.45) / 0.35);
+            drawPineNeedles(ctx, w, h, p3);
+        }
+        if (progress > 0.75) {
+            const p4 = Math.min(1, (progress - 0.75) / 0.25);
+            drawPineDetails(ctx, w, h, p4);
+        }
+
+        if (progress > 0.9) {
+            const p6 = Math.min(1, (progress - 0.9) / 0.1);
+            drawSealAndSignature(ctx, w, h, '苍松', p6);
+        }
+    }
+
+    function drawPineTrunk(ctx, w, h, p) {
+        const trunk = [[0.5,0.95],[0.48,0.82],[0.52,0.68],[0.48,0.55],[0.52,0.42],[0.5,0.3],[0.52,0.18]];
+        const pts = trunk.map(v => [v[0]*w, v[1]*h]);
+        const count = Math.ceil(pts.length * p);
+        if (count < 2) return;
+        ctx.save();
+        // 主干粗线
+        ctx.strokeStyle = '#3a2a1a';
+        ctx.lineCap = 'round';
+        for (let i = 0; i < count - 1; i++) {
+            const t = i / (pts.length - 1);
+            ctx.lineWidth = 22 * (1 - t * 0.5);
+            ctx.beginPath();
+            ctx.moveTo(pts[i][0], pts[i][1]);
+            ctx.lineTo(pts[i+1][0], pts[i+1][1]);
+            ctx.stroke();
+        }
+        // 树皮纹理
+        ctx.strokeStyle = 'rgba(80,60,40,0.4)';
+        ctx.lineWidth = 2;
+        for (let i = 1; i < count - 1; i++) {
+            for (let k = 0; k < 4; k++) {
+                const ox = (Math.random() - 0.5) * 15;
+                ctx.beginPath();
+                ctx.moveTo(pts[i][0] + ox, pts[i][1] - 5);
+                ctx.lineTo(pts[i][0] + ox + 5, pts[i][1] + 5);
+                ctx.stroke();
+            }
+        }
+        ctx.restore();
+    }
+
+    function drawPineBranches(ctx, w, h, p) {
+        const branches = [
+            [[0.48,0.55],[0.38,0.5],[0.28,0.48],[0.18,0.5]],
+            [[0.52,0.42],[0.62,0.38],[0.72,0.35],[0.82,0.38]],
+            [[0.5,0.3],[0.4,0.26],[0.32,0.24],[0.25,0.26]]
+        ];
+        ctx.save();
+        ctx.strokeStyle = '#2a1a0a';
+        ctx.lineCap = 'round';
+        branches.forEach((branch, idx) => {
+            if (p < idx * 0.25) return;
+            const bp = Math.min(1, (p - idx * 0.25) / 0.3);
+            const pts = branch.map(v => [v[0]*w, v[1]*h]);
+            const count = Math.ceil(pts.length * bp);
+            if (count < 2) return;
+            for (let i = 0; i < count - 1; i++) {
+                const t = i / (pts.length - 1);
+                ctx.lineWidth = 8 * (1 - t * 0.5);
+                ctx.beginPath();
+                ctx.moveTo(pts[i][0], pts[i][1]);
+                ctx.lineTo(pts[i+1][0], pts[i+1][1]);
+                ctx.stroke();
+            }
+        });
+        ctx.restore();
+    }
+
+    function drawPineNeedles(ctx, w, h, p) {
+        const needleGroups = [
+            { x: 0.25, y: 0.26, count: 5 },
+            { x: 0.82, y: 0.38, count: 5 },
+            { x: 0.18, y: 0.50, count: 4 },
+            { x: 0.52, y: 0.18, count: 5 }
+        ];
+        ctx.save();
+        needleGroups.forEach((group, idx) => {
+            if (p < idx * 0.2) return;
+            const gp = Math.min(1, (p - idx * 0.2) / 0.25);
+            const gx = group.x * w, gy = group.y * h;
+            for (let i = 0; i < Math.floor(group.count * gp); i++) {
+                const angle = (i / group.count) * Math.PI * 2 + idx * 0.5;
+                const nlen = 25 + Math.random() * 15;
+                ctx.beginPath();
+                ctx.moveTo(gx, gy);
+                ctx.lineTo(gx + Math.cos(angle) * nlen, gy + Math.sin(angle) * nlen);
+                ctx.strokeStyle = `rgba(40,70,30,${0.7 * gp})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                // 针叶簇
+                for (let k = 0; k < 3; k++) {
+                    const subAngle = angle + (k - 1) * 0.2;
+                    ctx.beginPath();
+                    ctx.moveTo(gx + Math.cos(angle) * nlen * 0.7, gy + Math.sin(angle) * nlen * 0.7);
+                    ctx.lineTo(gx + Math.cos(subAngle) * nlen, gy + Math.sin(subAngle) * nlen);
+                    ctx.strokeStyle = `rgba(50,85,35,${0.5 * gp})`;
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+            }
+        });
+        ctx.restore();
+    }
+
+    function drawPineDetails(ctx, w, h, p) {
+        ctx.save();
+        // 添加一些松针细节
+        ctx.fillStyle = `rgba(45,75,30,${0.3 * p})`;
+        for (let i = 0; i < 20; i++) {
+            const x = (0.15 + Math.random() * 0.7) * w;
+            const y = (0.15 + Math.random() * 0.4) * h;
+            ctx.beginPath();
+            ctx.arc(x, y, 2 + Math.random() * 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+    }
+</script>
+</body>
+</html>

@@ -688,10 +688,10 @@
         // ===== 文物数据 =====
         const artifacts = [
             // 真实3D文物（前4个）
-            { name: '击鼓说唱俑', category: 'pottery', dynasty: '东汉', has3d: true, url: 'museum-jiagu.html', img: 'artifact-drum-storyteller.jpg', desc: '击鼓说唱俑出土于四川成都天回山东汉崖墓，俑为泥质灰陶，头戴帻，额前有花饰，袒胸露腹，左臂环抱一扁鼓，右手举槌欲击，作击鼓说唱表演。其神态诙谐，动作夸张，是一件富有浓厚民间气息和地方风貌的优秀雕塑作品，被誉为"天下第一俑"。' },
-            { name: '虎钮淳于', category: 'bronze', dynasty: '战国', has3d: true, url: 'museum-huniu.html', img: 'artifact-tiger-chunyu.jpg', desc: '虎钮淳于为战国时期青铜乐器，器顶作圆盘形，中央立一虎形钮，虎作昂首张口状，造型威武雄健。淳于为古代军乐器，常与鼓配合使用，用于战争中指挥进退。此器造型精美，虎钮栩栩如生，是研究古代巴文化的重要实物资料。' },
-            { name: '青铜鸟', category: 'bronze', dynasty: '商代', has3d: true, url: 'museum-niao.html', img: 'artifact-bronze-bird.jpg', desc: '青铜鸟为商代晚期青铜酒器，整体作鸟形，昂首挺胸，双翅收敛，尾羽下垂，造型生动传神。鸟身饰有精细的羽毛纹，工艺精湛，是商代青铜艺术的杰出代表。这类鸟兽形尊在商周时期极为盛行，既是实用酒器，也是重要的礼器。' },
-            { name: '三羊尊', category: 'bronze', dynasty: '商代', has3d: true, url: 'sanyangzun-3d.html', img: 'artifact-three-goat-zun.jpg', desc: '三羊尊为商代晚期青铜酒器，大口外撇，长颈折肩，深腹圈足。肩部装饰三只高浮雕卷角羊首，羊首双目圆睁，双角卷曲，形象逼真生动。尊通体饰以云雷纹为地的兽面纹，纹饰繁缛精美，代表了商代青铜铸造工艺的最高水平。' },
+            { name: '击鼓说唱俑', category: 'pottery', dynasty: '东汉', has3d: true, url: 'https://justxylia.github.io/fingertip-museum/museum-jiagu.html', img: 'artifact-drum-storyteller.jpg', desc: '击鼓说唱俑出土于四川成都天回山东汉崖墓，俑为泥质灰陶，头戴帻，额前有花饰，袒胸露腹，左臂环抱一扁鼓，右手举槌欲击，作击鼓说唱表演。其神态诙谐，动作夸张，是一件富有浓厚民间气息和地方风貌的优秀雕塑作品，被誉为"天下第一俑"。' },
+            { name: '虎钮淳于', category: 'bronze', dynasty: '战国', has3d: true, url: 'https://justxylia.github.io/fingertip-museum/museum-huniu.html', img: 'artifact-tiger-chunyu.jpg', desc: '虎钮淳于为战国时期青铜乐器，器顶作圆盘形，中央立一虎形钮，虎作昂首张口状，造型威武雄健。淳于为古代军乐器，常与鼓配合使用，用于战争中指挥进退。此器造型精美，虎钮栩栩如生，是研究古代巴文化的重要实物资料。' },
+            { name: '青铜鸟', category: 'bronze', dynasty: '商代', has3d: true, url: 'https://justxylia.github.io/fingertip-museum/museum-niao.html', img: 'artifact-bronze-bird.jpg', desc: '青铜鸟为商代晚期青铜酒器，整体作鸟形，昂首挺胸，双翅收敛，尾羽下垂，造型生动传神。鸟身饰有精细的羽毛纹，工艺精湛，是商代青铜艺术的杰出代表。这类鸟兽形尊在商周时期极为盛行，既是实用酒器，也是重要的礼器。' },
+            { name: '三羊尊', category: 'bronze', dynasty: '商代', has3d: true, url: 'https://justxylia.github.io/fingertip-museum/museum-3d.html', img: 'artifact-three-goat-zun.jpg', desc: '三羊尊为商代晚期青铜酒器，大口外撇，长颈折肩，深腹圈足。肩部装饰三只高浮雕卷角羊首，羊首双目圆睁，双角卷曲，形象逼真生动。尊通体饰以云雷纹为地的兽面纹，纹饰繁缛精美，代表了商代青铜铸造工艺的最高水平。' },
 
             // 青铜器
             { name: '后母戊鼎', category: 'bronze', dynasty: '商代', img: 'artifact-houmwu-ding.jpg', desc: '后母戊鼎（原称司母戊鼎），又称后母戊大方鼎、后母戊方鼎，是商代晚期青铜铸品，是已知中国古代最重的青铜器。鼎身四周铸有精巧的盘龙纹和饕餮纹，增加了文物本身的威武凝重之感。此鼎形制巨大，雄伟庄严，重832.84公斤，反映了商代青铜铸造业的生产规模和技术水平。' },
@@ -1108,7 +1108,8 @@
             modalDesc.textContent = artifact.desc;
             
             modal3dBtn.style.display = 'inline-flex';
-            modal3dBtn.href = artifact.url || 'sanyangzun-3d.html';
+            modal3dBtn.href = artifact.url || 'https://justxylia.github.io/fingertip-museum/museum-3d.html';
+            modal3dBtn.target = /^https?:\/\//.test(modal3dBtn.href) ? '_blank' : '_self';
             
             modalOverlay.classList.add('active');
             document.body.style.overflow = 'hidden';
