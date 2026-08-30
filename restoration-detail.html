@@ -1,1 +1,448 @@
-FULL_RESTORATION_DETAIL_PLACEHOLDER
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>修复技术 · 中华文物</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+    --color-primary: #c9a962;
+    --color-primary-dark: #8b7355;
+    --color-bg-dark: #0a0a0f;
+    --color-bg-medium: #12121a;
+    --color-bg-light: #1a1a25;
+    --glass-bg: rgba(20, 20, 30, 0.7);
+    --glass-border: rgba(201, 169, 98, 0.15);
+    --color-text: #f5f0e8;
+    --color-text-muted: #8a8578;
+    --font-display: 'Ma Shan Zheng', cursive;
+    --font-serif: 'Noto Serif SC', serif;
+    --font-sans: 'Noto Sans SC', sans-serif;
+}
+html { scroll-behavior: smooth; }
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg-dark);
+    color: var(--color-text);
+    overflow-x: hidden;
+    line-height: 1.8;
+}
+
+/* 导航 */
+.nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 3rem;
+    background: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+}
+.nav-left { display: flex; align-items: center; gap: 1.2rem; }
+.back-link {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    border: 1.5px solid var(--color-primary);
+    border-radius: 999px;
+    background: rgba(201,169,98,0.08);
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+.back-link svg { width: 16px; height: 16px; }
+.back-link:hover { background: rgba(201,169,98,0.18); transform: translateX(-2px); }
+.nav-logo {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+}
+.nav-links { display: flex; list-style: none; gap: 2rem; }
+.nav-links a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+    position: relative;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--color-primary); }
+
+/* 页面头部 */
+.page-hero {
+    padding: 8rem 2rem 3rem;
+    text-align: center;
+    background: radial-gradient(ellipse at top, rgba(201,169,98,0.1), transparent 60%);
+    position: relative;
+}
+.page-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+}
+.page-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+    color: var(--color-primary);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.6rem;
+    text-shadow: 0 0 30px rgba(201,169,98,0.3);
+}
+.page-hero p {
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    max-width: 720px;
+    margin: 0 auto;
+}
+.crumb {
+    display: inline-block;
+    padding: 4px 14px;
+    margin-bottom: 1rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.3em;
+    color: var(--color-primary);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: rgba(201,169,98,0.06);
+}
+
+/* 详情网格 */
+.detail-section {
+    padding: 4rem 2rem;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+}
+@media (max-width: 880px) {
+    .detail-grid { grid-template-columns: 1fr; }
+}
+.detail-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    position: relative;
+}
+.detail-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    border-color: rgba(201,169,98,0.3);
+}
+.detail-card-image {
+    width: 100%; height: 240px;
+    overflow: hidden; position: relative;
+    background: #0d0d14;
+}
+.detail-card-image img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+.detail-card:hover .detail-card-image img { transform: scale(1.05); }
+.detail-card-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(10,10,15,0.9), transparent);
+}
+.detail-card-tag {
+    position: absolute;
+    top: 1.2rem; left: 1.2rem;
+    padding: 0.35rem 0.9rem;
+    background: rgba(201,169,98,0.18);
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    font-size: 0.78rem;
+    border-radius: 4px;
+    z-index: 2;
+    backdrop-filter: blur(10px);
+    letter-spacing: 0.1em;
+}
+.detail-card-content { padding: 1.8rem 1.8rem 2rem; }
+.detail-card-content h3 {
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    color: var(--color-primary);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.08em;
+}
+.detail-card-content p {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+}
+.detail-card-content .features {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+    margin-top: 1.2rem;
+}
+.detail-card-content .features span {
+    padding: 0.3rem 0.8rem;
+    background: rgba(201,169,98,0.08);
+    border: 1px solid rgba(201,169,98,0.2);
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+}
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.4rem;
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    color: var(--color-bg-dark);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 600;
+    border-radius: 8px;
+    letter-spacing: 0.15em;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(201,169,98,0.25);
+    border: 1px solid var(--color-primary);
+}
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201,169,98,0.4);
+}
+.action-btn svg { width: 16px; height: 16px; }
+.action-btn.ghost {
+    background: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    box-shadow: none;
+    margin-left: 0.6rem;
+}
+.action-btn.ghost:hover {
+    background: rgba(201,169,98,0.1);
+}
+
+/* 时间线 */
+.timeline-section {
+    padding: 4rem 2rem;
+    background: var(--color-bg-medium);
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+}
+.timeline-section-inner { max-width: 960px; margin: 0 auto; }
+.timeline-title {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: var(--color-primary);
+    text-align: center;
+    margin-bottom: 3rem;
+    letter-spacing: 0.1em;
+}
+.timeline { position: relative; padding-left: 2.5rem; }
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--color-primary), transparent);
+}
+.timeline-item { position: relative; padding-bottom: 2.5rem; }
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2.85rem; top: 0.5rem;
+    width: 12px; height: 12px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    border: 3px solid var(--color-bg-medium);
+    box-shadow: 0 0 10px rgba(201,169,98,0.5);
+}
+.timeline-item h4 {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--color-primary);
+    margin-bottom: 0.4rem;
+}
+.timeline-item p {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+/* Footer */
+.footer {
+    padding: 2.5rem 2rem;
+    text-align: center;
+    background: var(--color-bg-dark);
+    border-top: 1px solid var(--glass-border);
+}
+.footer p {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    font-family: var(--font-serif);
+}
+
+@media (max-width: 720px) {
+    .nav { padding: 0.8rem 1.2rem; }
+    .nav-links { display: none; }
+    .back-link { padding: 0.4rem 0.8rem; font-size: 0.78rem; }
+    .page-hero { padding: 6rem 1rem 2rem; }
+    .detail-section, .timeline-section { padding: 3rem 1rem; }
+    .detail-card-content { padding: 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+    <div class="nav-left">
+        <a href="restoration-cover.html" class="back-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+            返回
+        </a>
+        <a href="index.html" class="nav-logo">中华文物</a>
+    </div>
+    <ul class="nav-links">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="vessels-cover.html">器之灵</a></li>
+        <li><a href="stone-cover.html">石之韵</a></li>
+        <li><a href="history-cover.html">史之痕</a></li>
+        <li><a href="restoration-cover.html" class="active">文物修复</a></li>
+        <li><a href="promotion-cover.html">推广</a></li>
+    </ul>
+</nav>
+
+<header class="page-hero">
+    <span class="crumb">RESTORATION · TECHNIQUE</span>
+    <h1>修复技术</h1>
+    <p>从传统手工技艺到现代数字保护，呈现文物修复领域的技术体系与实践案例</p>
+</header>
+
+<section class="detail-section">
+    <div class="detail-grid">
+
+        <!-- 数字孪生 -->
+        <div class="detail-card">
+            <div class="detail-card-image">
+                <img src="images/ai-color-restoration.jpg" alt="数字孪生">
+                <span class="detail-card-tag">数字孪生</span>
+            </div>
+            <div class="detail-card-content">
+                <h3>数字孪生</h3>
+                <p>通过高精度 3D 扫描与摄影测量技术，为每件文物建立 1:1 数字孪生体。数字孪生不仅记录外观形态，还包含材质、纹理、色彩等多维度信息，实现文物的永久存档与跨地域共享。</p>
+                <div class="features">
+                    <span>3D 扫描</span>
+                    <span>摄影测量</span>
+                    <span>材质分析</span>
+                    <span>永久存档</span>
+                </div>
+                <a href="heritage-scan.html" class="action-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    开启纹样鉴识
+                </a>
+                <a href="museum-3d.html" class="action-btn ghost">3D 鉴赏</a>
+            </div>
+        </div>
+
+        <!-- AI 色彩还原 -->
+        <div class="detail-card">
+            <div class="detail-card-image">
+                <img src="images/ai-color-restoration.jpg" alt="AI 色彩还原">
+                <span class="detail-card-tag">AI 还原</span>
+            </div>
+            <div class="detail-card-content">
+                <h3>AI 色彩还原</h3>
+                <p>基于深度学习模型，对褪色或剥落的文物色彩进行智能预测与还原。AI 色彩还原尊重历史依据与考古实证，让千年文物的原始色彩得以重现。</p>
+                <div class="features">
+                    <span>深度学习</span>
+                    <span>色彩预测</span>
+                    <span>历史依据</span>
+                    <span>考古实证</span>
+                </div>
+                <a href="museum-3d.html" class="action-btn">查看还原案例</a>
+            </div>
+        </div>
+
+        <!-- 传统工艺 -->
+        <div class="detail-card">
+            <div class="detail-card-image">
+                <img src="images/cuojinyinlongfangan.jpg" alt="传统工艺">
+                <span class="detail-card-tag">传统工艺</span>
+            </div>
+            <div class="detail-card-content">
+                <h3>传统修复工艺</h3>
+                <p>金缮、锔瓷、漆艺……每一项传统技艺都凝聚着匠人的智慧。我们以现代材料学解读古法，让传统工艺在当代焕发新生。</p>
+                <div class="features">
+                    <span>金缮</span>
+                    <span>锔瓷</span>
+                    <span>漆艺</span>
+                    <span>青铜修复</span>
+                </div>
+                <a href="vessels-cover.html" class="action-btn">了解器物</a>
+            </div>
+        </div>
+
+        <!-- 预防性保护 -->
+        <div class="detail-card">
+            <div class="detail-card-image">
+                <img src="images/leshan-buddha.jpg" alt="预防性保护">
+                <span class="detail-card-tag">预防保护</span>
+            </div>
+            <div class="detail-card-content">
+                <h3>预防性保护</h3>
+                <p>通过环境监测、温湿度控制、光辐射管理，将文物保护前置。预防胜于治疗——用科技为文物撑起全天候的"保护伞"。</p>
+                <div class="features">
+                    <span>环境监测</span>
+                    <span>温湿度控制</span>
+                    <span>光辐射管理</span>
+                    <span>智能预警</span>
+                </div>
+                <a href="stone-cover.html" class="action-btn">查看石质保护</a>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="timeline-section">
+    <div class="timeline-section-inner">
+        <h2 class="timeline-title">修复技术发展脉络</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <h4>手工修复时期</h4>
+                <p>以金缮、锔瓷、漆艺为代表的传统工艺，依赖师徒相传与个人经验，凝聚匠人智慧与文化记忆。</p>
+            </div>
+            <div class="timeline-item">
+                <h4>化学修复时期</h4>
+                <p>现代化学材料引入文物修复领域，合成树脂、缓蚀剂等提升修复效率与持久性。</p>
+            </div>
+            <div class="timeline-item">
+                <h4>数字技术介入</h4>
+                <p>3D 扫描、数字摄影、虚拟现实技术开始应用于文物记录。敦煌研究院等机构建立数字化档案，开启文物保护新纪元。</p>
+            </div>
+            <div class="timeline-item">
+                <h4>智能化阶段</h4>
+                <p>AI 色彩还原、智能监测、纹样鉴识等新技术与文物深度结合，构建"科技 + 文化"双向驱动的保护体系。</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <p>中华文物 · 修复技术 · 薪火相传</p>
+</footer>
+
+</body>
+</html>
