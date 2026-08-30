@@ -2,1520 +2,1024 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AR 文物识别扫描 | 文物修复 · 中华文物</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AR 文物识别 · 中华文物</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
     --color-primary: #c9a962;
     --color-primary-dark: #8b7355;
-    --color-primary-light: #e0c989;
-    --color-bg-dark: #0a0a0f;
-    --color-bg-medium: #12121a;
-    --color-bg-light: #1a1a25;
-    --glass-bg: rgba(20, 20, 30, 0.7);
-    --glass-border: rgba(201, 169, 98, 0.15);
-    --color-text: #f5f0e8;
+    --color-primary-light: #e8d08a;
+    --color-bg-dark: #0a0908;
+    --color-bg-medium: #14110d;
+    --color-bg-card: #1c1812;
+    --glass-bg: rgba(28, 24, 18, 0.78);
+    --glass-border: rgba(201, 169, 98, 0.22);
+    --color-text: #f5efe0;
     --color-text-muted: #8a8578;
-    --font-display: 'Ma Shan Zheng', cursive;
+    --color-success: #6fc18b;
+    --font-display: 'Ma Shan Zheng', 'Noto Serif SC', cursive, serif;
     --font-serif: 'Noto Serif SC', serif;
     --font-sans: 'Noto Sans SC', sans-serif;
-    --font-mono: 'Courier New', monospace;
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 100%; height: 100%; }
-html { scroll-behavior: smooth; }
+html, body { width: 100%; min-height: 100vh; }
 body {
     font-family: var(--font-sans);
     background: var(--color-bg-dark);
     color: var(--color-text);
     overflow-x: hidden;
-    line-height: 1.8;
-    min-height: 100vh;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
 }
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 
-/* 左上角浮动返回按钮 - 兜底，确保用户一定能看见 */
-.floating-back {
+/* ============ 大尺寸左上角返回按钮 ============ */
+.back-btn {
     position: fixed;
-    top: 18px;
-    left: 18px;
-    z-index: 1100;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.7rem 1.2rem;
-    color: #0a0a0f;
-    text-decoration: none;
-    font-size: 0.95rem;
+    gap: 0.6rem;
+    padding: 0.85rem 1.4rem 0.85rem 1.1rem;
+    color: var(--color-bg-dark);
+    font-size: 1rem;
     font-weight: 700;
     letter-spacing: 0.15em;
-    border: 2px solid var(--color-primary);
-    border-radius: 999px;
-    background: linear-gradient(135deg, #e8c878 0%, #c9a962 50%, #a8893f 100%);
-    box-shadow: 0 4px 20px rgba(201,169,98,0.5), 0 0 24px rgba(201,169,98,0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-family: var(--font-sans);
-}
-.floating-back svg { width: 18px; height: 18px; stroke-width: 2.5; }
-.floating-back:hover {
-    transform: translateX(-3px) scale(1.04);
-    box-shadow: 0 6px 28px rgba(201,169,98,0.65), 0 0 32px rgba(201,169,98,0.4);
     background: linear-gradient(135deg, #f0d488 0%, #d4b46a 50%, #b89548 100%);
-}
-.floating-back:active { transform: translateX(-1px) scale(0.98); }
-.floating-back .fb-text { display: inline; }
-@media (max-width: 720px) {
-    .floating-back { top: 12px; left: 12px; padding: 0.55rem 0.9rem; font-size: 0.82rem; }
-    .floating-back svg { width: 15px; height: 15px; }
-    .floating-back .fb-text { letter-spacing: 0.1em; }
-}
-
-/* 顶部导航 */
-.nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 1000;
-    padding: 1rem 2.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(10,10,15,0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--glass-border);
-}
-.nav-left {
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-}
-.nav-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.55rem 1.1rem;
-    color: var(--color-primary);
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    border: 1.5px solid var(--color-primary);
+    border: 2px solid #e8c878;
     border-radius: 999px;
-    background: rgba(201,169,98,0.12);
-    transition: all 0.3s ease;
-    font-family: var(--font-sans);
-    box-shadow: 0 2px 10px rgba(201,169,98,0.2);
+    box-shadow: 0 4px 18px rgba(201,169,98,0.55), 0 0 28px rgba(201,169,98,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
 }
-.nav-back svg { width: 16px; height: 16px; stroke-width: 2.2; }
-.nav-back:hover {
-    background: rgba(201,169,98,0.25);
-    border-color: var(--color-primary-light);
-    color: var(--color-primary-light);
-    transform: translateX(-2px);
-    box-shadow: 0 4px 16px rgba(201,169,98,0.4);
+.back-btn svg { width: 20px; height: 20px; stroke-width: 2.5; }
+.back-btn:hover {
+    transform: translateX(-3px);
+    box-shadow: 0 6px 24px rgba(201,169,98,0.7), 0 0 36px rgba(201,169,98,0.4), inset 0 1px 0 rgba(255,255,255,0.35);
 }
-.nav-back span { display: inline; }
+.back-btn:active { transform: translateX(-1px) scale(0.98); }
 @media (max-width: 720px) {
-    .nav-back { padding: 0.45rem 0.85rem; font-size: 0.78rem; }
+    .back-btn { top: 14px; left: 14px; padding: 0.7rem 1.1rem 0.7rem 0.9rem; font-size: 0.88rem; }
+    .back-btn svg { width: 17px; height: 17px; }
 }
 
-/* 导航右侧链接 */
-.nav-logo {
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    color: var(--color-primary);
-    text-decoration: none;
-    letter-spacing: 0.1em;
-}
-.nav-links { display: flex; gap: 2rem; list-style: none; }
-.nav-links a {
-    color: var(--color-text);
-    text-decoration: none;
-    font-size: 0.9rem;
-    padding: 0.4rem 0;
-    transition: color 0.3s ease;
+/* ============ 主舞台 ============ */
+.stage {
     position: relative;
-}
-.nav-links a::after {
-    content: '';
-    position: absolute;
-    left: 0; bottom: 0;
-    width: 0; height: 1px;
-    background: var(--color-primary);
-    transition: width 0.3s ease;
-}
-.nav-links a:hover, .nav-links a.active { color: var(--color-primary); }
-.nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
-
-/* ===== AR 扫描主舞台 ===== */
-.ar-stage {
-    position: relative;
-    width: 100%;
     min-height: 100vh;
-    padding-top: 70px;
+    padding: 90px 24px 48px;
     background:
-        radial-gradient(ellipse at center, #0f0f18 0%, #0a0a0f 70%);
+        radial-gradient(ellipse at 50% 0%, #2a1f10 0%, #14110d 45%, #0a0908 100%);
     overflow: hidden;
 }
-
-.ar-stage::before {
+.stage::before {
     content: '';
     position: absolute;
     inset: 0;
     background-image:
         linear-gradient(rgba(201,169,98,0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(201,169,98,0.04) 1px, transparent 1px);
-    background-size: 50px 50px;
+    background-size: 60px 60px;
     pointer-events: none;
     z-index: 0;
 }
-
-.ar-stage::after {
+.stage::after {
     content: '';
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(circle at 30% 20%, rgba(201,169,98,0.06), transparent 50%),
-        radial-gradient(circle at 70% 80%, rgba(201,169,98,0.04), transparent 50%);
+        radial-gradient(circle at 20% 30%, rgba(201,169,98,0.07), transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(201,169,98,0.05), transparent 50%);
     pointer-events: none;
     z-index: 0;
 }
-
-.ar-inner {
+.container {
     position: relative;
-    z-index: 2;
-    max-width: 1400px;
+    z-index: 1;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 2rem 2rem 4rem;
 }
 
-/* 顶部标题 */
-.ar-header {
+/* ============ 顶部标题 ============ */
+.page-head {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 36px;
 }
-.ar-header h1 {
-    font-family: var(--font-display);
-    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
-    color: var(--color-primary);
-    letter-spacing: 0.2em;
-    margin-bottom: 0.4rem;
-    text-shadow: 0 0 24px rgba(201,169,98,0.3);
-}
-.ar-header p {
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
-    letter-spacing: 0.15em;
-}
-.ar-header .ar-tag {
+.page-head .crumb {
     display: inline-block;
-    margin-top: 0.8rem;
-    padding: 0.3rem 0.9rem;
-    background: rgba(201,169,98,0.1);
-    border: 1px solid rgba(201,169,98,0.3);
-    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 0.78rem;
+    letter-spacing: 0.3em;
     color: var(--color-primary);
-    font-size: 0.75rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: rgba(201,169,98,0.06);
+    margin-bottom: 14px;
+}
+.page-head h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    color: var(--color-primary);
+    letter-spacing: 0.18em;
+    text-shadow: 0 0 32px rgba(201,169,98,0.35);
+    margin-bottom: 10px;
+}
+.page-head p {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
     letter-spacing: 0.2em;
-    font-family: var(--font-mono);
 }
 
-/* 扫描主面板 */
-.scan-wrap {
+/* ============ 主网格 ============ */
+.main-grid {
     display: grid;
-    grid-template-columns: 1.6fr 1fr;
-    gap: 1.5rem;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 28px;
     align-items: stretch;
 }
+@media (max-width: 980px) {
+    .main-grid { grid-template-columns: 1fr; }
+}
 
-/* ===== 沉浸式取景器 ===== */
+/* ============ 扫描卡片 ============ */
+.scan-card {
+    position: relative;
+    background: var(--glass-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+}
+.scan-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--glass-border);
+}
+.scan-title h2 {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--color-text);
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.scan-title h2::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: linear-gradient(to bottom, #e8c878, #b89548);
+    border-radius: 2px;
+}
+.scan-title .live-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: var(--color-primary);
+}
+.scan-title .live-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--color-success);
+    box-shadow: 0 0 10px var(--color-success);
+    animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+/* 取景框 */
 .viewport {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 10;
+    border-radius: 14px;
+    overflow: hidden;
     background:
-        linear-gradient(135deg, #0d0d14 0%, #1a1a25 50%, #0d0d14 100%);
-    border-radius: 18px;
-    overflow: hidden;
+        radial-gradient(ellipse at center, #1a140a 0%, #0a0908 100%);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 24px 70px rgba(0,0,0,0.6), inset 0 0 60px rgba(0,0,0,0.4);
+    box-shadow: inset 0 0 80px rgba(0,0,0,0.6);
 }
-
-#camVideo {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-    z-index: 1;
-}
-#camVideo.active { display: block; }
-
-/* 未开启摄像头时的占位 */
-.viewport-idle {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1.2rem;
-    z-index: 2;
-    background:
-        radial-gradient(circle at 50% 50%, rgba(201,169,98,0.08), transparent 60%),
-        repeating-linear-gradient(45deg, rgba(201,169,98,0.02) 0 2px, transparent 2px 12px);
-}
-.viewport-idle svg {
-    width: 100px;
-    height: 100px;
-    color: var(--color-primary);
-    opacity: 0.6;
-    filter: drop-shadow(0 0 12px rgba(201,169,98,0.4));
-}
-.viewport-idle .hint {
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
-    text-align: center;
-    max-width: 360px;
-}
-.viewport-idle .btn-launch {
-    margin-top: 0.6rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.8rem 1.4rem;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-    color: var(--color-bg-dark);
-    border: none;
-    border-radius: 999px;
-    font-family: var(--font-sans);
-    font-size: 0.92rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    box-shadow: 0 8px 24px rgba(201,169,98,0.3);
-    transition: all 0.3s ease;
-}
-.viewport-idle .btn-launch:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(201,169,98,0.45);
-}
-
-/* 扫描覆盖层 */
-#scanOverlay {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    pointer-events: none;
-    display: none;
-}
-#scanOverlay.active { display: block; }
-
-/* 雷达扫描圆环 */
-.radar-ring {
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 200px; height: 200px;
-    transform: translate(-50%, -50%);
-    border: 1px solid rgba(201,169,98,0.3);
-    border-radius: 50%;
-}
-.radar-ring::before, .radar-ring::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 1px solid rgba(201,169,98,0.2);
-    border-radius: 50%;
-    animation: radarPulse 2.4s ease-out infinite;
-}
-.radar-ring::after { animation-delay: 1.2s; }
-@keyframes radarPulse {
-    0% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(2.4); opacity: 0; }
-}
-
-/* 文物识别取景框 - 文物轮廓形状 */
-.viewfinder {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60%;
-    height: 70%;
-}
-.vf-corner {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    border: 2px solid var(--color-primary);
-    filter: drop-shadow(0 0 8px rgba(201,169,98,0.7));
-}
-.vf-tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
-.vf-tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
-.vf-bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
-.vf-br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
-
-/* 文物轮廓 SVG（识别框内显示的轮廓） */
-.artifact-silhouette {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 38%;
-    height: 60%;
-    opacity: 0.5;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-}
-.artifact-silhouette.matched { opacity: 0.9; }
-.artifact-silhouette svg { width: 100%; height: 100%; }
-.artifact-silhouette svg path,
-.artifact-silhouette svg circle,
-.artifact-silhouette svg rect,
-.artifact-silhouette svg ellipse,
-.artifact-silhouette svg polygon,
-.artifact-silhouette svg line {
-    fill: none;
-    stroke: var(--color-primary);
-    stroke-width: 1.5;
-    stroke-dasharray: 4 3;
-    filter: drop-shadow(0 0 4px rgba(201,169,98,0.6));
-}
-
-/* 扫描线（横竖双线） */
-.scan-line-h {
-    position: absolute;
-    top: 15%;
-    left: 20%;
-    width: 60%;
-    height: 1.5px;
-    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
-    box-shadow: 0 0 14px var(--color-primary);
-    animation: scanSweepH 2.2s ease-in-out infinite;
-    opacity: 0;
-}
-#scanOverlay.active .scan-line-h { opacity: 1; }
-@keyframes scanSweepH {
-    0%, 100% { transform: translateY(0); opacity: 0.2; }
-    50% { transform: translateY(480%); opacity: 1; }
-}
-.scan-line-v {
-    position: absolute;
-    top: 15%;
-    left: 20%;
-    height: 70%;
-    width: 1.5px;
-    background: linear-gradient(180deg, transparent, var(--color-primary), transparent);
-    box-shadow: 0 0 14px var(--color-primary);
-    animation: scanSweepV 3s ease-in-out infinite;
-    opacity: 0;
-}
-#scanOverlay.active .scan-line-v { opacity: 0.7; }
-@keyframes scanSweepV {
-    0%, 100% { transform: translateX(0); opacity: 0.15; }
-    50% { transform: translateX(360%); opacity: 0.8; }
-}
-
-/* 网格叠加 */
-.grid-overlay {
-    position: absolute;
-    inset: 20%;
-    background-image:
-        linear-gradient(rgba(201,169,98,0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(201,169,98,0.08) 1px, transparent 1px);
-    background-size: 20px 20px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-#scanOverlay.active .grid-overlay { opacity: 1; }
-
-/* HUD 元素 */
-.viewport-hud {
-    position: absolute;
-    inset: 0;
-    padding: 1.2rem 1.4rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    z-index: 5;
-    pointer-events: none;
-}
-.hud-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.74rem;
-    color: var(--color-primary);
-    letter-spacing: 0.1em;
-    font-family: var(--font-mono);
-    text-shadow: 0 0 6px rgba(201,169,98,0.5);
-}
-.hud-dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    background: var(--color-primary);
-    border-radius: 50%;
-    margin-right: 6px;
-    animation: blink 1.4s ease-in-out infinite;
-    box-shadow: 0 0 8px var(--color-primary);
-}
-@keyframes blink { 0%,100% {opacity: 1;} 50% {opacity: 0.3;} }
-
-.hud-center {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.6rem;
-}
-.hud-status {
-    background: rgba(10,10,15,0.7);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    padding: 0.6rem 1.4rem;
-    border-radius: 999px;
-    border: 1px solid var(--glass-border);
-    color: var(--color-text);
-    font-size: 0.88rem;
-    letter-spacing: 0.15em;
-    font-family: var(--font-sans);
-}
-.hud-progress-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.4rem;
-    width: 60%;
-}
-.hud-progress-bar {
-    width: 100%;
-    height: 2px;
-    background: rgba(201,169,98,0.15);
-    border-radius: 2px;
-    overflow: hidden;
-}
-.hud-progress-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
-    box-shadow: 0 0 10px var(--color-primary);
-    transition: width 0.2s linear;
-}
-.hud-progress-text {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--color-primary);
-    letter-spacing: 0.2em;
-}
-
-/* 识别成功闪光 */
-.flash {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, rgba(201,169,98,0.5), transparent 70%);
-    z-index: 4;
-    pointer-events: none;
-    opacity: 0;
-}
-.flash.fire {
-    animation: flashFire 0.6s ease-out;
-}
-@keyframes flashFire {
-    0% { opacity: 0; }
-    30% { opacity: 1; }
-    100% { opacity: 0; }
-}
-
-/* ===== 控制台 ===== */
-.controls {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: 18px;
-    padding: 1.8rem;
-    position: relative;
-    overflow: hidden;
-}
-.controls::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
-}
-.controls h3 {
-    font-family: var(--font-display);
-    color: var(--color-primary);
-    font-size: 1.3rem;
-    letter-spacing: 0.15em;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-}
-.controls h3::before {
-    content: '';
-    width: 24px; height: 1px;
-    background: var(--color-primary);
-}
-.controls .ctrl-desc {
-    color: var(--color-text-muted);
-    font-size: 0.85rem;
-    line-height: 1.7;
-}
-
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.85rem 1.3rem;
-    border-radius: 10px;
-    font-family: var(--font-sans);
-    font-size: 0.92rem;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    letter-spacing: 0.1em;
-    background: transparent;
-    color: var(--color-text);
-}
-.btn-primary {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-    color: var(--color-bg-dark);
-    font-weight: 600;
-    box-shadow: 0 6px 20px rgba(201,169,98,0.25);
-}
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(201,169,98,0.4); }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-.btn-secondary {
-    background: transparent;
-    color: var(--color-primary);
-    border-color: var(--color-primary);
-}
-.btn-secondary:hover { background: rgba(201,169,98,0.12); }
-
-.btn-ghost {
-    background: rgba(201,169,98,0.06);
-    border-color: var(--glass-border);
-}
-.btn-ghost:hover { border-color: var(--color-primary); color: var(--color-primary); }
-
-.nav-left {
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-}
-.nav-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 1rem;
-    color: var(--color-primary);
-    text-decoration: none;
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-    border: 1px solid var(--glass-border);
-    border-radius: 999px;
-    background: rgba(201,169,98,0.05);
-    transition: all 0.3s ease;
-    font-family: var(--font-sans);
-}
-.nav-back:hover {
-    background: rgba(201,169,98,0.15);
-    border-color: var(--color-primary);
-    color: var(--color-primary-light);
-    transform: translateX(-2px);
-}
-.nav-back svg { width: 14px; height: 14px; }
-
-.btn-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
-.btn-row .btn { flex: 1; min-width: 0; }
-
-.sample-list-label {
-    color: var(--color-text-muted);
-    font-size: 0.78rem;
-    letter-spacing: 0.15em;
-    margin-bottom: 0.4rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-.sample-list-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--glass-border);
-}
-.sample-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-}
-.sample-chip {
-    padding: 0.4rem 0.85rem;
-    background: rgba(201,169,98,0.08);
-    border: 1px solid var(--glass-border);
-    border-radius: 999px;
-    color: var(--color-text-muted);
-    font-size: 0.78rem;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    font-family: var(--font-sans);
-}
-.sample-chip:hover, .sample-chip.active {
-    color: var(--color-primary);
-    border-color: var(--color-primary);
-    background: rgba(201,169,98,0.18);
-    box-shadow: 0 0 12px rgba(201,169,98,0.2);
-}
-
-.tip-card {
-    background: rgba(201,169,98,0.04);
-    border: 1px solid var(--glass-border);
-    border-radius: 10px;
-    padding: 0.8rem 1rem;
-    font-size: 0.78rem;
-    color: var(--color-text-muted);
-    line-height: 1.6;
-    display: flex;
-    gap: 0.6rem;
-    align-items: flex-start;
-}
-.tip-card .tip-icon {
-    color: var(--color-primary);
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
-/* ===== 识别成功结果卡片 ===== */
-.result-stage {
-    margin-top: 2.5rem;
-    position: relative;
-    display: none;
-    animation: slideUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.result-stage.active { display: block; }
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.result-card {
-    background:
-        linear-gradient(135deg, rgba(20,20,30,0.95) 0%, rgba(30,30,45,0.95) 100%);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid var(--glass-border);
-    border-radius: 22px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
-}
-.result-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
-    z-index: 1;
-}
-.result-card::after {
-    content: '';
-    position: absolute;
-    top: 12px; right: 12px;
-    width: 80px; height: 80px;
-    background: radial-gradient(circle, rgba(201,169,98,0.15), transparent 70%);
-    pointer-events: none;
-}
-
-/* 结果头部 */
-.result-head {
-    padding: 1.6rem 2rem 1.2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--glass-border);
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-.result-head-left {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-}
-.result-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-    color: var(--color-bg-dark);
-    padding: 0.4rem 0.9rem;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-}
-.result-badge svg { width: 14px; height: 14px; }
-.result-confidence {
-    font-family: var(--font-mono);
-    color: var(--color-primary);
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-}
-.result-confidence strong { font-size: 1.1rem; margin-right: 0.3rem; }
-.result-head-right {
-    display: flex;
-    gap: 0.6rem;
-    align-items: center;
-    color: var(--color-text-muted);
-    font-size: 0.78rem;
-    font-family: var(--font-mono);
-    letter-spacing: 0.1em;
-}
-.result-head-right .live-dot {
-    width: 6px; height: 6px;
-    background: #4ade80;
-    border-radius: 50%;
-    box-shadow: 0 0 8px #4ade80;
-    animation: blink 1.4s ease-in-out infinite;
-    margin-right: 0.3rem;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-/* 结果主体 */
-.result-body {
-    display: grid;
-    grid-template-columns: 1.05fr 1.4fr;
-    gap: 0;
-}
-
-/* 左侧：3D 展示 */
-.result-3d {
-    position: relative;
-    aspect-ratio: 1;
-    background:
-        radial-gradient(circle at center, #16161f 0%, #0a0a0f 70%);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-right: 1px solid var(--glass-border);
-}
-.result-3d::before {
+.viewport::before {
     content: '';
     position: absolute;
     inset: 0;
     background-image:
         linear-gradient(rgba(201,169,98,0.05) 1px, transparent 1px),
         linear-gradient(90deg, rgba(201,169,98,0.05) 1px, transparent 1px);
-    background-size: 30px 30px;
-    pointer-events: none;
+    background-size: 40px 40px;
+    z-index: 1;
 }
-#resultArtifactImg {
-    width: 70%;
-    height: 70%;
-    object-fit: contain;
-    filter: drop-shadow(0 20px 50px rgba(0,0,0,0.7)) drop-shadow(0 0 30px rgba(201,169,98,0.2));
-    animation: floatRotate 8s ease-in-out infinite;
-    position: relative;
-    z-index: 2;
-}
-@keyframes floatRotate {
-    0%, 100% { transform: perspective(800px) rotateY(-8deg) translateY(0); }
-    50% { transform: perspective(800px) rotateY(8deg) translateY(-12px); }
-}
-.result-3d-overlay {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 3;
-}
-.result-3d-tag {
-    position: absolute;
-    top: 1rem; left: 1rem;
-    background: rgba(10,10,15,0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    border-radius: 6px;
-    padding: 0.3rem 0.7rem;
-    color: var(--color-primary);
-    font-size: 0.72rem;
-    font-family: var(--font-mono);
-    letter-spacing: 0.1em;
-}
-.result-3d-corner {
-    position: absolute;
-    width: 20px; height: 20px;
-    border: 2px solid var(--color-primary);
-}
-.result-3d-corner.tl { top: 0.6rem; left: 0.6rem; border-right: 0; border-bottom: 0; }
-.result-3d-corner.tr { top: 0.6rem; right: 0.6rem; border-left: 0; border-bottom: 0; }
-.result-3d-corner.bl { bottom: 0.6rem; left: 0.6rem; border-right: 0; border-top: 0; }
-.result-3d-corner.br { bottom: 0.6rem; right: 0.6rem; border-left: 0; border-top: 0; }
-.result-3d-rotate {
-    position: absolute;
-    bottom: 1rem; left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: rgba(10,10,15,0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    border-radius: 999px;
-    padding: 0.4rem 0.9rem;
-    color: var(--color-text-muted);
-    font-size: 0.72rem;
-    font-family: var(--font-mono);
-    letter-spacing: 0.1em;
-}
-.result-3d-rotate svg { color: var(--color-primary); }
 
-/* 右侧：信息 */
-.result-info {
-    padding: 2rem;
+/* 取景框四角 */
+.frame-corner {
+    position: absolute;
+    width: 38px; height: 38px;
+    border: 2px solid var(--color-primary);
+    z-index: 4;
+}
+.frame-corner.tl { top: 18px; left: 18px; border-right: none; border-bottom: none; }
+.frame-corner.tr { top: 18px; right: 18px; border-left: none; border-bottom: none; }
+.frame-corner.bl { bottom: 18px; left: 18px; border-right: none; border-top: none; }
+.frame-corner.br { bottom: 18px; right: 18px; border-left: none; border-top: none; }
+
+/* 雷达扫描圆环 */
+.radar {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 280px; height: 280px;
+    margin: -140px 0 0 -140px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,169,98,0.25);
+    z-index: 2;
+    animation: radarPulse 2.4s ease-in-out infinite;
+}
+.radar::before, .radar::after {
+    content: '';
+    position: absolute;
+    inset: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,169,98,0.18);
+}
+.radar::after { inset: 60px; border-color: rgba(201,169,98,0.12); }
+@keyframes radarPulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.08); opacity: 0.6; }
+}
+
+/* 扫描线 */
+.scan-line-h, .scan-line-v {
+    position: absolute;
+    z-index: 3;
+    pointer-events: none;
+}
+.scan-line-h {
+    left: 0; right: 0; top: 50%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--color-primary) 50%, transparent 100%);
+    box-shadow: 0 0 12px var(--color-primary);
+    animation: sweepH 3s ease-in-out infinite;
+}
+.scan-line-v {
+    top: 0; bottom: 0; left: 50%;
+    width: 1px;
+    background: linear-gradient(180deg, transparent 0%, var(--color-primary) 50%, transparent 100%);
+    box-shadow: 0 0 12px var(--color-primary);
+    animation: sweepV 3s ease-in-out infinite;
+    animation-delay: -1.5s;
+}
+@keyframes sweepH {
+    0%, 100% { transform: translateY(-90px); }
+    50% { transform: translateY(90px); }
+}
+@keyframes sweepV {
+    0%, 100% { transform: translateX(-140px); }
+    50% { transform: translateX(140px); }
+}
+
+/* 文物识别轮廓 */
+.artifact-svg {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px; height: 240px;
+    z-index: 3;
+    opacity: 0.65;
+}
+.artifact-svg svg { width: 100%; height: 100%; }
+.artifact-svg path, .artifact-svg circle, .artifact-svg line {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 1.5;
+    stroke-dasharray: 5 4;
+    animation: dashFlow 4s linear infinite;
+}
+@keyframes dashFlow {
+    to { stroke-dashoffset: -100; }
+}
+
+/* HUD 状态 */
+.hud {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 18px;
+    z-index: 5;
+    padding: 0 24px;
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 8px;
 }
-.result-name {
-    font-family: var(--font-display);
-    font-size: 2.4rem;
-    color: var(--color-primary);
-    letter-spacing: 0.15em;
-    line-height: 1.2;
-    text-shadow: 0 0 24px rgba(201,169,98,0.2);
-}
-.result-sub {
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
+.hud-row {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: -0.6rem;
-}
-.result-sub::before {
-    content: '';
-    width: 20px; height: 1px;
-    background: var(--color-primary);
-}
-
-.result-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-.result-tag {
-    padding: 0.35rem 0.85rem;
-    background: rgba(201,169,98,0.08);
-    border: 1px solid rgba(201,169,98,0.2);
+    justify-content: space-between;
+    font-size: 0.72rem;
     color: var(--color-primary);
-    font-size: 0.78rem;
-    border-radius: 4px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.2em;
+    text-shadow: 0 0 6px rgba(0,0,0,0.8);
+}
+.hud-row .hud-status {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.4rem;
 }
-.result-tag.model {
-    background: linear-gradient(135deg, rgba(201,169,98,0.2), rgba(201,169,98,0.05));
-    border-color: var(--color-primary);
-    box-shadow: 0 0 10px rgba(201,169,98,0.2);
-}
-
-/* 参数网格 */
-.spec-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.7rem;
-}
-.spec-item {
-    background: rgba(201,169,98,0.04);
-    border: 1px solid var(--glass-border);
-    border-radius: 10px;
-    padding: 0.85rem 1rem;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-.spec-item:hover {
-    background: rgba(201,169,98,0.08);
-    border-color: rgba(201,169,98,0.3);
-}
-.spec-item::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 2px; height: 100%;
+.hud-row .hud-dot {
+    width: 6px; height: 6px;
     background: var(--color-primary);
-    opacity: 0.6;
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--color-primary);
+    animation: pulse 1.4s ease-in-out infinite;
 }
-.spec-label {
-    color: var(--color-text-muted);
-    font-size: 0.72rem;
+.hud-center {
+    text-align: center;
+    padding: 8px 0;
+}
+.hud-status-text {
+    font-family: var(--font-display);
+    color: var(--color-primary);
+    font-size: 1.1rem;
     letter-spacing: 0.15em;
-    margin-bottom: 0.3rem;
-    font-family: var(--font-mono);
+    margin-bottom: 8px;
+    text-shadow: 0 0 12px rgba(201,169,98,0.5);
 }
-.spec-value {
-    color: var(--color-text);
-    font-size: 0.95rem;
-    font-weight: 500;
-    font-family: var(--font-serif);
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(201,169,98,0.12);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #b89548, #e8c878, #b89548);
+    box-shadow: 0 0 8px var(--color-primary);
+    transition: width 0.3s ease;
+}
+.progress-text {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    letter-spacing: 0.2em;
+    margin-top: 4px;
 }
 
-/* 文物描述 */
-.result-desc {
+/* 闪光 */
+.flash {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255,235,180,0.8) 0%, transparent 60%);
+    z-index: 6;
+    pointer-events: none;
+    opacity: 0;
+}
+.flash.fire { animation: flashFire 0.6s ease-out; }
+@keyframes flashFire {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* 中央提示 */
+.viewport-hint {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    text-align: center;
     color: var(--color-text-muted);
     font-size: 0.9rem;
-    line-height: 1.85;
-    border-left: 2px solid var(--color-primary);
-    padding: 0.4rem 0 0.4rem 1rem;
-    background: linear-gradient(90deg, rgba(201,169,98,0.04), transparent);
-    padding: 0.7rem 1rem;
-    border-radius: 0 8px 8px 0;
+    letter-spacing: 0.15em;
+    pointer-events: none;
+}
+.viewport-hint .hint-icon {
+    width: 64px; height: 64px;
+    margin: 0 auto 14px;
+    border: 1.5px solid var(--glass-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(201,169,98,0.05);
+}
+.viewport-hint .hint-icon svg {
+    width: 28px; height: 28px;
+    stroke: var(--color-primary);
+    fill: none;
+    stroke-width: 1.5;
+}
+.viewport-hint strong {
+    display: block;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 6px;
 }
 
-/* 识别数据流 */
-.stream-data {
+/* 扫描卡片底部按钮 */
+.scan-actions {
     display: flex;
-    gap: 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+.btn {
+    flex: 1;
+    min-width: 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.4rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    border: 1px solid transparent;
+}
+.btn svg { width: 16px; height: 16px; }
+.btn-primary {
+    background: linear-gradient(135deg, #e8c878, #b89548);
+    color: var(--color-bg-dark);
+    box-shadow: 0 6px 18px rgba(201,169,98,0.35);
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(201,169,98,0.5);
+}
+.btn-ghost {
+    background: rgba(201,169,98,0.06);
+    color: var(--color-primary);
+    border-color: var(--glass-border);
+}
+.btn-ghost:hover {
+    background: rgba(201,169,98,0.15);
+    border-color: var(--color-primary);
+}
+.btn-ghost:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ============ 侧栏 ============ */
+.side {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+.panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+}
+.panel h3 {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    color: var(--color-text);
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--glass-border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.panel h3::before {
+    content: '';
+    width: 3px; height: 16px;
+    background: linear-gradient(to bottom, #e8c878, #b89548);
+    border-radius: 2px;
+}
+.panel p.tip {
+    font-size: 0.85rem;
     color: var(--color-text-muted);
-    padding: 0.6rem 0.8rem;
+    line-height: 1.7;
+    margin-bottom: 14px;
+}
+
+/* 示例文物 */
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.chip {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    color: var(--color-text);
+    background: rgba(201,169,98,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+.chip:hover {
+    background: rgba(201,169,98,0.18);
+    border-color: var(--color-primary);
+    color: var(--color-primary-light);
+    transform: translateY(-1px);
+}
+.chip.active {
+    background: linear-gradient(135deg, #e8c878, #b89548);
+    color: var(--color-bg-dark);
+    border-color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* 识别结果卡 */
+.result {
+    display: none;
+    border: 1px solid var(--color-primary);
+    background: linear-gradient(135deg, rgba(201,169,98,0.08), rgba(201,169,98,0.02));
+    box-shadow: 0 0 32px rgba(201,169,98,0.18);
+}
+.result.show { display: block; }
+.result-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--glass-border);
+}
+.result-head .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #0a3d1c;
+    background: linear-gradient(135deg, #b8e8c4, #6fc18b);
+    border-radius: 6px;
+    letter-spacing: 0.1em;
+}
+.result-head .conf {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    letter-spacing: 0.1em;
+}
+.result-head .conf strong {
+    color: var(--color-primary);
+    font-size: 1rem;
+    margin-left: 4px;
+}
+.result-body {
+    display: flex;
+    gap: 18px;
+    align-items: stretch;
+}
+@media (max-width: 600px) {
+    .result-body { flex-direction: column; }
+}
+.result-art {
+    position: relative;
+    width: 130px; height: 160px;
+    flex-shrink: 0;
+    border-radius: 10px;
     background: rgba(0,0,0,0.3);
     border: 1px solid var(--glass-border);
-    border-radius: 6px;
-    flex-wrap: wrap;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
 }
-.stream-data span { color: var(--color-primary); margin-right: 0.2rem; }
-
-/* 操作按钮组 */
+.result-art img {
+    max-width: 90%; max-height: 90%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(201,169,98,0.3));
+    animation: floatRotate 6s ease-in-out infinite;
+}
+@keyframes floatRotate {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-6px) rotate(2deg); }
+}
+.result-art::before, .result-art::after {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--color-primary);
+}
+.result-art::before { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+.result-art::after { bottom: 6px; right: 6px; border-left: none; border-top: none; }
+.result-info { flex: 1; min-width: 0; }
+.result-info h4 {
+    font-family: var(--font-display);
+    color: var(--color-primary);
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+}
+.result-info .sub {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+}
+.spec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 14px;
+    font-size: 0.82rem;
+    margin-bottom: 14px;
+}
+.spec-grid div span:first-child {
+    color: var(--color-text-muted);
+    margin-right: 4px;
+}
+.spec-grid div span:last-child {
+    color: var(--color-text);
+    font-weight: 500;
+}
 .result-actions {
     display: flex;
+    gap: 8px;
     flex-wrap: wrap;
-    gap: 0.7rem;
-    margin-top: 0.4rem;
 }
-.result-actions .btn { flex: 1; min-width: 140px; }
+.btn-mini {
+    flex: 1;
+    min-width: 0;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.78rem;
+    border-radius: 8px;
+    letter-spacing: 0.08em;
+}
+.btn-link {
+    background: linear-gradient(135deg, #e8c878, #b89548);
+    color: var(--color-bg-dark);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+}
+.btn-link.outline {
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+}
+.btn-link.outline:hover {
+    background: rgba(201,169,98,0.12);
+}
+
+/* 页脚 */
+.foot {
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--glass-border);
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    letter-spacing: 0.2em;
+}
 
 /* 响应式 */
-@media (max-width: 1024px) {
-    .scan-wrap { grid-template-columns: 1fr; }
-    .result-body { grid-template-columns: 1fr; }
-    .result-3d { aspect-ratio: 16 / 9; border-right: 0; border-bottom: 1px solid var(--glass-border); }
-}
 @media (max-width: 720px) {
-    .nav { padding: 0.8rem 1.2rem; }
-    .nav-links { display: none; }
-    .nav-back { padding: 0.4rem 0.8rem; font-size: 0.78rem; }
-    .nav-back span { display: inline; }
-    .ar-inner { padding: 1rem 1rem 2rem; }
-    .spec-grid { grid-template-columns: 1fr; }
-    .result-info { padding: 1.4rem; }
-    .result-name { font-size: 1.8rem; }
-    .result-head { padding: 1.2rem 1.4rem; }
-    .viewfinder { width: 80%; height: 60%; }
+    .stage { padding: 80px 14px 32px; }
+    .scan-card, .panel { padding: 18px; }
+    .viewport { aspect-ratio: 4 / 3; }
+    .radar { width: 200px; height: 200px; margin: -100px 0 0 -100px; }
+    .artifact-svg { width: 150px; height: 180px; }
+    .hud { padding: 0 14px; }
 }
 </style>
 </head>
 <body>
 
-<!-- 浮动返回按钮 - 兜底定位，无论在哪个界面都能看到 -->
-<a href="restoration-detail.html" class="floating-back" title="返回修复技术" aria-label="返回修复技术">
+<!-- 显眼的大尺寸左上角返回按钮 -->
+<a href="restoration-detail.html" class="back-btn" title="返回修复技术" aria-label="返回修复技术">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
         <path d="M19 12H5"/>
         <path d="M12 19l-7-7 7-7"/>
     </svg>
-    <span class="fb-text">返回</span>
+    返回
 </a>
 
-<nav class="nav">
-    <div class="nav-left">
-        <a href="restoration-detail.html" class="nav-back" title="返回修复技术">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-            返回
-        </a>
-        <a href="index.html" class="nav-logo">中华文物</a>
-    </div>
-    <ul class="nav-links">
-        <li><a href="index.html">首页</a></li>
-        <li><a href="vessels-cover.html">器之灵</a></li>
-        <li><a href="stone-cover.html">石之韵</a></li>
-        <li><a href="history-cover.html">史之痕</a></li>
-        <li><a href="restoration-cover.html" class="active">文物修复</a></li>
-        <li><a href="promotion-cover.html">推广</a></li>
-    </ul>
-</nav>
-
-<section class="ar-stage">
-    <div class="ar-inner">
-        <div class="ar-header">
+<main class="stage">
+    <div class="container">
+        <!-- 顶部标题 -->
+        <header class="page-head">
+            <span class="crumb">RECOGNITION · v2.1</span>
             <h1>AR 文物识别</h1>
-            <p>实时取景 · 智能识别 · 一键解析</p>
-            <span class="ar-tag">RECOGNITION · v2.0</span>
-        </div>
+            <p>智能扫描 · 实时识别 · 一键解析</p>
+        </header>
 
-        <div class="scan-wrap">
-            <!-- 取景器 -->
-            <div class="viewport" id="viewport">
-                <video id="camVideo" autoplay playsinline muted></video>
-
-                <!-- 未开启摄像头 -->
-                <div class="viewport-idle" id="viewportIdle">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                        <circle cx="12" cy="13" r="4"/>
-                    </svg>
-                    <div class="hint">将摄像头对准文物进行实时识别<br>或选择下方示例文物开启模拟识别</div>
-                    <button class="btn-launch" id="btnLaunch">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1 14V8l6 4z"/></svg>
-                        开启摄像头
-                    </button>
+        <!-- 主网格：扫描 + 侧栏 -->
+        <div class="main-grid">
+            <!-- 扫描卡片 -->
+            <section class="scan-card">
+                <div class="scan-title">
+                    <h2>扫描识别</h2>
+                    <span class="live-tag"><span class="live-dot"></span>AR · READY</span>
                 </div>
 
-                <!-- 扫描覆盖层 -->
-                <div id="scanOverlay">
-                    <div class="radar-ring"></div>
-                    <div class="viewfinder">
-                        <span class="vf-corner vf-tl"></span>
-                        <span class="vf-corner vf-tr"></span>
-                        <span class="vf-corner vf-bl"></span>
-                        <span class="vf-corner vf-br"></span>
+                <div class="viewport" id="viewport">
+                    <span class="frame-corner tl"></span>
+                    <span class="frame-corner tr"></span>
+                    <span class="frame-corner bl"></span>
+                    <span class="frame-corner br"></span>
 
-                        <!-- 文物识别轮廓（默认） -->
-                        <div class="artifact-silhouette" id="artifactSilhouette">
-                            <svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet">
-                                <path d="M30 20 Q30 10, 50 10 Q70 10, 70 20 L70 35 Q80 40, 80 55 L80 95 Q80 110, 65 110 L35 110 Q20 110, 20 95 L20 55 Q20 40, 30 35 Z"/>
-                                <line x1="30" y1="20" x2="70" y2="20"/>
-                                <circle cx="50" cy="60" r="12"/>
-                            </svg>
-                        </div>
+                    <div class="radar"></div>
+                    <div class="scan-line-h"></div>
+                    <div class="scan-line-v"></div>
 
-                        <span class="scan-line-h"></span>
-                        <span class="scan-line-v"></span>
-                        <div class="grid-overlay"></div>
+                    <div class="artifact-svg">
+                        <svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet">
+                            <path d="M30 18 Q30 8, 50 8 Q70 8, 70 18 L70 32 Q82 38, 82 55 L82 96 Q82 112, 65 112 L35 112 Q18 112, 18 96 L18 55 Q18 38, 30 32 Z"/>
+                            <line x1="30" y1="18" x2="70" y2="18"/>
+                            <circle cx="50" cy="58" r="11"/>
+                            <line x1="50" y1="69" x2="50" y2="92"/>
+                        </svg>
                     </div>
 
-                    <div class="viewport-hud">
+                    <div class="viewport-hint" id="viewportHint">
+                        <div class="hint-icon">
+                            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        </div>
+                        <strong>扫描文物</strong>
+                        选择下方示例文物开始识别
+                    </div>
+
+                    <div class="hud" id="hud" style="display:none;">
                         <div class="hud-row">
-                            <span><span class="hud-dot"></span>AR · ACTIVE</span>
-                            <span id="hudTime">00:00:00</span>
+                            <span class="hud-status"><span class="hud-dot"></span>识别中</span>
+                            <span id="hudTime">00:00</span>
                         </div>
                         <div class="hud-center">
-                            <div class="hud-status" id="hudStatus">正在识别中…</div>
-                            <div class="hud-progress-wrap">
-                                <div class="hud-progress-bar">
-                                    <div class="hud-progress-fill" id="progressFill"></div>
-                                </div>
-                                <div class="hud-progress-text" id="progressText">扫描中 0%</div>
+                            <div class="hud-status-text" id="hudStatus">智能匹配中…</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
                             </div>
+                            <div class="progress-text" id="progressText">0%</div>
                         </div>
                         <div class="hud-row">
-                            <span id="hudFps">FPS · 60</span>
                             <span>AI · RESNET-50</span>
+                            <span>RES 1920×1080</span>
                         </div>
                     </div>
 
                     <div class="flash" id="flash"></div>
                 </div>
-            </div>
 
-            <!-- 控制台 -->
-            <div class="controls">
-                <h3>识别控制台</h3>
-                <p class="ctrl-desc">支持摄像头实时取景识别，或选择示例文物进行模拟识别。识别过程约 2-3 秒，结果将自动展示。</p>
-
-                <div class="btn-row">
+                <div class="scan-actions">
                     <button class="btn btn-primary" id="btnStart">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1 14V8l6 4z"/></svg>
-                        <span id="btnStartText">开启扫描</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                        开始扫描
                     </button>
-                    <button class="btn btn-ghost" id="btnStop" disabled>停止</button>
+                    <button class="btn btn-ghost" id="btnStop" disabled>
+                        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+                        停止
+                    </button>
                 </div>
+            </section>
 
-                <div>
-                    <div class="sample-list-label">示例文物</div>
-                    <div class="sample-list">
-                        <span class="sample-chip" data-id="sanyangzun">三羊尊</span>
-                        <span class="sample-chip" data-id="jiagu">击鼓说唱俑</span>
-                        <span class="sample-chip" data-id="huniu">虎钮淳于</span>
-                        <span class="sample-chip" data-id="niao">青铜鸟</span>
-                        <span class="sample-chip" data-id="bronze">青铜鼎</span>
+            <!-- 侧栏 -->
+            <aside class="side">
+                <!-- 示例文物 -->
+                <div class="panel">
+                    <h3>示例文物</h3>
+                    <p class="tip">点击下方任意文物，2.4 秒内完成模拟识别，体验完整 AR 流程。</p>
+                    <div class="chips">
+                        <span class="chip" data-id="sanyangzun" data-img="images/artifact-fuhaozalianyan.jpg" data-name="四羊方尊" data-sub="商代晚期 · 盛酒礼器" data-conf="99.2" data-material="青铜" data-era="约 3000 年前" data-craft="范铸法" data-grade="国家一级" data-museum="中国国家博物馆">四羊方尊</span>
+                        <span class="chip" data-id="jigu" data-img="images/artifact-drum-storyteller.jpg" data-name="击鼓说唱俑" data-sub="东汉 · 陶俑" data-conf="97.8" data-material="陶" data-era="约 1800 年前" data-craft="模制 + 彩绘" data-grade="国家一级" data-museum="故宫博物院">击鼓说唱俑</span>
+                        <span class="chip" data-id="huniu" data-img="images/artifact-tiger-chunyu.jpg" data-name="虎钮淳于" data-sub="东汉 · 军乐器" data-conf="98.5" data-material="青铜" data-era="约 1800 年前" data-craft="范铸法" data-grade="国家一级" data-museum="三峡博物馆">虎钮淳于</span>
+                        <span class="chip" data-id="niao" data-img="images/artifact-bronze-bird.jpg" data-name="青铜鸟" data-sub="商代 · 艺术摆件" data-conf="96.4" data-material="青铜" data-era="约 3000 年前" data-craft="范铸法" data-grade="国家二级" data-museum="上海博物馆">青铜鸟</span>
+                        <span class="chip" data-id="ding" data-img="images/artifact-houmwu-ding.jpg" data-name="后母戊鼎" data-sub="商代 · 礼器" data-conf="98.9" data-material="青铜" data-era="约 3300 年前" data-craft="范铸法" data-grade="国家一级" data-museum="中国国家博物馆">后母戊鼎</span>
                     </div>
                 </div>
 
-                <div class="tip-card">
-                    <span class="tip-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-                    </span>
-                    <span>请在光线充足的环境下使用，将文物置于取景框中心以获得最佳识别效果。</span>
-                </div>
-
-                <a href="restoration-detail.html" class="btn btn-secondary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    返回修复技术
-                </a>
-            </div>
-        </div>
-
-        <!-- 识别成功结果区 -->
-        <div class="result-stage" id="resultStage">
-            <div class="result-card">
-                <div class="result-head">
-                    <div class="result-head-left">
-                        <span class="result-badge">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <!-- 识别结果 -->
+                <div class="panel result" id="resultPanel">
+                    <h3>识别结果</h3>
+                    <div class="result-head">
+                        <span class="badge">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
                             识别命中
                         </span>
-                        <span class="result-confidence" id="resultConfidence">置信度 <strong>99.2%</strong></span>
+                        <span class="conf">置信度<strong id="confVal">99.2%</strong></span>
                     </div>
-                    <div class="result-head-right">
-                        <span><span class="live-dot"></span>实时识别结果</span>
-                    </div>
-                </div>
-
-                <div class="result-body">
-                    <!-- 左侧：文物 3D 展示 -->
-                    <div class="result-3d">
-                        <span class="result-3d-tag" id="resultTag3d">3D · READY</span>
-                        <span class="result-3d-corner tl"></span>
-                        <span class="result-3d-corner tr"></span>
-                        <span class="result-3d-corner bl"></span>
-                        <span class="result-3d-corner br"></span>
-                        <img id="resultArtifactImg" src="" alt="识别文物">
-                        <div class="result-3d-rotate">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
-                            AUTO ROTATE
+                    <div class="result-body">
+                        <div class="result-art">
+                            <img id="resultImg" src="" alt="识别文物">
                         </div>
-                    </div>
-
-                    <!-- 右侧：信息 -->
-                    <div class="result-info">
-                        <div>
-                            <h2 class="result-name" id="resultName">三羊铜尊</h2>
-                            <div class="result-sub" id="resultSub">商代晚期 · 盛酒礼器</div>
-                        </div>
-
-                        <div class="result-tags">
-                            <span class="result-tag" id="resultDynasty">商代</span>
-                            <span class="result-tag" id="resultCategory">青铜器</span>
-                            <span class="result-tag" id="resultLocation">三峡博物馆</span>
-                            <span class="result-tag model">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                                3D 模型可查看
-                            </span>
-                        </div>
-
-                        <div class="spec-grid">
-                            <div class="spec-item">
-                                <div class="spec-label">材质</div>
-                                <div class="spec-value" id="specMaterial">青铜</div>
+                        <div class="result-info">
+                            <h4 id="resultName">三羊铜尊</h4>
+                            <div class="sub" id="resultSub">商代晚期 · 盛酒礼器</div>
+                            <div class="spec-grid">
+                                <div><span>材质</span><span id="rMaterial">青铜</span></div>
+                                <div><span>年代</span><span id="rEra">约 3000 年前</span></div>
+                                <div><span>工艺</span><span id="rCraft">范铸法</span></div>
+                                <div><span>级别</span><span id="rGrade">国家一级</span></div>
+                                <div style="grid-column:1/-1;"><span>馆藏</span><span id="rMuseum">三峡博物馆</span></div>
                             </div>
-                            <div class="spec-item">
-                                <div class="spec-label">年代</div>
-                                <div class="spec-value" id="specAge">约 3000 年前</div>
+                            <div class="result-actions">
+                                <a href="museum-3d.html" class="btn-mini btn-link">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                                    3D 鉴赏
+                                </a>
+                                <button class="btn-mini btn-link outline" id="btnRescan">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                                    重新识别
+                                </button>
                             </div>
-                            <div class="spec-item">
-                                <div class="spec-label">工艺</div>
-                                <div class="spec-value" id="specCraft">范铸法</div>
-                            </div>
-                            <div class="spec-item">
-                                <div class="spec-label">级别</div>
-                                <div class="spec-value" id="specGrade">国家一级</div>
-                            </div>
-                        </div>
-
-                        <p class="result-desc" id="resultDesc">三羊铜尊是商代晚期青铜礼器的代表作，整体造型雄浑庄重。</p>
-
-                        <div class="stream-data">
-                            <span>ID</span>#<span id="streamId">SH-3014</span>
-                            <span>SCAN</span><span id="streamScan">0.0s</span>
-                            <span>RES</span>1920×1080
-                            <span>NET</span>OK
-                        </div>
-
-                        <div class="result-actions">
-                            <a href="museum-3d.html" class="btn btn-primary" id="btnView3d">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                                3D 模型查看
-                            </a>
-                            <a href="museum-3d.html" class="btn btn-secondary">完整信息</a>
-                            <button class="btn btn-ghost" id="btnRescan">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>
-                                重新识别
-                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
+            </aside>
         </div>
+
+        <footer class="foot">
+            中华文物 · 数字孪生 AR 识别 · 模拟体验版
+        </footer>
     </div>
-</section>
+</main>
 
 <script>
-const samples = {
-    sanyangzun: {
-        name: '三羊铜尊',
-        sub: '商代晚期 · 盛酒礼器',
-        dynasty: '商代',
-        category: '青铜器',
-        location: '三峡博物馆',
-        material: '青铜',
-        age: '约 3000 年前',
-        craft: '范铸法',
-        grade: '国家一级',
-        image: 'images/sanyangzun-main.jpg',
-        desc: '三羊铜尊是商代晚期青铜礼器的代表作，整体造型雄浑庄重，三羊开泰纹饰精美绝伦，体现了古代工匠高超的范铸技艺与神秘图腾信仰，是商代礼器艺术与铸造技术的巅峰。',
-        confidence: '99.2%',
-        url: 'museum-3d.html',
-        id: 'SH-3014',
-        silhouette: '<svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet"><path d="M25 30 Q25 12, 50 12 Q75 12, 75 30 L75 45 Q88 50, 88 65 L88 95 Q88 115, 70 115 L30 115 Q12 115, 12 95 L12 65 Q12 50, 25 45 Z"/><path d="M30 30 Q30 20, 50 20 Q70 20, 70 30"/><ellipse cx="50" cy="70" rx="14" ry="10"/></svg>'
-    },
-    jiagu: {
-        name: '击鼓说唱俑',
-        sub: '东汉 · 陪葬陶俑',
-        dynasty: '东汉',
-        category: '陶器',
-        location: '三峡博物馆',
-        material: '陶土',
-        age: '约 1800 年前',
-        craft: '泥塑焙烧',
-        grade: '国家一级',
-        image: 'images/artifact-drum-storyteller.jpg',
-        desc: '击鼓说唱俑是东汉时期巴蜀地区陶俑艺术的杰作，人物表情夸张生动，击鼓姿态豪迈奔放，是研究汉代民俗、说唱艺术与雕塑风格的重要实物。',
-        confidence: '98.6%',
-        url: 'museum-3d.html',
-        id: 'DH-2025',
-        silhouette: '<svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet"><circle cx="50" cy="35" r="18"/><path d="M32 50 L30 90 L40 90 L42 70 L58 70 L60 90 L70 90 L68 50 Q60 56, 50 56 Q40 56, 32 50 Z"/><rect x="20" y="55" width="14" height="14" rx="2"/></svg>'
-    },
-    huniu: {
-        name: '虎钮淳于',
-        sub: '战国 · 巴蜀军乐器',
-        dynasty: '战国',
-        category: '青铜器',
-        location: '三峡博物馆',
-        material: '青铜',
-        age: '约 2300 年前',
-        craft: '青铜铸造',
-        grade: '国家一级',
-        image: 'images/artifact-tiger-chunyu.jpg',
-        desc: '虎钮淳于是巴蜀地区战国时期特有的青铜军乐器，器身饰以精美纹饰，虎钮造型威武雄壮，是巴蜀文化的代表性器物，见证了古代巴蜀战争的辉煌历史。',
-        confidence: '97.8%',
-        url: 'museum-3d.html',
-        id: 'ZG-1817',
-        silhouette: '<svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet"><path d="M35 25 L65 25 L75 40 L80 60 L80 95 Q80 110, 65 110 L35 110 Q20 110, 20 95 L20 60 L25 40 Z"/><ellipse cx="50" cy="22" rx="14" ry="10"/><circle cx="42" cy="20" r="2"/><circle cx="58" cy="20" r="2"/></svg>'
-    },
-    niao: {
-        name: '青铜神鸟',
-        sub: '商周 · 图腾礼器',
-        dynasty: '商周',
-        category: '青铜器',
-        location: '三峡博物馆',
-        material: '青铜',
-        age: '约 3100 年前',
-        craft: '范铸法',
-        grade: '国家一级',
-        image: 'images/artifact-bronze-bird.jpg',
-        desc: '青铜神鸟是商周时期巴蜀先民崇拜的神鸟图腾，鸟首高昂、羽翼舒展，蕴含着古人对飞鸟通神的崇敬与敬畏，是巴蜀青铜文明的杰出代表。',
-        confidence: '99.4%',
-        url: 'museum-3d.html',
-        id: 'SZ-4022',
-        silhouette: '<svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet"><path d="M50 15 Q70 25, 70 45 L70 70 Q70 85, 55 90 L45 90 Q30 85, 30 70 L30 45 Q30 25, 50 15 Z"/><path d="M30 50 L15 55 L30 60 M70 50 L85 55 L70 60 M50 90 L50 110"/><circle cx="42" cy="35" r="2.5"/></svg>'
-    },
-    bronze: {
-        name: '青铜方鼎',
-        sub: '商代 · 烹饪礼器',
-        dynasty: '商代',
-        category: '青铜器',
-        location: '三峡博物馆',
-        material: '青铜',
-        age: '约 3200 年前',
-        craft: '范铸法',
-        grade: '国家一级',
-        image: 'images/artifact-bronze-ding.jpg',
-        desc: '青铜方鼎是商代礼器中的重器，造型方正庄严，饕餮纹饰神秘狞厉，是王权与神权结合的象征，也是早期青铜艺术的巅峰之作。',
-        confidence: '96.5%',
-        url: 'museum-3d.html',
-        id: 'SH-1011',
-        silhouette: '<svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet"><rect x="20" y="40" width="60" height="55" rx="3"/><path d="M20 40 L20 28 L30 28 L30 40 M70 40 L70 28 L80 28 L80 40 M15 95 L15 110 L30 110 L30 95 M70 95 L70 110 L85 110 L85 95"/><line x1="20" y1="60" x2="80" y2="60"/><circle cx="50" cy="75" r="8"/></svg>'
+(function() {
+    'use strict';
+
+    const btnStart = document.getElementById('btnStart');
+    const btnStop = document.getElementById('btnStop');
+    const btnRescan = document.getElementById('btnRescan');
+    const viewportHint = document.getElementById('viewportHint');
+    const hud = document.getElementById('hud');
+    const hudTime = document.getElementById('hudTime');
+    const hudStatus = document.getElementById('hudStatus');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const flash = document.getElementById('flash');
+    const resultPanel = document.getElementById('resultPanel');
+    const chips = document.querySelectorAll('.chip');
+
+    const confVal = document.getElementById('confVal');
+    const resultImg = document.getElementById('resultImg');
+    const resultName = document.getElementById('resultName');
+    const resultSub = document.getElementById('resultSub');
+    const rMaterial = document.getElementById('rMaterial');
+    const rEra = document.getElementById('rEra');
+    const rCraft = document.getElementById('rCraft');
+    const rGrade = document.getElementById('rGrade');
+    const rMuseum = document.getElementById('rMuseum');
+
+    let scanTimer = null;
+    let clockTimer = null;
+    let seconds = 0;
+    let currentSample = null;
+    let isScanning = false;
+
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    function setStatus(text) { hudStatus.textContent = text; }
+
+    function fillResult(d) {
+        confVal.textContent = d.conf + '%';
+        resultImg.src = d.img;
+        resultImg.alt = d.name;
+        resultName.textContent = d.name;
+        resultSub.textContent = d.sub;
+        rMaterial.textContent = d.material;
+        rEra.textContent = d.era;
+        rCraft.textContent = d.craft;
+        rGrade.textContent = d.grade;
+        rMuseum.textContent = d.museum;
     }
-};
 
-const video = document.getElementById('camVideo');
-const idle = document.getElementById('viewportIdle');
-const overlay = document.getElementById('scanOverlay');
-const btnLaunch = document.getElementById('btnLaunch');
-const btnStart = document.getElementById('btnStart');
-const btnStartText = document.getElementById('btnStartText');
-const btnStop = document.getElementById('btnStop');
-const btnRescan = document.getElementById('btnRescan');
-const hudStatus = document.getElementById('hudStatus');
-const hudTime = document.getElementById('hudTime');
-const progressFill = document.getElementById('progressFill');
-const progressText = document.getElementById('progressText');
-const flash = document.getElementById('flash');
-const resultStage = document.getElementById('resultStage');
-const silhouette = document.getElementById('artifactSilhouette');
-const streamScan = document.getElementById('streamScan');
+    function startScan(chipEl) {
+        if (isScanning) return;
+        if (!chipEl) return;
+        const d = {
+            id: chipEl.dataset.id,
+            name: chipEl.dataset.name,
+            sub: chipEl.dataset.sub,
+            img: chipEl.dataset.img,
+            conf: chipEl.dataset.conf,
+            material: chipEl.dataset.material,
+            era: chipEl.dataset.era,
+            craft: chipEl.dataset.craft,
+            grade: chipEl.dataset.grade,
+            museum: chipEl.dataset.museum
+        };
+        currentSample = d;
 
-let stream = null;
-let scanTimer = null;
-let hudTimer = null;
-let isScanning = false;
-let currentSample = null;
-let startTime = 0;
-let scanStartTime = 0;
+        chips.forEach(c => c.classList.toggle('active', c === chipEl));
 
-function updateHudTime() {
-    const elapsed = Math.floor((Date.now() - startTime) / 1000);
-    const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
-    const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
-    const s = String(elapsed % 60).padStart(2, '0');
-    hudTime.textContent = `${h}:${m}:${s}`;
-}
-
-async function startCamera() {
-    try {
-        stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-            audio: false
-        });
-        video.srcObject = stream;
-        video.classList.add('active');
-        idle.style.display = 'none';
-        btnStart.disabled = false;
-        btnStartText.textContent = '开始扫描';
+        isScanning = true;
+        btnStart.disabled = true;
         btnStop.disabled = false;
-    } catch (e) {
-        alert('无法访问摄像头：' + e.message + '\n请使用 HTTPS 访问或选择下方示例文物进行模拟识别。');
-        console.error(e);
-    }
-}
+        viewportHint.style.display = 'none';
+        hud.style.display = 'flex';
+        resultPanel.classList.remove('show');
 
-function stopCamera() {
-    if (stream) {
-        stream.getTracks().forEach(t => t.stop());
-        stream = null;
-    }
-    video.classList.remove('active');
-    idle.style.display = 'flex';
-    btnStart.disabled = true;
-    btnStartText.textContent = '开启扫描';
-    btnStop.disabled = true;
-    stopScan();
-}
+        seconds = 0;
+        hudTime.textContent = '00:00';
+        progressFill.style.width = '0%';
+        progressText.textContent = '0%';
+        setStatus('智能匹配中…');
 
-function startScan() {
-    if (isScanning) return;
-    isScanning = true;
-    startTime = Date.now();
-    scanStartTime = Date.now();
-    overlay.classList.add('active');
-    resultStage.classList.remove('active');
-    hudStatus.textContent = '正在识别中…';
-    hudTimer = setInterval(updateHudTime, 1000);
-    updateHudTime();
+        if (clockTimer) clearInterval(clockTimer);
+        clockTimer = setInterval(() => {
+            seconds++;
+            hudTime.textContent = '00:' + pad(Math.floor(seconds / 60)) + ':' + pad(seconds % 60);
+        }, 1000);
 
-    let progress = 0;
-    progressFill.style.width = '0%';
-    progressText.textContent = '扫描中 0%';
-
-    scanTimer = setInterval(() => {
-        const elapsed = ((Date.now() - scanStartTime) / 1000).toFixed(1);
-        streamScan.textContent = elapsed + 's';
-
-        progress += Math.random() * 7 + 2;
-        if (progress >= 100) {
-            progress = 100;
-            clearInterval(scanTimer);
-            progressFill.style.width = '100%';
-            progressText.textContent = '识别完成 100%';
-            hudStatus.textContent = '识别成功';
-            flash.classList.add('fire');
-            setTimeout(() => {
-                flash.classList.remove('fire');
-                showResult();
-            }, 500);
-        } else {
-            progressFill.style.width = progress.toFixed(1) + '%';
-            progressText.textContent = `扫描中 ${progress.toFixed(0)}%`;
-        }
-    }, 130);
-}
-
-function stopScan() {
-    if (scanTimer) { clearInterval(scanTimer); scanTimer = null; }
-    if (hudTimer) { clearInterval(hudTimer); hudTimer = null; }
-    isScanning = false;
-    overlay.classList.remove('active');
-}
-
-function showResult() {
-    if (!currentSample) return;
-    const data = samples[currentSample];
-    document.getElementById('resultArtifactImg').src = data.image;
-    document.getElementById('resultName').textContent = data.name;
-    document.getElementById('resultSub').textContent = data.sub;
-    document.getElementById('resultDynasty').textContent = data.dynasty;
-    document.getElementById('resultCategory').textContent = data.category;
-    document.getElementById('resultLocation').textContent = data.location;
-    document.getElementById('specMaterial').textContent = data.material;
-    document.getElementById('specAge').textContent = data.age;
-    document.getElementById('specCraft').textContent = data.craft;
-    document.getElementById('specGrade').textContent = data.grade;
-    document.getElementById('resultDesc').textContent = data.desc;
-    document.getElementById('resultConfidence').innerHTML = `置信度 <strong>${data.confidence}</strong>`;
-    document.getElementById('btnView3d').href = data.url;
-    document.getElementById('streamId').textContent = data.id;
-    if (data.silhouette) {
-        silhouette.innerHTML = data.silhouette;
-        silhouette.classList.add('matched');
+        if (scanTimer) clearInterval(scanTimer);
+        let pct = 0;
+        scanTimer = setInterval(() => {
+            pct += 4;
+            if (pct >= 100) {
+                pct = 100;
+                progressFill.style.width = '100%';
+                progressText.textContent = '100%';
+                finishScan();
+                return;
+            }
+            progressFill.style.width = pct + '%';
+            progressText.textContent = pct + '%';
+            if (pct < 30) setStatus('特征提取中…');
+            else if (pct < 60) setStatus('轮廓匹配中…');
+            else if (pct < 85) setStatus('数据库比对中…');
+            else setStatus('即将完成…');
+        }, 96);
     }
 
-    resultStage.classList.add('active');
-    setTimeout(() => {
-        resultStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 200);
-}
+    function finishScan() {
+        clearInterval(scanTimer);
+        clearInterval(clockTimer);
+        scanTimer = null;
+        clockTimer = null;
 
-btnLaunch.addEventListener('click', async () => {
-    await startCamera();
-});
-btnStart.addEventListener('click', () => {
-    if (stream) startScan();
-});
-btnStop.addEventListener('click', stopCamera);
-btnRescan.addEventListener('click', () => {
-    if (currentSample) {
-        resultStage.classList.remove('active');
-        setTimeout(() => startScan(), 200);
+        setStatus('✓ 识别命中');
+        flash.classList.add('fire');
+        setTimeout(() => flash.classList.remove('fire'), 700);
+
+        fillResult(currentSample);
+
+        setTimeout(() => {
+            resultPanel.classList.add('show');
+            resultPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 400);
+
+        isScanning = false;
+        btnStart.disabled = false;
+        btnStop.disabled = true;
     }
-});
 
-document.querySelectorAll('.sample-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-        document.querySelectorAll('.sample-chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        currentSample = chip.dataset.id;
-        if (stream) stopCamera();
-        startScan();
+    function stopScan() {
+        if (scanTimer) { clearInterval(scanTimer); scanTimer = null; }
+        if (clockTimer) { clearInterval(clockTimer); clockTimer = null; }
+        isScanning = false;
+        btnStart.disabled = false;
+        btnStop.disabled = true;
+        viewportHint.style.display = '';
+        hud.style.display = 'none';
+        progressFill.style.width = '0%';
+        progressText.textContent = '0%';
+        setStatus('智能匹配中…');
+    }
+
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => startScan(chip));
     });
-});
+    btnStart.addEventListener('click', () => {
+        if (currentSample) {
+            const chip = Array.from(chips).find(c => c.dataset.id === currentSample.id);
+            if (chip) { startScan(chip); return; }
+        }
+        if (chips.length) startScan(chips[0]);
+    });
+    btnStop.addEventListener('click', stopScan);
+    btnRescan.addEventListener('click', () => {
+        if (currentSample) {
+            const chip = Array.from(chips).find(c => c.dataset.id === currentSample.id);
+            if (chip) startScan(chip);
+        }
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            if (isScanning) stopScan();
+            else if (resultPanel.classList.contains('show')) resultPanel.classList.remove('show');
+        }
+    });
+})();
 </script>
+
 </body>
 </html>
