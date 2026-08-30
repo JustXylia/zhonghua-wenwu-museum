@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>AR 文物识别 · 中华文物</title>
+<title>纹样鉴识 · 中华文物数字馆</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -717,9 +717,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     <div class="container">
         <!-- 顶部标题 -->
         <header class="page-head">
-            <span class="crumb">RECOGNITION · v2.1</span>
-            <h1>AR 文物识别</h1>
-            <p>智能扫描 · 实时识别 · 一键解析</p>
+            <span class="crumb">PATTERN · v2.1</span>
+            <h1>纹样鉴识</h1>
+            <p>智能匹配 · 纹饰解析 · 一键查阅</p>
         </header>
 
         <!-- 主网格：扫描 + 侧栏 -->
@@ -727,8 +727,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
             <!-- 扫描卡片 -->
             <section class="scan-card">
                 <div class="scan-title">
-                    <h2>扫描识别</h2>
-                    <span class="live-tag"><span class="live-dot"></span>AR · READY</span>
+                    <h2>纹饰扫描</h2>
+                    <span class="live-tag"><span class="live-dot"></span>READY</span>
                 </div>
 
                 <div class="viewport" id="viewport">
@@ -754,8 +754,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
                         <div class="hint-icon">
                             <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                         </div>
-                        <strong>扫描文物</strong>
-                        选择下方示例文物开始识别
+                        <strong>纹样扫描</strong>
+                        选择下方示例纹饰开始匹配
                     </div>
 
                     <div class="hud" id="hud" style="display:none;">
@@ -772,7 +772,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
                         </div>
                         <div class="hud-row">
                             <span>AI · RESNET-50</span>
-                            <span>RES 1920×1080</span>
+                            <span>纹饰匹配中</span>
                         </div>
                     </div>
 
@@ -795,8 +795,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
             <aside class="side">
                 <!-- 示例文物 -->
                 <div class="panel">
-                    <h3>示例文物</h3>
-                    <p class="tip">点击下方任意文物，2.4 秒内完成模拟识别，体验完整 AR 流程。</p>
+                    <h3>示例纹饰</h3>
+                    <p class="tip">点击下方任意纹饰，2.4 秒内完成模拟匹配，体验完整流程。</p>
                     <div class="chips">
                         <span class="chip" data-id="sanyangzun" data-img="images/artifact-fuhaozalianyan.jpg" data-name="四羊方尊" data-sub="商代晚期 · 盛酒礼器" data-conf="99.2" data-material="青铜" data-era="约 3000 年前" data-craft="范铸法" data-grade="国家一级" data-museum="中国国家博物馆">四羊方尊</span>
                         <span class="chip" data-id="jigu" data-img="images/artifact-drum-storyteller.jpg" data-name="击鼓说唱俑" data-sub="东汉 · 陶俑" data-conf="97.8" data-material="陶" data-era="约 1800 年前" data-craft="模制 + 彩绘" data-grade="国家一级" data-museum="故宫博物院">击鼓说唱俑</span>
@@ -808,20 +808,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
                 <!-- 识别结果 -->
                 <div class="panel result" id="resultPanel">
-                    <h3>识别结果</h3>
+                    <h3>鉴识结果</h3>
                     <div class="result-head">
                         <span class="badge">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-                            识别命中
+                            匹配成功
                         </span>
-                        <span class="conf">置信度<strong id="confVal">99.2%</strong></span>
+                        <span class="conf">可信度<strong id="confVal">99.2%</strong></span>
                     </div>
                     <div class="result-body">
                         <div class="result-art">
-                            <img id="resultImg" src="" alt="识别文物">
+                            <img id="resultImg" src="" alt="鉴识纹饰">
                         </div>
                         <div class="result-info">
-                            <h4 id="resultName">三羊铜尊</h4>
+                            <h4 id="resultName">四羊方尊</h4>
                             <div class="sub" id="resultSub">商代晚期 · 盛酒礼器</div>
                             <div class="spec-grid">
                                 <div><span>材质</span><span id="rMaterial">青铜</span></div>
@@ -837,7 +837,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
                                 </a>
                                 <button class="btn-mini btn-link outline" id="btnRescan">
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-                                    重新识别
+                                    重新匹配
                                 </button>
                             </div>
                         </div>
@@ -847,7 +847,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
         </div>
 
         <footer class="foot">
-            中华文物 · 数字孪生 AR 识别 · 模拟体验版
+            中华文物 · 数字馆 · 纹样鉴识模拟体验
         </footer>
     </div>
 </main>
