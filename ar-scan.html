@@ -8,107 +8,448 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--color-primary:#c9a962;--color-primary-dark:#8b7355;--color-bg-dark:#0a0a0f;--color-bg-medium:#12121a;--color-bg-light:#1a1a25;--glass-bg:rgba(20,20,30,0.7);--glass-border:rgba(201,169,98,0.15);--color-text:#f5f0e8;--color-text-muted:#8a8578;--font-display:'Ma Shan Zheng',cursive;--font-serif:'Noto Serif SC',serif;--font-sans:'Noto Sans SC',sans-serif;}
-*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}body{font-family:var(--font-sans);background:var(--color-bg-dark);color:var(--color-text);overflow-x:hidden;line-height:1.8;min-height:100vh;}
-.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1.2rem 3rem;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border);}
-.nav-logo{font-family:var(--font-display);font-size:1.6rem;color:var(--color-primary);text-decoration:none;}
-.nav-links{display:flex;gap:2rem;list-style:none;}
-.nav-links a{color:var(--color-text);text-decoration:none;font-size:0.9rem;padding:0.4rem 0;transition:color 0.3s ease;}
-.nav-links a:hover,.nav-links a.active{color:var(--color-primary);}
-.stage{position:relative;width:100%;min-height:100vh;padding-top:80px;background:radial-gradient(ellipse at center,#0f0f18 0%,#0a0a0f 70%);overflow:hidden;}
-.stage::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(201,169,98,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,169,98,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
-.stage-inner{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:3rem 2rem;}
-.stage-title{text-align:center;margin-bottom:2.5rem;}
-.stage-title h1{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);color:var(--color-primary);letter-spacing:0.15em;margin-bottom:0.5rem;}
-.stage-title p{color:var(--color-text-muted);font-size:0.95rem;letter-spacing:0.1em;}
-.scan-panel{display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;align-items:stretch;}
-.viewport{position:relative;width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,#0d0d14 0%,#1a1a25 100%);border-radius:16px;overflow:hidden;border:1px solid var(--glass-border);box-shadow:0 20px 60px rgba(0,0,0,0.5);}
-#camVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}#camVideo.active{display:block;}
-.viewport-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;background:radial-gradient(circle at 30% 40%,rgba(201,169,98,0.06),transparent 50%),radial-gradient(circle at 70% 60%,rgba(201,169,98,0.04),transparent 50%);}
-.viewport-fallback svg{width:80px;height:80px;color:var(--color-primary);opacity:0.6;}
-.viewport-fallback .hint{color:var(--color-text-muted);font-size:0.9rem;letter-spacing:0.1em;text-align:center;padding:0 2rem;}
-#scanOverlay{position:absolute;inset:0;pointer-events:none;display:none;}#scanOverlay.active{display:block;}
-.viewfinder{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70%;height:70%;}
-.corner-tl,.corner-tr,.corner-bl,.corner-br{position:absolute;width:32px;height:32px;border:2px solid var(--color-primary);filter:drop-shadow(0 0 6px rgba(201,169,98,0.6));}
-.corner-tl{top:0;left:0;border-right:0;border-bottom:0;}.corner-tr{top:0;right:0;border-left:0;border-bottom:0;}
-.corner-bl{bottom:0;left:0;border-right:0;border-top:0;}.corner-br{bottom:0;right:0;border-left:0;border-top:0;}
-.scan-line{position:absolute;top:15%;left:15%;width:70%;height:2px;background:linear-gradient(90deg,transparent,var(--color-primary),transparent);box-shadow:0 0 12px var(--color-primary);animation:scanSweep 2.4s ease-in-out infinite;opacity:0;}
-#scanOverlay.active .scan-line{opacity:1;}
-@keyframes scanSweep{0%,100%{transform:translateY(0);opacity:0.2;}50%{transform:translateY(420%);opacity:1;}}
-.crosshair{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;border:1px solid var(--color-primary);opacity:0.4;}
-.crosshair::before,.crosshair::after{content:'';position:absolute;background:var(--color-primary);}
-.crosshair::before{top:50%;left:-10px;right:-10px;height:1px;transform:translateY(-50%);}
-.crosshair::after{left:50%;top:-10px;bottom:-10px;width:1px;transform:translateX(-50%);}
-.viewport-hud{position:absolute;inset:0;padding:1.2rem;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;}
-.hud-top{display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;color:var(--color-primary);letter-spacing:0.1em;font-family:'Courier New',monospace;}
-.hud-dot{display:inline-block;width:8px;height:8px;background:var(--color-primary);border-radius:50%;margin-right:6px;animation:blink 1.4s ease-in-out infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
-.hud-status{text-align:center;background:rgba(10,10,15,0.6);backdrop-filter:blur(10px);padding:0.6rem 1.2rem;border-radius:999px;border:1px solid var(--glass-border);align-self:center;color:var(--color-text);font-size:0.9rem;letter-spacing:0.1em;pointer-events:auto;}
-.hud-bottom{display:flex;justify-content:space-between;align-items:center;color:var(--color-text-muted);font-size:0.75rem;font-family:'Courier New',monospace;}
-.scan-progress{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);width:70%;pointer-events:none;}
-.scan-progress-bar{height:2px;background:rgba(201,169,98,0.2);border-radius:2px;overflow:hidden;}
-.scan-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--color-primary-dark),var(--color-primary));box-shadow:0 0 8px var(--color-primary);transition:width 0.2s linear;}
-.scan-progress-text{margin-top:0.5rem;text-align:center;font-family:'Courier New',monospace;font-size:0.75rem;color:var(--color-primary);letter-spacing:0.15em;}
-.controls{display:flex;flex-direction:column;gap:1rem;background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:16px;padding:2rem;}
-.controls h3{font-family:var(--font-display);color:var(--color-primary);font-size:1.3rem;margin-bottom:0.5rem;letter-spacing:0.1em;}
-.controls p{color:var(--color-text-muted);font-size:0.88rem;line-height:1.7;margin-bottom:1rem;}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.9rem 1.4rem;border-radius:10px;font-family:var(--font-sans);font-size:0.95rem;cursor:pointer;border:1px solid transparent;transition:all 0.3s ease;text-decoration:none;letter-spacing:0.1em;}
-.btn-primary{background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));color:var(--color-bg-dark);font-weight:600;box-shadow:0 6px 20px rgba(201,169,98,0.25);}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(201,169,98,0.4);}
-.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
-.btn-secondary{background:transparent;color:var(--color-primary);border-color:var(--color-primary);}
-.btn-secondary:hover{background:rgba(201,169,98,0.12);}
-.btn-ghost{background:rgba(201,169,98,0.08);color:var(--color-text);border-color:var(--glass-border);}
-.btn-ghost:hover{border-color:var(--color-primary);color:var(--color-primary);}
-.btn-group{display:flex;flex-direction:column;gap:0.6rem;}
-.sample-list{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.5rem;}
-.sample-chip{padding:0.35rem 0.8rem;background:rgba(201,169,98,0.08);border:1px solid var(--glass-border);border-radius:999px;color:var(--color-text-muted);font-size:0.78rem;cursor:pointer;transition:all 0.25s ease;}
-.sample-chip:hover{color:var(--color-primary);border-color:var(--color-primary);background:rgba(201,169,98,0.15);}
-.result-panel{margin-top:3rem;background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:20px;padding:2.5rem;display:none;position:relative;overflow:hidden;}
-.result-panel.active{display:block;animation:fadeInUp 0.6s ease;}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-.result-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--color-primary),transparent);}
-.result-header{display:flex;align-items:center;gap:0.6rem;margin-bottom:1.5rem;color:var(--color-primary);font-size:0.85rem;letter-spacing:0.2em;}
-.result-header .check{width:24px;height:24px;border-radius:50%;background:var(--color-primary);color:var(--color-bg-dark);display:inline-flex;align-items:center;justify-content:center;font-weight:700;}
-.result-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:2rem;align-items:start;}
-.result-image{position:relative;aspect-ratio:1;background:#0d0d14;border-radius:14px;overflow:hidden;border:1px solid var(--glass-border);}
-.result-image img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease;}
-.result-image:hover img{transform:scale(1.05);}
-.result-image::before{content:'识别命中';position:absolute;top:12px;left:12px;z-index:2;background:var(--color-primary);color:var(--color-bg-dark);padding:0.25rem 0.7rem;font-size:0.75rem;font-weight:600;border-radius:4px;letter-spacing:0.1em;}
-.result-confidence{position:absolute;bottom:12px;right:12px;background:rgba(10,10,15,0.7);backdrop-filter:blur(10px);border:1px solid var(--glass-border);color:var(--color-primary);padding:0.25rem 0.7rem;font-size:0.75rem;font-family:'Courier New',monospace;border-radius:4px;z-index:2;}
-.result-info h2{font-family:var(--font-display);font-size:2.2rem;color:var(--color-primary);margin-bottom:0.4rem;letter-spacing:0.1em;}
-.result-sub{color:var(--color-text-muted);font-size:0.9rem;margin-bottom:1.5rem;}
-.result-tags{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem;}
-.result-tag{padding:0.35rem 0.85rem;background:rgba(201,169,98,0.1);border:1px solid rgba(201,169,98,0.25);color:var(--color-primary);font-size:0.82rem;border-radius:4px;letter-spacing:0.05em;}
-.result-tag.model{background:linear-gradient(135deg,rgba(201,169,98,0.2),rgba(201,169,98,0.05));border-color:var(--color-primary);}
-.spec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.8rem;margin-bottom:1.5rem;}
-.spec-item{background:rgba(201,169,98,0.05);border:1px solid var(--glass-border);border-radius:8px;padding:0.8rem 1rem;}
-.spec-label{color:var(--color-text-muted);font-size:0.75rem;letter-spacing:0.1em;margin-bottom:0.3rem;}
-.spec-value{color:var(--color-text);font-size:0.95rem;font-weight:500;}
-.result-desc{color:var(--color-text-muted);font-size:0.92rem;line-height:1.8;margin-bottom:1.8rem;border-left:2px solid var(--color-primary);padding-left:1rem;}
-.result-actions{display:flex;flex-wrap:wrap;gap:0.8rem;}
-.idle-state{text-align:center;padding:4rem 2rem;color:var(--color-text-muted);background:rgba(201,169,98,0.03);border:1px dashed var(--glass-border);border-radius:16px;margin-top:3rem;}
-.idle-state .icon{font-size:3rem;color:var(--color-primary);opacity:0.5;margin-bottom:1rem;}
-@media (max-width:900px){.scan-panel{grid-template-columns:1fr;}.result-grid{grid-template-columns:1fr;}.nav{padding:1rem 1.5rem;}.nav-links{display:none;}.stage-inner{padding:2rem 1rem;}.spec-grid{grid-template-columns:1fr;}}
+:root {
+    --color-primary: #c9a962;
+    --color-primary-dark: #8b7355;
+    --color-primary-light: #e0c989;
+    --color-bg-dark: #0a0a0f;
+    --color-bg-medium: #12121a;
+    --color-bg-light: #1a1a25;
+    --glass-bg: rgba(20, 20, 30, 0.7);
+    --glass-border: rgba(201, 169, 98, 0.15);
+    --color-text: #f5f0e8;
+    --color-text-muted: #8a8578;
+    --font-display: 'Ma Shan Zheng', cursive;
+    --font-serif: 'Noto Serif SC', serif;
+    --font-sans: 'Noto Sans SC', sans-serif;
+    --font-mono: 'Courier New', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-sans); background: var(--color-bg-dark); color: var(--color-text); overflow-x: hidden; line-height: 1.8; min-height: 100vh; }
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 1rem 2.5rem; display: flex; justify-content: space-between; align-items: center; background: rgba(10,10,15,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); }
+.nav-logo { font-family: var(--font-display); font-size: 1.6rem; color: var(--color-primary); text-decoration: none; letter-spacing: 0.1em; }
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a { color: var(--color-text); text-decoration: none; font-size: 0.9rem; padding: 0.4rem 0; transition: color 0.3s ease; position: relative; }
+.nav-links a::after { content: ''; position: absolute; left: 0; bottom: 0; width: 0; height: 1px; background: var(--color-primary); transition: width 0.3s ease; }
+.nav-links a:hover, .nav-links a.active { color: var(--color-primary); }
+.nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+.ar-stage { position: relative; width: 100%; min-height: 100vh; padding-top: 70px; background: radial-gradient(ellipse at center, #0f0f18 0%, #0a0a0f 70%); overflow: hidden; }
+.ar-stage::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(201,169,98,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,98,0.04) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; z-index: 0; }
+.ar-stage::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, rgba(201,169,98,0.06), transparent 50%), radial-gradient(circle at 70% 80%, rgba(201,169,98,0.04), transparent 50%); pointer-events: none; z-index: 0; }
+.ar-inner { position: relative; z-index: 2; max-width: 1400px; margin: 0 auto; padding: 2rem 2rem 4rem; }
+.ar-header { text-align: center; margin-bottom: 2rem; }
+.ar-header h1 { font-family: var(--font-display); font-size: clamp(1.8rem, 3.5vw, 2.6rem); color: var(--color-primary); letter-spacing: 0.2em; margin-bottom: 0.4rem; text-shadow: 0 0 24px rgba(201,169,98,0.3); }
+.ar-header p { color: var(--color-text-muted); font-size: 0.9rem; letter-spacing: 0.15em; }
+.ar-header .ar-tag { display: inline-block; margin-top: 0.8rem; padding: 0.3rem 0.9rem; background: rgba(201,169,98,0.1); border: 1px solid rgba(201,169,98,0.3); border-radius: 999px; color: var(--color-primary); font-size: 0.75rem; letter-spacing: 0.2em; font-family: var(--font-mono); }
+.scan-wrap { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.5rem; align-items: stretch; }
+.viewport { position: relative; width: 100%; aspect-ratio: 16 / 10; background: linear-gradient(135deg, #0d0d14 0%, #1a1a25 50%, #0d0d14 100%); border-radius: 18px; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: 0 24px 70px rgba(0,0,0,0.6), inset 0 0 60px rgba(0,0,0,0.4); }
+#camVideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; z-index: 1; }
+#camVideo.active { display: block; }
+.viewport-idle { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.2rem; z-index: 2; background: radial-gradient(circle at 50% 50%, rgba(201,169,98,0.08), transparent 60%), repeating-linear-gradient(45deg, rgba(201,169,98,0.02) 0 2px, transparent 2px 12px); }
+.viewport-idle svg { width: 100px; height: 100px; color: var(--color-primary); opacity: 0.6; filter: drop-shadow(0 0 12px rgba(201,169,98,0.4)); }
+.viewport-idle .hint { color: var(--color-text-muted); font-size: 0.9rem; letter-spacing: 0.1em; text-align: center; max-width: 360px; }
+.viewport-idle .btn-launch { margin-top: 0.6rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.4rem; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); color: var(--color-bg-dark); border: none; border-radius: 999px; font-family: var(--font-sans); font-size: 0.92rem; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; box-shadow: 0 8px 24px rgba(201,169,98,0.3); transition: all 0.3s ease; }
+.viewport-idle .btn-launch:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(201,169,98,0.45); }
+#scanOverlay { position: absolute; inset: 0; z-index: 3; pointer-events: none; display: none; }
+#scanOverlay.active { display: block; }
+.radar-ring { position: absolute; top: 50%; left: 50%; width: 200px; height: 200px; transform: translate(-50%, -50%); border: 1px solid rgba(201,169,98,0.3); border-radius: 50%; }
+.radar-ring::before, .radar-ring::after { content: ''; position: absolute; inset: 0; border: 1px solid rgba(201,169,98,0.2); border-radius: 50%; animation: radarPulse 2.4s ease-out infinite; }
+.radar-ring::after { animation-delay: 1.2s; }
+@keyframes radarPulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.4); opacity: 0; } }
+.viewfinder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60%; height: 70%; }
+.vf-corner { position: absolute; width: 40px; height: 40px; border: 2px solid var(--color-primary); filter: drop-shadow(0 0 8px rgba(201,169,98,0.7)); }
+.vf-tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+.vf-tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+.vf-bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+.vf-br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+.artifact-silhouette { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 38%; height: 60%; opacity: 0.5; pointer-events: none; transition: opacity 0.4s ease; }
+.artifact-silhouette.matched { opacity: 0.9; }
+.artifact-silhouette svg { width: 100%; height: 100%; }
+.artifact-silhouette svg path, .artifact-silhouette svg circle, .artifact-silhouette svg rect, .artifact-silhouette svg ellipse, .artifact-silhouette svg polygon, .artifact-silhouette svg line { fill: none; stroke: var(--color-primary); stroke-width: 1.5; stroke-dasharray: 4 3; filter: drop-shadow(0 0 4px rgba(201,169,98,0.6)); }
+.scan-line-h { position: absolute; top: 15%; left: 20%; width: 60%; height: 1.5px; background: linear-gradient(90deg, transparent, var(--color-primary), transparent); box-shadow: 0 0 14px var(--color-primary); animation: scanSweepH 2.2s ease-in-out infinite; opacity: 0; }
+#scanOverlay.active .scan-line-h { opacity: 1; }
+@keyframes scanSweepH { 0%, 100% { transform: translateY(0); opacity: 0.2; } 50% { transform: translateY(480%); opacity: 1; } }
+.scan-line-v { position: absolute; top: 15%; left: 20%; height: 70%; width: 1.5px; background: linear-gradient(180deg, transparent, var(--color-primary), transparent); box-shadow: 0 0 14px var(--color-primary); animation: scanSweepV 3s ease-in-out infinite; opacity: 0; }
+#scanOverlay.active .scan-line-v { opacity: 0.7; }
+@keyframes scanSweepV { 0%, 100% { transform: translateX(0); opacity: 0.15; } 50% { transform: translateX(360%); opacity: 0.8; } }
+.grid-overlay { position: absolute; inset: 20%; background-image: linear-gradient(rgba(201,169,98,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,98,0.08) 1px, transparent 1px); background-size: 20px 20px; pointer-events: none; opacity: 0; transition: opacity 0.4s ease; }
+#scanOverlay.active .grid-overlay { opacity: 1; }
+.viewport-hud { position: absolute; inset: 0; padding: 1.2rem 1.4rem; display: flex; flex-direction: column; justify-content: space-between; z-index: 5; pointer-events: none; }
+.hud-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.74rem; color: var(--color-primary); letter-spacing: 0.1em; font-family: var(--font-mono); text-shadow: 0 0 6px rgba(201,169,98,0.5); }
+.hud-dot { display: inline-block; width: 8px; height: 8px; background: var(--color-primary); border-radius: 50%; margin-right: 6px; animation: blink 1.4s ease-in-out infinite; box-shadow: 0 0 8px var(--color-primary); }
+@keyframes blink { 0%,100% {opacity: 1;} 50% {opacity: 0.3;} }
+.hud-center { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
+.hud-status { background: rgba(10,10,15,0.7); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); padding: 0.6rem 1.4rem; border-radius: 999px; border: 1px solid var(--glass-border); color: var(--color-text); font-size: 0.88rem; letter-spacing: 0.15em; font-family: var(--font-sans); }
+.hud-progress-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; width: 60%; }
+.hud-progress-bar { width: 100%; height: 2px; background: rgba(201,169,98,0.15); border-radius: 2px; overflow: hidden; }
+.hud-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary)); box-shadow: 0 0 10px var(--color-primary); transition: width 0.2s linear; }
+.hud-progress-text { font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-primary); letter-spacing: 0.2em; }
+.flash { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(201,169,98,0.5), transparent 70%); z-index: 4; pointer-events: none; opacity: 0; }
+.flash.fire { animation: flashFire 0.6s ease-out; }
+@keyframes flashFire { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+.controls { display: flex; flex-direction: column; gap: 1.2rem; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.8rem; position: relative; overflow: hidden; }
+.controls::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--color-primary), transparent); }
+.controls h3 { font-family: var(--font-display); color: var(--color-primary); font-size: 1.3rem; letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.6rem; }
+.controls h3::before { content: ''; width: 24px; height: 1px; background: var(--color-primary); }
+.controls .ctrl-desc { color: var(--color-text-muted); font-size: 0.85rem; line-height: 1.7; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.85rem 1.3rem; border-radius: 10px; font-family: var(--font-sans); font-size: 0.92rem; cursor: pointer; border: 1px solid transparent; transition: all 0.3s ease; text-decoration: none; letter-spacing: 0.1em; background: transparent; color: var(--color-text); }
+.btn-primary { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); color: var(--color-bg-dark); font-weight: 600; box-shadow: 0 6px 20px rgba(201,169,98,0.25); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(201,169,98,0.4); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-secondary { background: transparent; color: var(--color-primary); border-color: var(--color-primary); }
+.btn-secondary:hover { background: rgba(201,169,98,0.12); }
+.btn-ghost { background: rgba(201,169,98,0.06); border-color: var(--glass-border); }
+.btn-ghost:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.btn-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.btn-row .btn { flex: 1; min-width: 0; }
+.sample-list-label { color: var(--color-text-muted); font-size: 0.78rem; letter-spacing: 0.15em; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
+.sample-list-label::after { content: ''; flex: 1; height: 1px; background: var(--glass-border); }
+.sample-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.sample-chip { padding: 0.4rem 0.85rem; background: rgba(201,169,98,0.08); border: 1px solid var(--glass-border); border-radius: 999px; color: var(--color-text-muted); font-size: 0.78rem; cursor: pointer; transition: all 0.25s ease; font-family: var(--font-sans); }
+.sample-chip:hover, .sample-chip.active { color: var(--color-primary); border-color: var(--color-primary); background: rgba(201,169,98,0.18); box-shadow: 0 0 12px rgba(201,169,98,0.2); }
+.tip-card { background: rgba(201,169,98,0.04); border: 1px solid var(--glass-border); border-radius: 10px; padding: 0.8rem 1rem; font-size: 0.78rem; color: var(--color-text-muted); line-height: 1.6; display: flex; gap: 0.6rem; align-items: flex-start; }
+.tip-card .tip-icon { color: var(--color-primary); flex-shrink: 0; margin-top: 2px; }
+.result-stage { margin-top: 2.5rem; position: relative; display: none; animation: slideUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.result-stage.active { display: block; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+.result-card { background: linear-gradient(135deg, rgba(20,20,30,0.95) 0%, rgba(30,30,45,0.95) 100%); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--glass-border); border-radius: 22px; overflow: hidden; position: relative; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+.result-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--color-primary), transparent); z-index: 1; }
+.result-head { padding: 1.6rem 2rem 1.2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); flex-wrap: wrap; gap: 1rem; }
+.result-head-left { display: flex; align-items: center; gap: 0.8rem; }
+.result-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); color: var(--color-bg-dark); padding: 0.4rem 0.9rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.15em; }
+.result-badge svg { width: 14px; height: 14px; }
+.result-confidence { font-family: var(--font-mono); color: var(--color-primary); font-size: 0.85rem; letter-spacing: 0.1em; }
+.result-confidence strong { font-size: 1.1rem; margin-right: 0.3rem; }
+.result-head-right { display: flex; gap: 0.6rem; align-items: center; color: var(--color-text-muted); font-size: 0.78rem; font-family: var(--font-mono); letter-spacing: 0.1em; }
+.result-head-right .live-dot { width: 6px; height: 6px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 8px #4ade80; animation: blink 1.4s ease-in-out infinite; margin-right: 0.3rem; display: inline-block; vertical-align: middle; }
+.result-body { display: grid; grid-template-columns: 1.05fr 1.4fr; gap: 0; }
+.result-3d { position: relative; aspect-ratio: 1; background: radial-gradient(circle at center, #16161f 0%, #0a0a0f 70%); overflow: hidden; display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--glass-border); }
+.result-3d::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(201,169,98,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,98,0.05) 1px, transparent 1px); background-size: 30px 30px; pointer-events: none; }
+#resultArtifactImg { width: 70%; height: 70%; object-fit: contain; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.7)) drop-shadow(0 0 30px rgba(201,169,98,0.2)); animation: floatRotate 8s ease-in-out infinite; position: relative; z-index: 2; }
+@keyframes floatRotate { 0%, 100% { transform: perspective(800px) rotateY(-8deg) translateY(0); } 50% { transform: perspective(800px) rotateY(8deg) translateY(-12px); } }
+.result-3d-tag { position: absolute; top: 1rem; left: 1rem; background: rgba(10,10,15,0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.7rem; color: var(--color-primary); font-size: 0.72rem; font-family: var(--font-mono); letter-spacing: 0.1em; z-index: 3; }
+.result-3d-corner { position: absolute; width: 20px; height: 20px; border: 2px solid var(--color-primary); z-index: 3; }
+.result-3d-corner.tl { top: 0.6rem; left: 0.6rem; border-right: 0; border-bottom: 0; }
+.result-3d-corner.tr { top: 0.6rem; right: 0.6rem; border-left: 0; border-bottom: 0; }
+.result-3d-corner.bl { bottom: 0.6rem; left: 0.6rem; border-right: 0; border-top: 0; }
+.result-3d-corner.br { bottom: 0.6rem; right: 0.6rem; border-left: 0; border-top: 0; }
+.result-3d-rotate { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 0.4rem; background: rgba(10,10,15,0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 999px; padding: 0.4rem 0.9rem; color: var(--color-text-muted); font-size: 0.72rem; font-family: var(--font-mono); letter-spacing: 0.1em; z-index: 3; }
+.result-3d-rotate svg { color: var(--color-primary); }
+.result-info { padding: 2rem; display: flex; flex-direction: column; gap: 1.2rem; }
+.result-name { font-family: var(--font-display); font-size: 2.4rem; color: var(--color-primary); letter-spacing: 0.15em; line-height: 1.2; text-shadow: 0 0 24px rgba(201,169,98,0.2); }
+.result-sub { color: var(--color-text-muted); font-size: 0.9rem; letter-spacing: 0.1em; display: flex; align-items: center; gap: 0.5rem; margin-top: -0.6rem; }
+.result-sub::before { content: ''; width: 20px; height: 1px; background: var(--color-primary); }
+.result-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.result-tag { padding: 0.35rem 0.85rem; background: rgba(201,169,98,0.08); border: 1px solid rgba(201,169,98,0.2); color: var(--color-primary); font-size: 0.78rem; border-radius: 4px; letter-spacing: 0.1em; display: inline-flex; align-items: center; gap: 0.3rem; }
+.result-tag.model { background: linear-gradient(135deg, rgba(201,169,98,0.2), rgba(201,169,98,0.05)); border-color: var(--color-primary); box-shadow: 0 0 10px rgba(201,169,98,0.2); }
+.spec-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.7rem; }
+.spec-item { background: rgba(201,169,98,0.04); border: 1px solid var(--glass-border); border-radius: 10px; padding: 0.85rem 1rem; position: relative; overflow: hidden; transition: all 0.3s ease; }
+.spec-item:hover { background: rgba(201,169,98,0.08); border-color: rgba(201,169,98,0.3); }
+.spec-item::before { content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 100%; background: var(--color-primary); opacity: 0.6; }
+.spec-label { color: var(--color-text-muted); font-size: 0.72rem; letter-spacing: 0.15em; margin-bottom: 0.3rem; font-family: var(--font-mono); }
+.spec-value { color: var(--color-text); font-size: 0.95rem; font-weight: 500; font-family: var(--font-serif); }
+.result-desc { color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.85; background: linear-gradient(90deg, rgba(201,169,98,0.04), transparent); padding: 0.7rem 1rem; border-radius: 0 8px 8px 0; border-left: 2px solid var(--color-primary); }
+.stream-data { display: flex; gap: 1rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-text-muted); padding: 0.6rem 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 6px; flex-wrap: wrap; }
+.stream-data span { color: var(--color-primary); margin-right: 0.2rem; }
+.result-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 0.4rem; }
+.result-actions .btn { flex: 1; min-width: 140px; }
+@media (max-width: 1024px) { .scan-wrap { grid-template-columns: 1fr; } .result-body { grid-template-columns: 1fr; } .result-3d { aspect-ratio: 16 / 9; border-right: 0; border-bottom: 1px solid var(--glass-border); } }
+@media (max-width: 720px) { .nav { padding: 0.8rem 1.2rem; } .nav-links { display: none; } .ar-inner { padding: 1rem 1rem 2rem; } .spec-grid { grid-template-columns: 1fr; } .result-info { padding: 1.4rem; } .result-name { font-size: 1.8rem; } .result-head { padding: 1.2rem 1.4rem; } .viewfinder { width: 80%; height: 60%; } }
 </style>
 </head>
 <body>
-<nav class="nav"><a href="index.html" class="nav-logo">中华文物</a><ul class="nav-links"><li><a href="index.html">首页</a></li><li><a href="vessels-cover.html">器之灵</a></li><li><a href="stone-cover.html">石之韵</a></li><li><a href="history-cover.html">史之痕</a></li><li><a href="restoration-cover.html" class="active">文物修复</a></li><li><a href="promotion-cover.html">推广</a></li></ul></nav>
-<section class="stage"><div class="stage-inner"><div class="stage-title"><h1>AR 文物识别</h1><p>将摄像头对准文物 · 实时识别解析</p></div><div class="scan-panel"><div class="viewport" id="viewport"><video id="camVideo" autoplay playsinline muted></video><div class="viewport-fallback" id="viewportFallback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><div class="hint">点击开启摄像头扫描，或选择下方示例文物进行模拟识别</div></div><div id="scanOverlay"><div class="viewfinder"><span class="corner-tl"></span><span class="corner-tr"></span><span class="corner-bl"></span><span class="corner-br"></span><span class="scan-line"></span><span class="crosshair"></span></div><div class="viewport-hud"><div class="hud-top"><span><span class="hud-dot"></span>AR ACTIVE</span><span id="hudTime">00:00:00</span></div><div class="hud-status" id="hudStatus">正在识别中</div><div class="hud-bottom"><span>FPS 60</span><span>AI RESNET-50</span></div></div><div class="scan-progress"><div class="scan-progress-bar"><div class="scan-progress-fill" id="progressFill"></div></div><div class="scan-progress-text" id="progressText">扫描中 0%</div></div></div></div><div class="controls"><h3>控制台</h3><p>支持摄像头实时取景识别，或选择示例文物进行模拟识别体验。识别过程约 2-3 秒。</p><div class="btn-group"><button class="btn btn-primary" id="btnStart"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1 14V8l6 4z"/></svg><span id="btnStartText">开启摄像头扫描</span></button><button class="btn btn-ghost" id="btnStop" disabled>停止扫描</button></div><div><div style="color:var(--color-text-muted);font-size:0.85rem;margin-bottom:0.6rem;">或选择示例文物</div><div class="sample-list"><span class="sample-chip" data-id="sanyangzun">三羊尊</span><span class="sample-chip" data-id="jiagu">击鼓说唱俑</span><span class="sample-chip" data-id="huniu">虎钮淳于</span><span class="sample-chip" data-id="niao">青铜鸟</span><span class="sample-chip" data-id="bronze">青铜鼎</span></div></div><a href="restoration-detail.html" class="btn btn-secondary">返回修复技术</a></div></div><div class="idle-state" id="idleState"><div class="icon">◎</div><div>扫描结果将显示在此处</div><div style="font-size:0.85rem;margin-top:0.5rem;opacity:0.7;">请开启摄像头或将示例文物置于取景框内</div></div><div class="result-panel" id="resultPanel"><div class="result-header"><span class="check">✓</span><span>识别成功</span></div><div class="result-grid"><div class="result-image"><img id="resultImage" src="" alt="识别文物"><span class="result-confidence" id="resultConfidence">置信度 99.2%</span></div><div class="result-info"><h2 id="resultName">三羊铜尊</h2><div class="result-sub" id="resultSub">商代晚期 盛酒礼器</div><div class="result-tags"><span class="result-tag" id="resultDynasty">商代</span><span class="result-tag" id="resultCategory">青铜器</span><span class="result-tag" id="resultLocation">三峡博物馆</span><span class="result-tag model">3D 模型可查看</span></div><div class="spec-grid"><div class="spec-item"><div class="spec-label">材质</div><div class="spec-value" id="specMaterial">青铜</div></div><div class="spec-item"><div class="spec-label">年代</div><div class="spec-value" id="specAge">约 3000 年前</div></div><div class="spec-item"><div class="spec-label">工艺</div><div class="spec-value" id="specCraft">范铸法</div></div><div class="spec-item"><div class="spec-label">级别</div><div class="spec-value" id="specGrade">国家一级</div></div></div><p class="result-desc" id="resultDesc">三羊铜尊是商代晚期青铜礼器的代表作，整体造型雄浑庄重，三羊开泰纹饰精美绝伦，体现了古代工匠高超的范铸技艺。</p><div class="result-actions"><a href="museum-3d.html" class="btn btn-primary" id="btnView3d"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>查看 3D 模型</a><a href="museum-3d.html" class="btn btn-secondary">查看完整信息</a><button class="btn btn-ghost" id="btnRescan">重新识别</button></div></div></div></div></div></section>
+<nav class="nav">
+    <a href="index.html" class="nav-logo">中华文物</a>
+    <ul class="nav-links">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="vessels-cover.html">器之灵</a></li>
+        <li><a href="stone-cover.html">石之韵</a></li>
+        <li><a href="history-cover.html">史之痕</a></li>
+        <li><a href="restoration-cover.html" class="active">文物修复</a></li>
+        <li><a href="promotion-cover.html">推广</a></li>
+    </ul>
+</nav>
+<section class="ar-stage">
+    <div class="ar-inner">
+        <div class="ar-header">
+            <h1>AR 文物识别</h1>
+            <p>实时取景 · 智能识别 · 一键解析</p>
+            <span class="ar-tag">RECOGNITION · v2.0</span>
+        </div>
+        <div class="scan-wrap">
+            <div class="viewport" id="viewport">
+                <video id="camVideo" autoplay playsinline muted></video>
+                <div class="viewport-idle" id="viewportIdle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                        <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                    <div class="hint">将摄像头对准文物进行实时识别<br>或选择下方示例文物开启模拟识别</div>
+                    <button class="btn-launch" id="btnLaunch">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1 14V8l6 4z"/></svg>
+                        开启摄像头
+                    </button>
+                </div>
+                <div id="scanOverlay">
+                    <div class="radar-ring"></div>
+                    <div class="viewfinder">
+                        <span class="vf-corner vf-tl"></span>
+                        <span class="vf-corner vf-tr"></span>
+                        <span class="vf-corner vf-bl"></span>
+                        <span class="vf-corner vf-br"></span>
+                        <div class="artifact-silhouette" id="artifactSilhouette">
+                            <svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet">
+                                <path d="M30 20 Q30 10, 50 10 Q70 10, 70 20 L70 35 Q80 40, 80 55 L80 95 Q80 110, 65 110 L35 110 Q20 110, 20 95 L20 55 Q20 40, 30 35 Z"/>
+                                <line x1="30" y1="20" x2="70" y2="20"/>
+                                <circle cx="50" cy="60" r="12"/>
+                            </svg>
+                        </div>
+                        <span class="scan-line-h"></span>
+                        <span class="scan-line-v"></span>
+                        <div class="grid-overlay"></div>
+                    </div>
+                    <div class="viewport-hud">
+                        <div class="hud-row">
+                            <span><span class="hud-dot"></span>AR · ACTIVE</span>
+                            <span id="hudTime">00:00:00</span>
+                        </div>
+                        <div class="hud-center">
+                            <div class="hud-status" id="hudStatus">正在识别中…</div>
+                            <div class="hud-progress-wrap">
+                                <div class="hud-progress-bar"><div class="hud-progress-fill" id="progressFill"></div></div>
+                                <div class="hud-progress-text" id="progressText">扫描中 0%</div>
+                            </div>
+                        </div>
+                        <div class="hud-row">
+                            <span id="hudFps">FPS · 60</span>
+                            <span>AI · RESNET-50</span>
+                        </div>
+                    </div>
+                    <div class="flash" id="flash"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <h3>识别控制台</h3>
+                <p class="ctrl-desc">支持摄像头实时取景识别，或选择示例文物进行模拟识别。识别过程约 2-3 秒，结果将自动展示。</p>
+                <div class="btn-row">
+                    <button class="btn btn-primary" id="btnStart">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1 14V8l6 4z"/></svg>
+                        <span id="btnStartText">开启扫描</span>
+                    </button>
+                    <button class="btn btn-ghost" id="btnStop" disabled>停止</button>
+                </div>
+                <div>
+                    <div class="sample-list-label">示例文物</div>
+                    <div class="sample-list">
+                        <span class="sample-chip" data-id="sanyangzun">三羊尊</span>
+                        <span class="sample-chip" data-id="jiagu">击鼓说唱俑</span>
+                        <span class="sample-chip" data-id="huniu">虎钮淳于</span>
+                        <span class="sample-chip" data-id="niao">青铜鸟</span>
+                        <span class="sample-chip" data-id="bronze">青铜鼎</span>
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <span class="tip-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></span>
+                    <span>请在光线充足的环境下使用，将文物置于取景框中心以获得最佳识别效果。</span>
+                </div>
+                <a href="restoration-detail.html" class="btn btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    返回修复技术
+                </a>
+            </div>
+        </div>
+        <div class="result-stage" id="resultStage">
+            <div class="result-card">
+                <div class="result-head">
+                    <div class="result-head-left">
+                        <span class="result-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>识别命中</span>
+                        <span class="result-confidence" id="resultConfidence">置信度 <strong>99.2%</strong></span>
+                    </div>
+                    <div class="result-head-right"><span><span class="live-dot"></span>实时识别结果</span></div>
+                </div>
+                <div class="result-body">
+                    <div class="result-3d">
+                        <span class="result-3d-tag" id="resultTag3d">3D · READY</span>
+                        <span class="result-3d-corner tl"></span>
+                        <span class="result-3d-corner tr"></span>
+                        <span class="result-3d-corner bl"></span>
+                        <span class="result-3d-corner br"></span>
+                        <img id="resultArtifactImg" src="" alt="识别文物">
+                        <div class="result-3d-rotate">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+                            AUTO ROTATE
+                        </div>
+                    </div>
+                    <div class="result-info">
+                        <div>
+                            <h2 class="result-name" id="resultName">三羊铜尊</h2>
+                            <div class="result-sub" id="resultSub">商代晚期 · 盛酒礼器</div>
+                        </div>
+                        <div class="result-tags">
+                            <span class="result-tag" id="resultDynasty">商代</span>
+                            <span class="result-tag" id="resultCategory">青铜器</span>
+                            <span class="result-tag" id="resultLocation">三峡博物馆</span>
+                            <span class="result-tag model">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                                3D 模型可查看
+                            </span>
+                        </div>
+                        <div class="spec-grid">
+                            <div class="spec-item"><div class="spec-label">材质</div><div class="spec-value" id="specMaterial">青铜</div></div>
+                            <div class="spec-item"><div class="spec-label">年代</div><div class="spec-value" id="specAge">约 3000 年前</div></div>
+                            <div class="spec-item"><div class="spec-label">工艺</div><div class="spec-value" id="specCraft">范铸法</div></div>
+                            <div class="spec-item"><div class="spec-label">级别</div><div class="spec-value" id="specGrade">国家一级</div></div>
+                        </div>
+                        <p class="result-desc" id="resultDesc">三羊铜尊是商代晚期青铜礼器的代表作，整体造型雄浑庄重。</p>
+                        <div class="stream-data">
+                            <span>ID</span>#<span id="streamId">SH-3014</span>
+                            <span>SCAN</span><span id="streamScan">0.0s</span>
+                            <span>RES</span>1920×1080
+                            <span>NET</span>OK
+                        </div>
+                        <div class="result-actions">
+                            <a href="museum-3d.html" class="btn btn-primary" id="btnView3d">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                                3D 模型查看
+                            </a>
+                            <a href="museum-3d.html" class="btn btn-secondary">完整信息</a>
+                            <button class="btn btn-ghost" id="btnRescan">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>
+                                重新识别
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 <script>
-const samples={sanyangzun:{name:'三羊铜尊',sub:'商代晚期 盛酒礼器',dynasty:'商代',category:'青铜器',location:'三峡博物馆',material:'青铜',age:'约 3000 年前',craft:'范铸法',grade:'国家一级',image:'images/sanyangzun-main.jpg',desc:'三羊铜尊是商代晚期青铜礼器的代表作，整体造型雄浑庄重，三羊开泰纹饰精美绝伦，体现了古代工匠高超的范铸技艺与神秘图腾信仰。',confidence:'99.2%',url:'https://justxylia.github.io/fingertip-museum/museum-3d.html'},jiagu:{name:'击鼓说唱俑',sub:'东汉 陪葬陶俑',dynasty:'东汉',category:'陶器',location:'三峡博物馆',material:'陶土',age:'约 1800 年前',craft:'泥塑焙烧',grade:'国家一级',image:'images/artifact-drum-storyteller.jpg',desc:'击鼓说唱俑是东汉时期巴蜀地区陶俑艺术的杰作，人物表情夸张生动，击鼓姿态豪迈奔放，是研究汉代民俗与雕塑艺术的重要实物。',confidence:'98.6%',url:'https://justxylia.github.io/fingertip-museum/museum-jiagu.html'},huniu:{name:'虎钮淳于',sub:'战国 巴蜀军乐器',dynasty:'战国',category:'青铜器',location:'三峡博物馆',material:'青铜',age:'约 2300 年前',craft:'青铜铸造',grade:'国家一级',image:'images/artifact-tiger-chunyu.jpg',desc:'虎钮淳于是巴蜀地区战国时期特有的青铜军乐器，器身饰以精美纹饰，虎钮造型威武雄壮，是巴蜀文化的代表性器物。',confidence:'97.8%',url:'https://justxylia.github.io/fingertip-museum/museum-huniu.html'},niao:{name:'青铜神鸟',sub:'商周 图腾礼器',dynasty:'商周',category:'青铜器',location:'三峡博物馆',material:'青铜',age:'约 3100 年前',craft:'范铸法',grade:'国家一级',image:'images/artifact-bronze-bird.jpg',desc:'青铜神鸟是商周时期巴蜀先民崇拜的神鸟图腾，鸟首高昂、羽翼舒展，蕴含着古人对飞鸟通神的崇敬与敬畏。',confidence:'99.4%',url:'https://justxylia.github.io/fingertip-museum/museum-niao.html'},bronze:{name:'青铜方鼎',sub:'商代 烹饪礼器',dynasty:'商代',category:'青铜器',location:'三峡博物馆',material:'青铜',age:'约 3200 年前',craft:'范铸法',grade:'国家一级',image:'images/artifact-bronze-ding.jpg',desc:'青铜方鼎是商代礼器中的重器，造型方正庄严，饕餮纹饰神秘狞厉，是王权与神权结合的象征，也是早期青铜艺术的巅峰之作。',confidence:'96.5%',url:'museum-3d.html'}};
-const video=document.getElementById('camVideo'),fallback=document.getElementById('viewportFallback'),overlay=document.getElementById('scanOverlay'),btnStart=document.getElementById('btnStart'),btnStartText=document.getElementById('btnStartText'),btnStop=document.getElementById('btnStop'),btnRescan=document.getElementById('btnRescan'),hudStatus=document.getElementById('hudStatus'),hudTime=document.getElementById('hudTime'),progressFill=document.getElementById('progressFill'),progressText=document.getElementById('progressText'),idleState=document.getElementById('idleState'),resultPanel=document.getElementById('resultPanel');
-let stream=null,scanTimer=null,hudTimer=null,isScanning=false,currentSample=null,startTime=0;
-function updateHudTime(){const elapsed=Math.floor((Date.now()-startTime)/1000);hudTime.textContent=`${String(Math.floor(elapsed/3600)).padStart(2,'0')}:${String(Math.floor((elapsed%3600)/60)).padStart(2,'0')}:${String(elapsed%60).padStart(2,'0')}`;}
-async function startCamera(){try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}},audio:false});video.srcObject=stream;video.classList.add('active');fallback.style.display='none';btnStart.disabled=true;btnStartText.textContent='摄像头已开启';btnStop.disabled=false;}catch(e){alert('无法访问摄像头:'+e.message+'\n请使用 HTTPS 访问或选择下方示例文物进行模拟识别。');console.error(e);}}
-function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}video.classList.remove('active');fallback.style.display='flex';btnStart.disabled=false;btnStartText.textContent='开启摄像头扫描';btnStop.disabled=true;stopScan();}
-function startScan(){if(isScanning)return;isScanning=true;startTime=Date.now();overlay.classList.add('active');idleState.style.display='none';resultPanel.classList.remove('active');hudStatus.textContent='正在识别中';hudTimer=setInterval(updateHudTime,1000);updateHudTime();let progress=0;progressFill.style.width='0%';progressText.textContent='扫描中 0%';scanTimer=setInterval(()=>{progress+=Math.random()*8+2;if(progress>=100){progress=100;clearInterval(scanTimer);progressFill.style.width='100%';progressText.textContent='识别完成 100%';hudStatus.textContent='识别成功';setTimeout(()=>showResult(),400);}else{progressFill.style.width=progress.toFixed(1)+'%';progressText.textContent=`扫描中 ${progress.toFixed(0)}%`;}},150);}
-function stopScan(){if(scanTimer){clearInterval(scanTimer);scanTimer=null;}if(hudTimer){clearInterval(hudTimer);hudTimer=null;}isScanning=false;overlay.classList.remove('active');}
-function showResult(){if(!currentSample)return;const data=samples[currentSample];document.getElementById('resultImage').src=data.image;document.getElementById('resultName').textContent=data.name;document.getElementById('resultSub').textContent=data.sub;document.getElementById('resultDynasty').textContent=data.dynasty;document.getElementById('resultCategory').textContent=data.category;document.getElementById('resultLocation').textContent=data.location;document.getElementById('specMaterial').textContent=data.material;document.getElementById('specAge').textContent=data.age;document.getElementById('specCraft').textContent=data.craft;document.getElementById('specGrade').textContent=data.grade;document.getElementById('resultDesc').textContent=data.desc;document.getElementById('resultConfidence').textContent='置信度 '+data.confidence;document.getElementById('btnView3d').href=data.url;resultPanel.classList.add('active');resultPanel.scrollIntoView({behavior:'smooth',block:'nearest'});}
-btnStart.addEventListener('click',async()=>{if(!stream)await startCamera();if(stream)startScan();});
-btnStop.addEventListener('click',stopCamera);
-btnRescan.addEventListener('click',()=>{if(currentSample)startScan();});
-document.querySelectorAll('.sample-chip').forEach(chip=>{chip.addEventListener('click',()=>{currentSample=chip.dataset.id;if(stream)stopCamera();startScan();});});
+const samples = {
+    sanyangzun: { name: '三羊铜尊', sub: '商代晚期 · 盛酒礼器', dynasty: '商代', category: '青铜器', location: '三峡博物馆', material: '青铜', age: '约 3000 年前', craft: '范铸法', grade: '国家一级', image: 'images/sanyangzun-main.jpg', desc: '三羊铜尊是商代晚期青铜礼器的代表作，整体造型雄浑庄重，三羊开泰纹饰精美绝伦，体现了古代工匠高超的范铸技艺与神秘图腾信仰，是商代礼器艺术与铸造技术的巅峰。', confidence: '99.2%', url: 'museum-3d.html', id: 'SH-3014', silhouette: '<svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet"><path d="M25 30 Q25 12, 50 12 Q75 12, 75 30 L75 45 Q88 50, 88 65 L88 95 Q88 115, 70 115 L30 115 Q12 115, 12 95 L12 65 Q12 50, 25 45 Z"/><path d="M30 30 Q30 20, 50 20 Q70 20, 70 30"/><ellipse cx="50" cy="70" rx="14" ry="10"/></svg>' },
+    jiagu: { name: '击鼓说唱俑', sub: '东汉 · 陪葬陶俑', dynasty: '东汉', category: '陶器', location: '三峡博物馆', material: '陶土', age: '约 1800 年前', craft: '泥塑焙烧', grade: '国家一级', image: 'images/artifact-drum-storyteller.jpg', desc: '击鼓说唱俑是东汉时期巴蜀地区陶俑艺术的杰作，人物表情夸张生动，击鼓姿态豪迈奔放，是研究汉代民俗、说唱艺术与雕塑风格的重要实物。', confidence: '98.6%', url: 'museum-3d.html', id: 'DH-2025', silhouette: '<svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet"><circle cx="50" cy="35" r="18"/><path d="M32 50 L30 90 L40 90 L42 70 L58 70 L60 90 L70 90 L68 50 Q60 56, 50 56 Q40 56, 32 50 Z"/><rect x="20" y="55" width="14" height="14" rx="2"/></svg>' },
+    huniu: { name: '虎钮淳于', sub: '战国 · 巴蜀军乐器', dynasty: '战国', category: '青铜器', location: '三峡博物馆', material: '青铜', age: '约 2300 年前', craft: '青铜铸造', grade: '国家一级', image: 'images/artifact-tiger-chunyu.jpg', desc: '虎钮淳于是巴蜀地区战国时期特有的青铜军乐器，器身饰以精美纹饰，虎钮造型威武雄壮，是巴蜀文化的代表性器物，见证了古代巴蜀战争的辉煌历史。', confidence: '97.8%', url: 'museum-3d.html', id: 'ZG-1817', silhouette: '<svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet"><path d="M35 25 L65 25 L75 40 L80 60 L80 95 Q80 110, 65 110 L35 110 Q20 110, 20 95 L20 60 L25 40 Z"/><ellipse cx="50" cy="22" rx="14" ry="10"/><circle cx="42" cy="20" r="2"/><circle cx="58" cy="20" r="2"/></svg>' },
+    niao: { name: '青铜神鸟', sub: '商周 · 图腾礼器', dynasty: '商周', category: '青铜器', location: '三峡博物馆', material: '青铜', age: '约 3100 年前', craft: '范铸法', grade: '国家一级', image: 'images/artifact-bronze-bird.jpg', desc: '青铜神鸟是商周时期巴蜀先民崇拜的神鸟图腾，鸟首高昂、羽翼舒展，蕴含着古人对飞鸟通神的崇敬与敬畏，是巴蜀青铜文明的杰出代表。', confidence: '99.4%', url: 'museum-3d.html', id: 'SZ-4022', silhouette: '<svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet"><path d="M50 15 Q70 25, 70 45 L70 70 Q70 85, 55 90 L45 90 Q30 85, 30 70 L30 45 Q30 25, 50 15 Z"/><path d="M30 50 L15 55 L30 60 M70 50 L85 55 L70 60 M50 90 L50 110"/><circle cx="42" cy="35" r="2.5"/></svg>' },
+    bronze: { name: '青铜方鼎', sub: '商代 · 烹饪礼器', dynasty: '商代', category: '青铜器', location: '三峡博物馆', material: '青铜', age: '约 3200 年前', craft: '范铸法', grade: '国家一级', image: 'images/artifact-bronze-ding.jpg', desc: '青铜方鼎是商代礼器中的重器，造型方正庄严，饕餮纹饰神秘狞厉，是王权与神权结合的象征，也是早期青铜艺术的巅峰之作。', confidence: '96.5%', url: 'museum-3d.html', id: 'SH-1011', silhouette: '<svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMid meet"><rect x="20" y="40" width="60" height="55" rx="3"/><path d="M20 40 L20 28 L30 28 L30 40 M70 40 L70 28 L80 28 L80 40 M15 95 L15 110 L30 110 L30 95 M70 95 L70 110 L85 110 L85 95"/><line x1="20" y1="60" x2="80" y2="60"/><circle cx="50" cy="75" r="8"/></svg>' }
+};
+const video = document.getElementById('camVideo');
+const idle = document.getElementById('viewportIdle');
+const overlay = document.getElementById('scanOverlay');
+const btnLaunch = document.getElementById('btnLaunch');
+const btnStart = document.getElementById('btnStart');
+const btnStartText = document.getElementById('btnStartText');
+const btnStop = document.getElementById('btnStop');
+const btnRescan = document.getElementById('btnRescan');
+const hudStatus = document.getElementById('hudStatus');
+const hudTime = document.getElementById('hudTime');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const flash = document.getElementById('flash');
+const resultStage = document.getElementById('resultStage');
+const silhouette = document.getElementById('artifactSilhouette');
+const streamScan = document.getElementById('streamScan');
+let stream = null, scanTimer = null, hudTimer = null, isScanning = false, currentSample = null, startTime = 0, scanStartTime = 0;
+function updateHudTime() {
+    const e = Math.floor((Date.now() - startTime) / 1000);
+    hudTime.textContent = `${String(Math.floor(e/3600)).padStart(2,'0')}:${String(Math.floor((e%3600)/60)).padStart(2,'0')}:${String(e%60).padStart(2,'0')}`;
+}
+async function startCamera() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+        video.srcObject = stream;
+        video.classList.add('active');
+        idle.style.display = 'none';
+        btnStart.disabled = false;
+        btnStartText.textContent = '开始扫描';
+        btnStop.disabled = false;
+    } catch (e) {
+        alert('无法访问摄像头：' + e.message + '\n请使用 HTTPS 访问或选择下方示例文物进行模拟识别。');
+        console.error(e);
+    }
+}
+function stopCamera() {
+    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    video.classList.remove('active');
+    idle.style.display = 'flex';
+    btnStart.disabled = true;
+    btnStartText.textContent = '开启扫描';
+    btnStop.disabled = true;
+    stopScan();
+}
+function startScan() {
+    if (isScanning) return;
+    isScanning = true;
+    startTime = Date.now();
+    scanStartTime = Date.now();
+    overlay.classList.add('active');
+    resultStage.classList.remove('active');
+    hudStatus.textContent = '正在识别中…';
+    hudTimer = setInterval(updateHudTime, 1000);
+    updateHudTime();
+    let progress = 0;
+    progressFill.style.width = '0%';
+    progressText.textContent = '扫描中 0%';
+    scanTimer = setInterval(() => {
+        streamScan.textContent = ((Date.now() - scanStartTime) / 1000).toFixed(1) + 's';
+        progress += Math.random() * 7 + 2;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(scanTimer);
+            progressFill.style.width = '100%';
+            progressText.textContent = '识别完成 100%';
+            hudStatus.textContent = '识别成功';
+            flash.classList.add('fire');
+            setTimeout(() => { flash.classList.remove('fire'); showResult(); }, 500);
+        } else {
+            progressFill.style.width = progress.toFixed(1) + '%';
+            progressText.textContent = `扫描中 ${progress.toFixed(0)}%`;
+        }
+    }, 130);
+}
+function stopScan() {
+    if (scanTimer) { clearInterval(scanTimer); scanTimer = null; }
+    if (hudTimer) { clearInterval(hudTimer); hudTimer = null; }
+    isScanning = false;
+    overlay.classList.remove('active');
+}
+function showResult() {
+    if (!currentSample) return;
+    const d = samples[currentSample];
+    document.getElementById('resultArtifactImg').src = d.image;
+    document.getElementById('resultName').textContent = d.name;
+    document.getElementById('resultSub').textContent = d.sub;
+    document.getElementById('resultDynasty').textContent = d.dynasty;
+    document.getElementById('resultCategory').textContent = d.category;
+    document.getElementById('resultLocation').textContent = d.location;
+    document.getElementById('specMaterial').textContent = d.material;
+    document.getElementById('specAge').textContent = d.age;
+    document.getElementById('specCraft').textContent = d.craft;
+    document.getElementById('specGrade').textContent = d.grade;
+    document.getElementById('resultDesc').textContent = d.desc;
+    document.getElementById('resultConfidence').innerHTML = `置信度 <strong>${d.confidence}</strong>`;
+    document.getElementById('btnView3d').href = d.url;
+    document.getElementById('streamId').textContent = d.id;
+    if (d.silhouette) { silhouette.innerHTML = d.silhouette; silhouette.classList.add('matched'); }
+    resultStage.classList.add('active');
+    setTimeout(() => { resultStage.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 200);
+}
+btnLaunch.addEventListener('click', async () => { await startCamera(); });
+btnStart.addEventListener('click', () => { if (stream) startScan(); });
+btnStop.addEventListener('click', stopCamera);
+btnRescan.addEventListener('click', () => {
+    if (currentSample) { resultStage.classList.remove('active'); setTimeout(() => startScan(), 200); }
+});
+document.querySelectorAll('.sample-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        document.querySelectorAll('.sample-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentSample = chip.dataset.id;
+        if (stream) stopCamera();
+        startScan();
+    });
+});
 </script>
 </body>
 </html>
