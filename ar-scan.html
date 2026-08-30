@@ -35,6 +35,10 @@ body { font-family: var(--font-sans); background: var(--color-bg-dark); color: v
 .nav-links a::after { content: ''; position: absolute; left: 0; bottom: 0; width: 0; height: 1px; background: var(--color-primary); transition: width 0.3s ease; }
 .nav-links a:hover, .nav-links a.active { color: var(--color-primary); }
 .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+.nav-left { display: flex; align-items: center; gap: 1.2rem; }
+.nav-back { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; color: var(--color-primary); text-decoration: none; font-size: 0.85rem; letter-spacing: 0.1em; border: 1px solid var(--glass-border); border-radius: 999px; background: rgba(201,169,98,0.05); transition: all 0.3s ease; font-family: var(--font-sans); }
+.nav-back:hover { background: rgba(201,169,98,0.15); border-color: var(--color-primary); color: var(--color-primary-light); transform: translateX(-2px); }
+.nav-back svg { width: 14px; height: 14px; }
 .ar-stage { position: relative; width: 100%; min-height: 100vh; padding-top: 70px; background: radial-gradient(ellipse at center, #0f0f18 0%, #0a0a0f 70%); overflow: hidden; }
 .ar-stage::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(201,169,98,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,169,98,0.04) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; z-index: 0; }
 .ar-stage::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 20%, rgba(201,169,98,0.06), transparent 50%), radial-gradient(circle at 70% 80%, rgba(201,169,98,0.04), transparent 50%); pointer-events: none; z-index: 0; }
@@ -156,12 +160,18 @@ body { font-family: var(--font-sans); background: var(--color-bg-dark); color: v
 .result-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 0.4rem; }
 .result-actions .btn { flex: 1; min-width: 140px; }
 @media (max-width: 1024px) { .scan-wrap { grid-template-columns: 1fr; } .result-body { grid-template-columns: 1fr; } .result-3d { aspect-ratio: 16 / 9; border-right: 0; border-bottom: 1px solid var(--glass-border); } }
-@media (max-width: 720px) { .nav { padding: 0.8rem 1.2rem; } .nav-links { display: none; } .ar-inner { padding: 1rem 1rem 2rem; } .spec-grid { grid-template-columns: 1fr; } .result-info { padding: 1.4rem; } .result-name { font-size: 1.8rem; } .result-head { padding: 1.2rem 1.4rem; } .viewfinder { width: 80%; height: 60%; } }
+@media (max-width: 720px) { .nav { padding: 0.8rem 1.2rem; } .nav-links { display: none; } .nav-back { padding: 0.4rem 0.8rem; font-size: 0.78rem; } .ar-inner { padding: 1rem 1rem 2rem; } .spec-grid { grid-template-columns: 1fr; } .result-info { padding: 1.4rem; } .result-name { font-size: 1.8rem; } .result-head { padding: 1.2rem 1.4rem; } .viewfinder { width: 80%; height: 60%; } }
 </style>
 </head>
 <body>
 <nav class="nav">
-    <a href="index.html" class="nav-logo">中华文物</a>
+    <div class="nav-left">
+        <a href="restoration-detail.html" class="nav-back" title="返回修复技术">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+            返回
+        </a>
+        <a href="index.html" class="nav-logo">中华文物</a>
+    </div>
     <ul class="nav-links">
         <li><a href="index.html">首页</a></li>
         <li><a href="vessels-cover.html">器之灵</a></li>
