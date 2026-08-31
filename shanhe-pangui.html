@@ -390,6 +390,268 @@
         .divider::before { left: -10px; }
         .divider::after { left: calc(100% + 10px); }
 
+        /* ============ 追索之路：数据/分布/倡议 ============ */
+        .restore-section {
+            padding: 5rem 1.5rem 6rem;
+            background: var(--bg);
+            position: relative;
+        }
+        .restore-inner { max-width: 1280px; margin: 0 auto; }
+
+        /* 公共 section 头 */
+        .sec-head {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+        .sec-head h2 {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+            color: var(--gold);
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+        .sec-head p {
+            font-family: var(--font-serif);
+            color: var(--text-mute);
+            font-size: 0.8rem;
+            letter-spacing: 0.4em;
+            text-indent: 0.4em;
+        }
+
+        /* 数据矩阵 */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.2rem;
+            margin-bottom: 5rem;
+        }
+        .data-card {
+            background: rgba(15, 15, 22, 0.55);
+            border: 1px solid var(--gold-line);
+            padding: 2rem 1.4rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .data-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0.5;
+        }
+        .data-card:hover { transform: translateY(-4px); border-color: var(--gold); }
+        .data-num {
+            font-family: var(--font-num);
+            font-size: clamp(2.4rem, 4vw, 3rem);
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        .data-label {
+            font-family: var(--font-serif);
+            font-size: 0.8rem;
+            color: var(--text-mute);
+            letter-spacing: 0.25em;
+            text-indent: 0.25em;
+            margin-bottom: 0.8rem;
+        }
+        .data-desc {
+            font-family: var(--font-serif);
+            font-size: 0.75rem;
+            color: var(--text-mute);
+            opacity: 0.75;
+            line-height: 1.7;
+            letter-spacing: 0.05em;
+        }
+
+        /* 海外机构分布 */
+        .dist-section {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 3rem;
+            margin-bottom: 5rem;
+            align-items: stretch;
+        }
+        .dist-left {
+            background: rgba(15, 15, 22, 0.55);
+            border: 1px solid var(--gold-line);
+            padding: 2.5rem 2rem;
+            position: relative;
+        }
+        .dist-left h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: var(--gold);
+            letter-spacing: 0.25em;
+            text-indent: 0.25em;
+            margin-bottom: 0.4rem;
+        }
+        .dist-left .en {
+            font-family: var(--font-serif);
+            color: var(--text-mute);
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            text-indent: 0.4em;
+            margin-bottom: 1.6rem;
+        }
+        .dist-list { list-style: none; }
+        .dist-item {
+            display: grid;
+            grid-template-columns: 60px 1fr 70px;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.9rem 0;
+            border-bottom: 1px dashed var(--gold-line);
+        }
+        .dist-item:last-child { border-bottom: none; }
+        .dist-flag {
+            font-family: var(--font-serif);
+            font-size: 0.78rem;
+            color: var(--gold);
+            letter-spacing: 0.2em;
+            font-weight: 600;
+        }
+        .dist-name {
+            font-family: var(--font-serif);
+            font-size: 0.95rem;
+            color: var(--text);
+            letter-spacing: 0.05em;
+        }
+        .dist-name small {
+            display: block;
+            color: var(--text-mute);
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            margin-top: 0.2rem;
+        }
+        .dist-num {
+            font-family: var(--font-num);
+            font-size: 1.5rem;
+            color: var(--gold);
+            text-align: right;
+        }
+
+        /* 追索事件时间线 */
+        .recover-wrap {
+            background: rgba(15, 15, 22, 0.55);
+            border: 1px solid var(--gold-line);
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .recover-wrap h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: var(--gold);
+            letter-spacing: 0.25em;
+            text-indent: 0.25em;
+            margin-bottom: 0.4rem;
+        }
+        .recover-wrap .en {
+            font-family: var(--font-serif);
+            color: var(--text-mute);
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            text-indent: 0.4em;
+            margin-bottom: 1.6rem;
+        }
+        .recover-list {
+            list-style: none;
+            flex: 1;
+            position: relative;
+            padding-left: 1.2rem;
+        }
+        .recover-list::before {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0; left: 3px;
+            width: 1px;
+            background: linear-gradient(180deg, var(--gold), transparent);
+        }
+        .recover-item {
+            position: relative;
+            padding: 0 0 1.1rem 1.4rem;
+        }
+        .recover-item::before {
+            content: '◆';
+            position: absolute;
+            left: -8px; top: 0.1rem;
+            color: var(--gold);
+            font-size: 0.6rem;
+        }
+        .recover-time {
+            font-family: var(--font-serif);
+            color: var(--gold);
+            font-size: 0.78rem;
+            letter-spacing: 0.2em;
+            font-weight: 600;
+        }
+        .recover-text {
+            font-family: var(--font-serif);
+            color: var(--text);
+            font-size: 0.86rem;
+            line-height: 1.7;
+            letter-spacing: 0.05em;
+            margin-top: 0.2rem;
+        }
+
+        /* 倡议 */
+        .pledge-section {
+            margin-bottom: 0;
+        }
+        .pledge-card {
+            background:
+                linear-gradient(135deg, rgba(201, 163, 90, 0.06) 0%, rgba(201, 163, 90, 0.02) 100%);
+            border: 1px solid var(--gold-line);
+            padding: 3.5rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .pledge-card::before, .pledge-card::after {
+            content: '';
+            position: absolute;
+            width: 80px; height: 80px;
+            border: 1px solid var(--gold);
+            opacity: 0.4;
+        }
+        .pledge-card::before { top: 16px; left: 16px; border-right: none; border-bottom: none; }
+        .pledge-card::after { bottom: 16px; right: 16px; border-left: none; border-top: none; }
+        .pledge-card h3 {
+            font-family: var(--font-display);
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            color: var(--gold);
+            letter-spacing: 0.35em;
+            text-indent: 0.35em;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+        .pledge-text {
+            font-family: var(--font-serif);
+            color: var(--text);
+            font-size: 0.95rem;
+            line-height: 2.2;
+            letter-spacing: 0.12em;
+            max-width: 720px;
+            margin: 0 auto 2rem;
+        }
+        .pledge-text em {
+            color: var(--gold-soft);
+            font-style: normal;
+        }
+        .pledge-quote {
+            font-family: var(--font-display);
+            color: var(--gold);
+            font-size: 1.05rem;
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            margin-top: 1.2rem;
+        }
+
         /* ============ 底部 ============ */
         .footer {
             padding: 3rem 1.5rem;
@@ -402,6 +664,14 @@
         }
 
         /* ============ 响应式 ============ */
+        @media (max-width: 720px) {
+            .data-grid { grid-template-columns: repeat(2, 1fr); }
+            .dist-section { grid-template-columns: 1fr; gap: 1.5rem; }
+        }
+        @media (max-width: 480px) {
+            .data-grid { grid-template-columns: 1fr; }
+            .pledge-card { padding: 2.5rem 1.2rem; }
+        }
         @media (max-width: 720px) {
             .topbar { padding: 1rem 1.2rem; }
             .hero { padding: 5rem 1rem 3rem; min-height: 90vh; }
@@ -479,12 +749,134 @@
 
 <!-- ============ 横向时间轴 ============ -->
 <section class="timeline-section" id="timeline">
-    <div class="timeline-head">
-        <h2>十 二 件 等 你 记 得</h2>
-        <p>从西周到明清 · 从青铜到书画</p>
-    </div>
     <div class="timeline-rail">
         <div class="timeline-track" id="track"></div>
+    </div>
+</section>
+
+<!-- ============ 追索之路 ============ -->
+<section class="restore-section">
+    <div class="restore-inner">
+
+        <!-- 数据矩阵 -->
+        <div class="sec-head">
+            <h2>流 失 之 谱</h2>
+            <p>A CENSUS OF THE LOST</p>
+        </div>
+        <div class="data-grid">
+            <div class="data-card">
+                <div class="data-num">1840</div>
+                <div class="data-label">近代流失起点</div>
+                <div class="data-desc">鸦片战争后，<br>大规模文物外流开始</div>
+            </div>
+            <div class="data-card">
+                <div class="data-num">1860</div>
+                <div class="data-label">圆明园浩劫</div>
+                <div class="data-desc">英法联军焚毁圆明园，<br>掠走文物逾 150 万件</div>
+            </div>
+            <div class="data-card">
+                <div class="data-num">1900</div>
+                <div class="data-label">八国联军之乱</div>
+                <div class="data-desc">敦煌莫高窟藏经洞<br>同一时期被发现</div>
+            </div>
+            <div class="data-card">
+                <div class="data-num">2009</div>
+                <div class="data-label">首例成功追索</div>
+                <div class="data-desc">圆明园鼠首兔首回归，<br>海外追索 0 的突破</div>
+            </div>
+        </div>
+
+        <!-- 海外分布 + 追索事件 -->
+        <div class="dist-section">
+            <div class="dist-left">
+                <h3>海 外 所 在</h3>
+                <div class="en">WHERE THEY NOW REST</div>
+                <ul class="dist-list">
+                    <li class="dist-item">
+                        <div class="dist-flag">英 国</div>
+                        <div class="dist-name">大英博物馆<small>第 33 号中国展厅</small></div>
+                        <div class="dist-num">23,000+</div>
+                    </li>
+                    <li class="dist-item">
+                        <div class="dist-flag">法 国</div>
+                        <div class="dist-name">枫丹白露宫中国馆<small>拿破仑三世皇后藏品</small></div>
+                        <div class="dist-num">3,000+</div>
+                    </li>
+                    <li class="dist-item">
+                        <div class="dist-flag">美 国</div>
+                        <div class="dist-name">大都会艺术博物馆<small>亚洲部中国藏品</small></div>
+                        <div class="dist-num">15,000+</div>
+                    </li>
+                    <li class="dist-item">
+                        <div class="dist-flag">美 国</div>
+                        <div class="dist-name">宾夕法尼亚大学博物馆<small>昭陵二骏所在</small></div>
+                        <div class="dist-num">2,800+</div>
+                    </li>
+                    <li class="dist-item">
+                        <div class="dist-flag">日 本</div>
+                        <div class="dist-name">泉屋博古馆·东京国立<small>三井家族旧藏</small></div>
+                        <div class="dist-num">10,000+</div>
+                    </li>
+                    <li class="dist-item">
+                        <div class="dist-flag">土耳其</div>
+                        <div class="dist-name">托普卡比宫<small>元青花重镇</small></div>
+                        <div class="dist-num">1,000+</div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="recover-wrap">
+                <h3>归 途 节 点</h3>
+                <div class="en">THE ROAD BACK HOME</div>
+                <ul class="recover-list">
+                    <li class="recover-item">
+                        <div class="recover-time">2009 · 2 月</div>
+                        <div class="recover-text">佳士得拍卖会，圆明园鼠首、兔首由法商捐出回归。</div>
+                    </li>
+                    <li class="recover-item">
+                        <div class="recover-time">2011 · 3 月</div>
+                        <div class="recover-text">浙江"肉身坐佛"事件，海外文物追索国际合作开启。</div>
+                    </li>
+                    <li class="recover-item">
+                        <div class="recover-time">2015 · 12 月</div>
+                        <div class="recover-text">大堡礁文物返还，甘肃秦公大墓金饰片归国。</div>
+                    </li>
+                    <li class="recover-item">
+                        <div class="recover-time">2018 · 3 月</div>
+                        <div class="recover-text">虎鎣（yíng）从英国回归，入藏国博。</div>
+                    </li>
+                    <li class="recover-item">
+                        <div class="recover-time">2019 · 2 月</div>
+                        <div class="recover-text">意大利返还 796 件套中国文物。</div>
+                    </li>
+                    <li class="recover-item">
+                        <div class="recover-time">2020 · 10 月</div>
+                        <div class="recover-text">曾伯克父青铜组器回归，流失 30 年终回家。</div>
+                    </li>
+                    <li class="recover-item">
+                        <div class="recover-time">2023 · 10 月</div>
+                        <div class="recover-text">美国返还 41 件文物，含陶器、玉器。</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 倡议 -->
+        <div class="pledge-section">
+            <div class="pledge-card">
+                <h3>一 封 给 山 河 的 回 信</h3>
+                <p class="pledge-text">
+                    若你曾在异国的展厅里与它们对视，<br>
+                    若你曾隔着玻璃触摸过它们的编号与陌生名字，<br>
+                    请<em>记住它们原本的样子</em>。<br><br>
+                    记住，是回家的第一步。<br>
+                    每一次凝视，都是一次<span style="color: var(--gold-soft);">轻声呼唤</span>。<br>
+                    每一份记得，都是一片不曾熄灭的灯火。
+                </p>
+                <div class="pledge-quote">" 山 河 虽 远 · 终 有 归 途 "</div>
+            </div>
+        </div>
+
     </div>
 </section>
 
