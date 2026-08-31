@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遗失详情 · 山河盼归 | 中华文物</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #c9a962;
+            --color-primary-dark: #8b7355;
+            --color-bg-dark: #0a0a0f;
+            --color-bg-medium: #12121a;
+            --color-bg-light: #1a1a25;
+            --glass-bg: rgba(20, 20, 30, 0.7);
+            --glass-border: rgba(201, 169, 98, 0.15);
+            --color-text: #f5f0e8;
+            --color-text-muted: #8a8578;
+            --font-display: 'Ma Shan Zheng', cursive;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-sans);
+            background: var(--color-bg-dark);
+            color: var(--color-text);
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* ============ 导航 ============ */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 1rem 2.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .nav-back {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            color: var(--color-primary);
+            text-decoration: none;
+            font-family: var(--font-serif);
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
+            border: 1px solid var(--color-primary);
+            border-radius: 999px;
+            background: rgba(201, 169, 98, 0.08);
+            transition: all 0.3s ease;
+        }
+        .nav-back:hover {
+            background: var(--color-primary);
+            color: var(--color-bg-dark);
+            transform: translateX(-2px);
+        }
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            text-decoration: none;
+            letter-spacing: 0.1em;
+        }
+        .nav-counter {
+            color: var(--color-text-muted);
+            font-family: var(--font-serif);
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+        }
+        .nav-counter b {
+            color: var(--color-primary);
+            font-weight: 500;
+        }
+
+        /* ============ Hero ============ */
+        .hero {
+            position: relative;
+            min-height: 70vh;
+            padding: 7rem 2rem 4rem;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+            filter: brightness(0.4) saturate(1.1);
+            z-index: 1;
+        }
+        .hero-bg::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg,
+                rgba(10,10,15,0.5) 0%,
+                rgba(10,10,15,0.7) 50%,
+                rgba(10,10,15,0.98) 100%);
+        }
+        .hero-content {
+            position: relative; z-index: 2;
+            text-align: center; max-width: 800px;
+        }
+        .hero-eyebrow {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            font-size: 0.72rem; letter-spacing: 0.4em;
+            color: var(--color-primary);
+            border: 1px solid var(--glass-border);
+            border-radius: 999px;
+            background: rgba(201, 169, 98, 0.06);
+            margin-bottom: 1.4rem;
+        }
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5vw, 3.8rem);
+            color: var(--color-text);
+            letter-spacing: 0.25em;
+            margin-bottom: 0.8rem;
+            text-shadow: 0 0 40px rgba(201, 169, 98, 0.3);
+        }
+        .hero-era {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            color: var(--color-text-muted);
+            letter-spacing: 0.4em;
+            margin-bottom: 0.4rem;
+        }
+        .hero-loc {
+            font-family: var(--font-serif);
+            font-size: 0.95rem;
+            color: var(--color-primary);
+            letter-spacing: 0.3em;
+        }
+
+        /* ============ 主体两栏 ============ */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        /* ============ 遗失信息 ============ */
+        .info-panel {
+            padding: 2rem 0;
+        }
+        .info-section {
+            margin-bottom: 2.5rem;
+        }
+        .info-h {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            letter-spacing: 0.15em;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            position: relative;
+        }
+        .info-h::before {
+            content: ''; position: absolute;
+            bottom: -1px; left: 0;
+            width: 50px; height: 1px;
+            background: var(--color-primary);
+        }
+        .info-text {
+            font-family: var(--font-serif);
+            font-size: 0.98rem;
+            color: var(--color-text);
+            line-height: 2;
+            letter-spacing: 0.05em;
+        }
+        .info-text em {
+            color: var(--color-primary);
+            font-style: normal;
+            font-weight: 500;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem 1.5rem;
+            margin-top: 1rem;
+            padding: 1.4rem;
+            background: rgba(201, 169, 98, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+        }
+        .info-grid-item {
+            display: flex; flex-direction: column; gap: 0.3rem;
+        }
+        .info-grid-label {
+            font-family: var(--font-serif);
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            letter-spacing: 0.2em;
+        }
+        .info-grid-value {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--color-primary);
+            letter-spacing: 0.05em;
+        }
+
+        /* ============ 拼图游戏 ============ */
+        .puzzle-panel {
+            padding: 2rem 0;
+        }
+        .puzzle-header {
+            display: flex; justify-content: space-between; align-items: baseline;
+            margin-bottom: 1rem;
+        }
+        .puzzle-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            letter-spacing: 0.15em;
+        }
+        .puzzle-progress {
+            font-family: var(--font-serif);
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            letter-spacing: 0.2em;
+        }
+        .puzzle-progress b {
+            color: var(--color-primary);
+            font-weight: 500;
+        }
+        .puzzle-board {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            aspect-ratio: 1;
+            width: 100%;
+            padding: 4px;
+            background: rgba(201, 169, 98, 0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+        }
+        .puzzle-cell {
+            position: relative;
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px dashed rgba(201, 169, 98, 0.15);
+            aspect-ratio: 1;
+            overflow: hidden;
+        }
+        .puzzle-cell .hint-num {
+            position: absolute; top: 4px; left: 4px;
+            font-family: var(--font-serif);
+            font-size: 0.7rem;
+            color: var(--color-text-muted);
+            opacity: 0.4;
+            z-index: 2;
+        }
+        .puzzle-cell.occupied {
+            border: 1px solid var(--color-primary);
+            background: transparent;
+        }
+        .puzzle-piece {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-size: 400% 400%;
+            background-repeat: no-repeat;
+            cursor: grab;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+            z-index: 5;
+        }
+        .puzzle-piece:hover { transform: scale(1.04); z-index: 10; }
+        .puzzle-piece.dragging { cursor: grabbing; z-index: 20; }
+        .puzzle-piece.placed { cursor: default; box-shadow: 0 0 0 2px var(--color-primary) inset; }
+        .puzzle-tray {
+            margin-top: 1rem;
+            min-height: 90px;
+            padding: 0.8rem;
+            background: rgba(20, 20, 30, 0.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            display: flex; flex-wrap: wrap;
+            gap: 6px;
+            align-content: flex-start;
+        }
+        .puzzle-tray .puzzle-piece {
+            position: relative;
+            width: 60px; height: 60px;
+            background-size: 400% 400%;
+        }
+        .puzzle-controls {
+            display: flex; gap: 0.8rem; margin-top: 1rem;
+        }
+        .p-btn {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            font-family: var(--font-serif);
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            background: transparent;
+            color: var(--color-primary);
+            border: 1px solid var(--color-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .p-btn:hover { background: var(--color-primary); color: var(--color-bg-dark); }
+        .p-btn.primary {
+            background: linear-gradient(135deg, #d4a544 0%, #b8902f 100%);
+            color: #1a1505;
+            border-color: transparent;
+        }
+        .p-btn.primary:hover { background: linear-gradient(135deg, #e6b758 0%, #c89c34 100%); }
+
+        /* ============ 完成模态 ============ */
+        .puzzle-success {
+            position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        .puzzle-success.active { opacity: 1; pointer-events: auto; }
+        .success-card {
+            text-align: center;
+            padding: 3rem 4rem;
+            background: linear-gradient(180deg, rgba(40, 30, 15, 0.9) 0%, rgba(20, 20, 30, 0.95) 100%);
+            border: 1px solid var(--color-primary);
+            box-shadow: 0 20px 60px rgba(201, 169, 98, 0.3);
+            transform: scale(0.85);
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            max-width: 420px;
+        }
+        .puzzle-success.active .success-card { transform: scale(1); }
+        .success-icon {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            color: var(--color-primary);
+            margin-bottom: 0.8rem;
+        }
+        .success-title {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            letter-spacing: 0.2em;
+            margin-bottom: 0.6rem;
+        }
+        .success-text {
+            font-family: var(--font-serif);
+            font-size: 0.95rem;
+            color: var(--color-text);
+            letter-spacing: 0.1em;
+            margin-bottom: 1.8rem;
+            line-height: 1.8;
+        }
+
+        /* ============ 上下页导航 ============ */
+        .pager {
+            max-width: 1200px;
+            margin: 2rem auto 5rem;
+            padding: 0 2rem;
+            display: flex; justify-content: space-between; gap: 1rem;
+        }
+        .pager a {
+            flex: 1;
+            padding: 1.5rem 1.5rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            text-decoration: none;
+            color: var(--color-text);
+            transition: all 0.3s ease;
+            display: flex; flex-direction: column; gap: 0.4rem;
+        }
+        .pager a:hover {
+            border-color: var(--color-primary);
+            background: rgba(201, 169, 98, 0.08);
+        }
+        .pager .label {
+            font-family: var(--font-serif);
+            font-size: 0.78rem;
+            color: var(--color-text-muted);
+            letter-spacing: 0.2em;
+        }
+        .pager .name {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            color: var(--color-primary);
+            letter-spacing: 0.1em;
+        }
+        .pager .empty { opacity: 0.3; pointer-events: none; }
+
+        /* ============ Footer ============ */
+        .footer {
+            padding: 2.5rem 2rem; text-align: center;
+            border-top: 1px solid var(--glass-border);
+            background: var(--color-bg-dark);
+        }
+        .footer p {
+            color: var(--color-text-muted);
+            font-size: 0.85rem; letter-spacing: 0.2em;
+        }
+
+        /* ============ 响应式 ============ */
+        @media (max-width: 1024px) {
+            .main { grid-template-columns: 1fr; gap: 2rem; }
+        }
+        @media (max-width: 768px) {
+            .nav { padding: 0.8rem 1rem; }
+            .hero { min-height: 60vh; padding: 6rem 1rem 3rem; }
+            .puzzle-board { gap: 2px; }
+            .puzzle-tray .puzzle-piece { width: 50px; height: 50px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航 -->
+    <nav class="nav">
+        <a href="shanhe-pangui.html" class="nav-back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            返回
+        </a>
+        <a href="shanhe-pangui.html" class="nav-logo">山河盼归</a>
+        <div class="nav-counter"><b id="navNum">01</b> / 12</div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-bg" id="heroBg"></div>
+        <div class="hero-content">
+            <div class="hero-eyebrow" id="heroEyebrow">LOST TREASURE</div>
+            <h1 class="hero-title" id="heroTitle">敦煌飞天藻井</h1>
+            <p class="hero-era" id="heroEra">北魏</p>
+            <p class="hero-loc" id="heroLoc">大英博物馆 · 第33号展厅</p>
+        </div>
+    </section>
+
+    <!-- 主体 -->
+    <main class="main">
+        <!-- 遗失信息 -->
+        <section class="info-panel">
+            <div class="info-section">
+                <h2 class="info-h">遗 失 始 末</h2>
+                <p class="info-text" id="lossText">载入中...</p>
+            </div>
+            <div class="info-section">
+                <h2 class="info-h">文 物 档 案</h2>
+                <div class="info-grid" id="infoGrid"></div>
+            </div>
+            <div class="info-section">
+                <h2 class="info-h">回 家 之 路</h2>
+                <p class="info-text" id="returnText">载入中...</p>
+            </div>
+        </section>
+
+        <!-- 拼图 -->
+        <section class="puzzle-panel">
+            <div class="puzzle-header">
+                <h2 class="puzzle-title">拼 图 · 唤 醒 记 忆</h2>
+                <span class="puzzle-progress">已完成 <b id="pDone">0</b> / 16</span>
+            </div>
+            <div class="puzzle-board" id="puzzleBoard"></div>
+            <p style="margin-top:0.8rem;font-family:var(--font-serif);font-size:0.8rem;color:var(--color-text-muted);letter-spacing:0.15em;">
+                ↓ 拖动下方碎片到对应位置 · 拼回它原本的模样
+            </p>
+            <div class="puzzle-tray" id="puzzleTray"></div>
+            <div class="puzzle-controls">
+                <button class="p-btn" id="pReset">重 置</button>
+                <button class="p-btn" id="pShuffle">打 乱</button>
+                <button class="p-btn primary" id="pPreview">预 览</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- 上下页 -->
+    <div class="pager">
+        <a id="pPrev" href="#"><span class="label">← 上一件</span><span class="name"></span></a>
+        <a id="pNext" href="#"><span class="label">下一件 →</span><span class="name"></span></a>
+    </div>
+
+    <!-- 完成模态 -->
+    <div class="puzzle-success" id="puzzleSuccess">
+        <div class="success-card">
+            <div class="success-icon">家</div>
+            <h3 class="success-title">归 位 完 成</h3>
+            <p class="success-text" id="successText">每一件游子都值得被记得</p>
+            <button class="p-btn primary" id="successClose">继 续 唤 醒</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>中华文物 · 山河盼归 | 漂泊百年的游子，家里还亮着灯</p>
+    </footer>
+
+    <script>
+        // ============ 12 件文物数据 ============
+        const artifacts = [
+            {
+                id: 1, num: '01', name: '敦煌飞天藻井', era: '北魏',
+                loc: '大英博物馆 · 第33号展厅',
+                img: 'images/yishu-1.jpg',
+                loss: '敦煌藏经洞于清光绪二十六年（1900年）被道士王圆箓发现后，<em>英国考古学家斯坦因</em>于1907年以五百两白银从王圆箓处骗购走包括飞天藻井在内的大量绢画、佛经与丝织品，运抵伦敦后入藏大英博物馆。自此，这批凝结北魏画师心血的藻井图案便再未回到莫高窟的穹顶之上。',
+                archive: [['年代', '北魏'], ['类别', '壁画 · 藻井'], ['材质', '矿物颜料 · 敦煌土'], ['尺寸', '约 120×120cm'], ['馆藏', '大英博物馆'], ['编号', 'OA 1919,0101,0.74']],
+                return: '目前大英博物馆未归还该藻井原件。2010年起，敦煌研究院与多家海外机构开展<em>数字化合作</em>，以高精度扫描方式让藻井图案"数字回家"，重现于莫高窟数字展示中心。'
+            },
+            {
+                id: 2, num: '02', name: '女史箴图', era: '东晋 · 顾恺之',
+                loc: '大英博物馆 · 第33号展厅',
+                img: 'images/yishu-2.jpg',
+                loss: '《女史箴图》原为清宫旧藏，<em>1900年八国联军侵华</em>时被英军从颐和园劫走，先入藏英王爱德华七世之手，后被大英博物馆以25英镑的价格购入。由于英国人不了解中国画的装裱传统，将原本的卷轴切割成四段，并以日式屏风形式重新装裱，造成画心断裂与磨损，是中国书画流散史上最痛心的一例。',
+                archive: [['年代', '东晋'], ['类别', '绢本设色 · 画卷'], ['作者', '顾恺之（传）'], ['原作年代', '公元4世纪'], ['现存', '唐代摹本'], ['馆藏', '大英博物馆']],
+                return: '原作九段现存于大英博物馆，<em>前三段已失</em>。2013年大英博物馆启动《女史箴图》修复项目，邀请中国故宫博物院文保专家参与会诊，让这件国宝在异国他乡得到最专业的呵护。'
+            },
+            {
+                id: 3, num: '03', name: '商晚兽面纹铜鼎', era: '商代晚期',
+                loc: '大英博物馆 · 东方馆',
+                img: 'images/yishu-3.jpg',
+                loss: '晚商青铜鼎是青铜时代的巅峰之作，纹饰繁缛、庄严肃穆。本件兽面纹方鼎出土于河南安阳殷墟一带，<em>20世纪初</em>随着盗掘之风盛行而流失海外，先后辗转于伦敦古董商之间，最终被大英博物馆收藏。其器身的饕餮纹（兽面纹）以云雷纹为地，主纹突出，体现了商代晚期"三层花"装饰的极致工艺。',
+                archive: [['年代', '商代晚期'], ['类别', '青铜礼器 · 方鼎'], ['材质', '青铜'], ['纹饰', '兽面纹 · 夔龙纹'], ['馆藏', '大英博物馆'], ['出土', '河南安阳']],
+                return: '中国国家博物馆与国内多家机构长期致力于通过<em>外交协商与商业回购</em>追索非法流失的商代青铜重器，目前已有包括子龙鼎、皿方罍等代表性器物成功归国。'
+            },
+            {
+                id: 4, num: '04', name: '昭陵六骏 · 飒露紫', era: '唐贞观',
+                loc: '美国宾夕法尼亚大学博物馆',
+                img: 'images/yishu-4.jpg',
+                loss: '昭陵六骏石刻是唐太宗李世民为纪念其六匹战马而雕的浮雕，每块高约 1.7 米、宽约 2 米。<em>1914年</em>，古玩商卢芹斋以 12.5 万美元将"飒露紫"和"拳毛䯄"两块石刻盗运出境，售予宾夕法尼亚大学博物馆。其中"飒露紫"刻画丘行恭为战马拔箭的瞬间，是六骏中唯一有人物形象的一块。',
+                archive: [['年代', '唐贞观十年'], ['类别', '石刻 · 浮雕'], ['材质', '青石'], ['原址', '陕西礼泉昭陵'], ['馆藏', '宾大博物馆'], ['流失', '1914年']],
+                return: '中国方面多次与美方接洽，2010年西安碑林博物馆与多家机构联合启动<em>"昭陵六骏"数字化复原</em>，让两块流失石刻以 3D 打印与 AR 方式"重聚"昭陵。'
+            },
+            {
+                id: 5, num: '05', name: '铜镀金錾花坛城', era: '清代 · 乾隆',
+                loc: '法国 · 枫丹白露宫',
+                img: 'images/yishu-5.jpg',
+                loss: '此坛城为清乾隆时期宫廷造办处专为承德外八庙之一普陀宗乘之庙铸造的藏传佛教法器，工艺繁复，集<em>錾花、累丝、镶嵌</em>于一身。1860年英法联军火烧圆明园时，<em>法军司令孟托邦</em>将大量宫廷珍玩掠夺回国，包括这件金光灿灿的坛城。战后作为"战利品"入藏枫丹白露宫中国馆，是法军劫掠圆明园最有力的实物证据。',
+                archive: [['年代', '清乾隆'], ['类别', '法器 · 坛城'], ['材质', '铜鎏金 · 镶嵌'], ['原址', '承德普陀宗乘之庙'], ['馆藏', '枫丹白露宫'], ['流失', '1860年']],
+                return: '2009年起，国内文物部门启动<em>"圆明园海外流失文物调查"</em>，建立流失文物目录。中法双方在文物追索领域开展合作研究，部分小型文物已通过商业回购途径归国。'
+            },
+            {
+                id: 6, num: '06', name: '点翠凤冠', era: '明代',
+                loc: '美国大都会艺术博物馆',
+                img: 'images/yishu-6.jpg',
+                loss: '点翠工艺以翠鸟羽毛镶嵌于金银底胎之上，色彩千年不褪。本件凤冠为明代皇后或亲王妃所佩戴，镶嵌珍珠、宝石与点翠凤鸟、九龙。<em>20世纪初</em>，因战乱与皇族流散，宫廷服饰流入海外市场，被大都会艺术博物馆收藏。点翠工艺在清末民初几近失传，更使这件凤冠成为无法再生的稀世珍品。',
+                archive: [['年代', '明代'], ['类别', '服饰 · 凤冠'], ['工艺', '点翠 · 累丝 · 镶嵌'], ['材质', '金 · 翠羽 · 珍珠'], ['馆藏', '大都会博物馆'], ['流失', '20世纪初']],
+                return: '目前故宫博物院已成功复原<em>非遗点翠工艺</em>，并以现代材料替代翠羽。本件流失凤冠虽未回归，但其工艺已通过 3D 数字扫描完整记录，让传统技艺重获新生。'
+            },
+            {
+                id: 7, num: '07', name: '元青花云龙纹罐', era: '元代',
+                loc: '土耳其 · 托普卡比宫',
+                img: 'images/yishu-7.jpg',
+                loss: '元青花瓷是中国陶瓷艺术的高峰，使用进口"苏麻离青"料绘制。本件云龙纹罐造型浑厚、纹饰大气，是<em>至正型</em>元青花的代表作。其原为元代宫廷或高级寺庙供奉之物，<em>15世纪前后</em>经丝绸之路贸易流入奥斯曼土耳其，成为托普卡比宫最珍贵的中国瓷器藏品之一。',
+                archive: [['年代', '元代至正年间'], ['类别', '瓷器 · 罐'], ['材质', '青花瓷'], ['纹饰', '云龙纹 · 海水纹'], ['馆藏', '托普卡比宫'], ['流失', '约15世纪']],
+                return: '元青花作为中国陶瓷史的瑰宝，<em>土耳其方面视其为国家珍宝</em>，暂无归还计划。但中土两国在陶瓷文化交流上持续开展，2018年伊斯坦布尔举办"中国瓷"专题展，让这段丝路记忆重新鲜活。'
+            },
+            {
+                id: 8, num: '08', name: '圆明园四十景图', era: '清 · 乾隆',
+                loc: '法国 · 巴黎国家图书馆',
+                img: 'images/yishu-8.jpg',
+                loss: '《圆明园四十景图》由清代宫廷画师沈源、唐岱绘制，乾隆御笔题诗，绢本设色，每景一幅，共四十幅。<em>1860年英法联军劫毁圆明园</em>后，原作被法军掠走，后入藏巴黎国家图书馆。这是圆明园真实面貌最重要、最直观的史料，今圆明园已成废墟，唯此图仍存。<em>原件于2013年首次以全本形式数字化回归</em>。',
+                archive: [['年代', '清乾隆'], ['类别', '绢本设色 · 册页'], ['作者', '沈源 · 唐岱 · 乾隆'], ['数量', '四十景'], ['馆藏', '巴黎国家图书馆'], ['流失', '1860年']],
+                return: '2013年圆明园管理处与法方合作，将此图以<em>高精度数字化方式</em>"请回"圆明园数字展馆，并出版学术研究图录，让圆明园盛景"重生"于国人眼前。'
+            },
+            {
+                id: 9, num: '09', name: '永乐大典', era: '明 · 永乐',
+                loc: '英美俄等八国图书馆',
+                img: 'images/yishu-9.jpg',
+                loss: '《永乐大典》是明永乐年间编纂的大型类书，全书 22,937 卷，<em>11095 册</em>，是中国古代最大的百科全书。历经明清战乱，至清末仅存约 800 余册。<em>1900年八国联军侵华</em>，翰林院被焚，剩余副本被各国侵略者掠夺、盗卖，散佚于英、美、俄、德、法、日等八国图书馆与私人藏家手中，成为中华文献最惨痛的流失事件。',
+                archive: [['年代', '明永乐'], ['类别', '类书'], ['编纂', '解缙 · 姚广孝'], ['原数', '11095册'], ['现存', '约800余册'], ['分布', '八国']],
+                return: '新中国成立后，通过<em>国家征集、商业回购、海外捐赠</em>等途径，已陆续收集到 224 册入藏国家图书馆。中华书局出版了《永乐大典》高清仿真本，让这部典籍以"另一种形式"回归故土。'
+            },
+            {
+                id: 10, num: '10', name: '金瓯永固杯', era: '清 · 乾隆',
+                loc: '英国 · 华莱士收藏馆',
+                img: 'images/yishu-10.jpg',
+                loss: '金瓯永固杯是清乾隆年间为新年开笔仪式特制的金杯，每年正月初一子时，乾隆帝在养心殿东暖阁用此杯屠苏酒，<em>祈愿大清疆土如金瓯般完整永固</em>。杯身镶嵌珍珠、宝石，由内务府造办处用纯金打造。1860年英法联军劫掠圆明园时流失，现藏于英国华莱士收藏馆，是"金瓯永固"这一成语最直接的文物见证。',
+                archive: [['年代', '清乾隆'], ['类别', '金器 · 酒杯'], ['材质', '纯金 · 宝石'], ['用途', '元旦开笔'], ['馆藏', '华莱士收藏馆'], ['流失', '1860年']],
+                return: '北京故宫博物院藏有<em>金瓯永固杯复制品</em>。每逢元旦，故宫会按清宫旧例举行仿制开笔仪式，让这件虽已漂泊海外的国之重器，以文化记忆的形式"留"在家中。'
+            },
+            {
+                id: 11, num: '11', name: '东汉摇钱树', era: '东汉',
+                loc: '广汉三星堆博物馆等',
+                img: 'images/yishu-11.jpg',
+                loss: '摇钱树是东汉时期流行于西南地区的特殊丧葬明器，<em>青铜铸造的树形装饰</em>，枝叶间缀满祈求财富的神兽与仙人。本组摇钱树出土于四川广汉与河南南阳一带，<em>20世纪90年代</em>盗墓之风盛行时大量流失海外，欧美多家博物馆与古董商均有收藏。摇钱树所反映的"羽化升仙"信仰，是研究汉代宇宙观与西南文化的重要实物。',
+                archive: [['年代', '东汉'], ['类别', '青铜明器 · 摇钱树'], ['材质', '青铜 · 鎏金'], ['出土', '四川广汉 · 河南南阳'], ['馆藏', '多家海外机构'], ['流失', '20世纪后期']],
+                return: '2018年以来，国家文物局联合公安部开展<em>"中国被盗文物信息平台"</em>建设，将包括摇钱树在内的多批汉代青铜纳入追索目录，部分小型器物已通过法律途径成功追回。'
+            },
+            {
+                id: 12, num: '12', name: '五色鹦鹉图', era: '唐代',
+                loc: '美国波士顿博物馆',
+                img: 'images/yishu-12.jpg',
+                loss: '《五色鹦鹉图》传为唐代画家<em>边鸾</em>所作，描绘一只五色鹦鹉栖于折枝海棠之上，赋色浓丽、勾勒精工，是唐代花鸟画的稀世珍本。原为清宫旧藏，著录于《石渠宝笈》。民国初年由溥仪以"赏赐"名义带出宫，后辗转流落海外，<em>1934年</em>由美国波士顿博物馆购入。画中鹦鹉与海棠的组合，被宋徽宗御题"杏嘴莺声尽日听"以赞其神韵。',
+                archive: [['年代', '唐代'], ['类别', '绢本设色 · 立轴'], ['作者', '边鸾（传）'], ['题材', '花鸟'], ['馆藏', '波士顿博物馆'], ['流失', '民国初期']],
+                return: '虽然原作未能归国，但其<em>数字高清图像</em>已被多家国内机构收录研究。台北故宫博物院在花鸟画研究中多次引用此图，延续着中华花鸟画的血脉传承。'
+            }
+        ];
+
+        // ============ 初始化 ============
+        const params = new URLSearchParams(window.location.search);
+        const id = parseInt(params.get('id') || '1');
+        const idx = Math.max(0, Math.min(11, id - 1));
+        const a = artifacts[idx];
+
+        document.title = `${a.name} · 山河盼归 | 中华文物`;
+        document.getElementById('heroBg').style.backgroundImage = `url('${a.img}')`;
+        document.getElementById('heroTitle').textContent = a.name;
+        document.getElementById('heroEra').textContent = a.era;
+        document.getElementById('heroLoc').textContent = a.loc;
+        document.getElementById('navNum').textContent = a.num;
+        document.getElementById('lossText').innerHTML = a.loss;
+        document.getElementById('returnText').innerHTML = a.return;
+
+        const grid = document.getElementById('infoGrid');
+        grid.innerHTML = a.archive.map(([k, v]) =>
+            `<div class="info-grid-item">
+                <span class="info-grid-label">${k}</span>
+                <span class="info-grid-value">${v}</span>
+            </div>`).join('');
+
+        // 上下页
+        const prev = document.getElementById('pPrev');
+        const next = document.getElementById('pNext');
+        if (idx === 0) {
+            prev.classList.add('empty');
+        } else {
+            prev.href = `shanhe-detail.html?id=${idx}`;
+            prev.querySelector('.name').textContent = artifacts[idx - 1].name;
+        }
+        if (idx === artifacts.length - 1) {
+            next.classList.add('empty');
+        } else {
+            next.href = `shanhe-detail.html?id=${idx + 2}`;
+            next.querySelector('.name').textContent = artifacts[idx + 1].name;
+        }
+
+        // ============ 拼图游戏 ============
+        const SIZE = 4;
+        let pieces = [];
+        let cells = [];
+        let placedCount = 0;
+        let dragPiece = null;
+        let offsetX = 0, offsetY = 0;
+        let startX = 0, startY = 0;
+
+        const board = document.getElementById('puzzleBoard');
+        const tray = document.getElementById('puzzleTray');
+        const pDone = document.getElementById('pDone');
+        const pReset = document.getElementById('pReset');
+        const pShuffle = document.getElementById('pShuffle');
+        const pPreview = document.getElementById('pPreview');
+
+        function buildBoard() {
+            board.innerHTML = '';
+            cells = [];
+            for (let i = 0; i < SIZE * SIZE; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'puzzle-cell';
+                cell.dataset.idx = i;
+                const hint = document.createElement('span');
+                hint.className = 'hint-num';
+                const r = Math.floor(i / SIZE) + 1;
+                const c = (i % SIZE) + 1;
+                hint.textContent = `${r},${c}`;
+                cell.appendChild(hint);
+                cell.addEventListener('dragover', e => e.preventDefault());
+                cell.addEventListener('drop', e => {
+                    e.preventDefault();
+                    if (dragPiece) onDrop(cell);
+                });
+                board.appendChild(cell);
+                cells.push(cell);
+            }
+        }
+
+        function buildPieces() {
+            pieces.forEach(p => p.el.remove());
+            pieces = [];
+            placedCount = 0;
+            tray.innerHTML = '';
+            for (let i = 0; i < SIZE * SIZE; i++) {
+                const r = Math.floor(i / SIZE);
+                const c = i % SIZE;
+                const el = document.createElement('div');
+                el.className = 'puzzle-piece';
+                el.style.backgroundImage = `url('${a.img}')`;
+                el.style.backgroundPosition = `${c * 100 / (SIZE - 1)}% ${r * 100 / (SIZE - 1)}%`;
+                el.dataset.idx = i;
+                el.draggable = true;
+                el.addEventListener('dragstart', onDragStart);
+                el.addEventListener('dragend', onDragEnd);
+                // touch
+                el.addEventListener('touchstart', onTouchStart, { passive: false });
+                el.addEventListener('touchmove', onTouchMove, { passive: false });
+                el.addEventListener('touchend', onTouchEnd);
+                tray.appendChild(el);
+                pieces.push({ idx: i, el, placed: false });
+            }
+            pDone.textContent = '0';
+        }
+
+        function onDragStart(e) {
+            const p = pieces.find(x => x.el === e.target);
+            if (!p || p.placed) { e.preventDefault(); return; }
+            dragPiece = p;
+            p.el.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', String(p.idx));
+        }
+        function onDragEnd() {
+            if (dragPiece) dragPiece.el.classList.remove('dragging');
+            dragPiece = null;
+        }
+        function onDrop(cell) {
+            if (!dragPiece) return;
+            const target = parseInt(cell.dataset.idx);
+            if (target === dragPiece.idx) {
+                placePiece(dragPiece, cell);
+            } else {
+                // 弹回
+                dragPiece.el.style.transform = 'scale(1)';
+            }
+        }
+
+        // 触摸支持
+        let touchPiece = null;
+        function onTouchStart(e) {
+            const p = pieces.find(x => x.el === e.target);
+            if (!p || p.placed) return;
+            touchPiece = p;
+            const t = e.touches[0];
+            const rect = p.el.getBoundingClientRect();
+            offsetX = t.clientX - rect.left;
+            offsetY = t.clientY - rect.top;
+            startX = rect.left; startY = rect.top;
+            p.el.classList.add('dragging');
+            document.body.style.overflow = 'hidden';
+        }
+        function onTouchMove(e) {
+            if (!touchPiece) return;
+            e.preventDefault();
+            const t = e.touches[0];
+            touchPiece.el.style.position = 'fixed';
+            touchPiece.el.style.left = (t.clientX - offsetX) + 'px';
+            touchPiece.el.style.top = (t.clientY - offsetY) + 'px';
+            touchPiece.el.style.width = (board.offsetWidth / SIZE - 8) + 'px';
+            touchPiece.el.style.height = (board.offsetWidth / SIZE - 8) + 'px';
+        }
+        function onTouchEnd(e) {
+            if (!touchPiece) return;
+            const t = e.changedTouches[0];
+            // 找到落点
+            let target = null;
+            for (const cell of cells) {
+                const rect = cell.getBoundingClientRect();
+                if (t.clientX >= rect.left && t.clientX <= rect.right &&
+                    t.clientY >= rect.top && t.clientY <= rect.bottom) {
+                    target = cell; break;
+                }
+            }
+            touchPiece.el.classList.remove('dragging');
+            document.body.style.overflow = '';
+            if (target && parseInt(target.dataset.idx) === touchPiece.idx) {
+                placePiece(touchPiece, target);
+            } else {
+                // 重置
+                touchPiece.el.style.position = '';
+                touchPiece.el.style.left = '';
+                touchPiece.el.style.top = '';
+                touchPiece.el.style.width = '';
+                touchPiece.el.style.height = '';
+            }
+            touchPiece = null;
+        }
+
+        function placePiece(p, cell) {
+            if (cell.querySelector('.puzzle-piece')) return;
+            p.placed = true;
+            p.el.classList.add('placed');
+            p.el.classList.remove('dragging');
+            p.el.style.position = 'absolute';
+            p.el.style.left = '0';
+            p.el.style.top = '0';
+            p.el.style.width = '100%';
+            p.el.style.height = '100%';
+            p.el.draggable = false;
+            cell.appendChild(p.el);
+            cell.classList.add('occupied');
+            placedCount++;
+            pDone.textContent = placedCount;
+            if (placedCount === SIZE * SIZE) {
+                setTimeout(showSuccess, 600);
+            }
+        }
+
+        function showSuccess() {
+            const s = document.getElementById('puzzleSuccess');
+            document.getElementById('successText').textContent =
+                `《${a.name}》归位完成 · 每一件游子都值得被记得`;
+            s.classList.add('active');
+        }
+
+        document.getElementById('successClose').addEventListener('click', () => {
+            document.getElementById('puzzleSuccess').classList.remove('active');
+            shufflePieces();
+        });
+
+        function shufflePieces() {
+            // 已放置的移除回托盘
+            pieces.forEach(p => {
+                if (p.placed) {
+                    p.el.style.position = '';
+                    p.el.style.left = '';
+                    p.el.style.top = '';
+                    p.el.style.width = '';
+                    p.el.style.height = '';
+                    p.el.draggable = true;
+                    p.placed = false;
+                }
+            });
+            cells.forEach(c => c.classList.remove('occupied'));
+            cells.forEach(c => {
+                const p = c.querySelector('.puzzle-piece');
+                if (p) p.remove();
+            });
+            tray.innerHTML = '';
+            // 重新随机顺序加入托盘
+            const shuffled = [...pieces].sort(() => Math.random() - 0.5);
+            shuffled.forEach(p => {
+                p.el.classList.remove('placed');
+                tray.appendChild(p.el);
+            });
+            placedCount = 0;
+            pDone.textContent = '0';
+        }
+
+        pReset.addEventListener('click', buildPieces);
+        pShuffle.addEventListener('click', shufflePieces);
+        let previewing = false;
+        pPreview.addEventListener('click', () => {
+            if (previewing) {
+                buildPieces();
+                pPreview.textContent = '预 览';
+                previewing = false;
+            } else {
+                tray.innerHTML = '';
+                cells.forEach(c => c.classList.remove('occupied'));
+                cells.forEach(c => {
+                    const p = c.querySelector('.puzzle-piece');
+                    if (p) p.remove();
+                });
+                pieces.forEach(p => {
+                    p.el.classList.add('placed');
+                    p.el.style.position = 'absolute';
+                    p.el.style.left = '0';
+                    p.el.style.top = '0';
+                    p.el.style.width = '100%';
+                    p.el.style.height = '100%';
+                    p.el.draggable = false;
+                    cells[p.idx].appendChild(p.el);
+                    p.placed = true;
+                });
+                placedCount = SIZE * SIZE;
+                pDone.textContent = placedCount;
+                pPreview.textContent = '重 新 来 过';
+                previewing = true;
+            }
+        });
+
+        // 启动
+        buildBoard();
+        buildPieces();
+    </script>
+</body>
+</html>
