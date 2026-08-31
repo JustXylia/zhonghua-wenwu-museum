@@ -6,19 +6,18 @@
     <title>山河盼归 · 漂泊海外的中华文物 | 中华文物</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Long+Cufon:wght@400&family=Caveat:wght@500;700&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --color-primary: #c9a962;
-            --color-primary-dark: #8b7355;
-            --color-bg-dark: #0a0a0f;
-            --color-bg-medium: #12121a;
-            --color-bg-light: #1a1a25;
-            --glass-bg: rgba(20, 20, 30, 0.7);
-            --glass-border: rgba(201, 169, 98, 0.15);
-            --color-text: #f5f0e8;
-            --color-text-muted: #8a8578;
-            --font-display: 'Ma Shan Zheng', cursive;
+            --gold: #c9a35a;
+            --gold-soft: #d9b97a;
+            --gold-line: rgba(201, 163, 90, 0.28);
+            --bg-deep: #06060a;
+            --bg: #0a0a0e;
+            --text: #f5f0e8;
+            --text-mute: #8a8578;
+            --font-display: 'Ma Shan Zheng', 'KaiTi', 'STKaiti', cursive;
+            --font-num: 'Caveat', 'Long Cufon', cursive;
             --font-serif: 'Noto Serif SC', serif;
             --font-sans: 'Noto Sans SC', sans-serif;
         }
@@ -26,696 +25,553 @@
         html { scroll-behavior: smooth; }
         body {
             font-family: var(--font-sans);
-            background: var(--color-bg-dark);
-            color: var(--color-text);
+            background: var(--bg);
+            color: var(--text);
             overflow-x: hidden;
             line-height: 1.8;
         }
+        a { color: inherit; text-decoration: none; }
 
-        /* ============ 导航 ============ */
-        .nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-            padding: 1.2rem 3rem;
+        /* ============ 顶部固定返回 ============ */
+        .topbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 1.2rem 2.4rem;
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
+            background: linear-gradient(180deg, rgba(6,6,10,0.85) 0%, rgba(6,6,10,0) 100%);
         }
-        .nav-logo {
-            font-family: var(--font-display);
-            font-size: 1.6rem; color: var(--color-primary);
-            text-decoration: none; letter-spacing: 0.1em;
-        }
-        .nav-links { display: flex; list-style: none; gap: 1.8rem; }
-        .nav-links a {
-            color: var(--color-text-muted); text-decoration: none;
-            font-size: 0.9rem; transition: color 0.3s ease; position: relative;
+        .topbar-back {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            color: var(--gold);
+            font-family: var(--font-serif);
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
             padding: 0.4rem 0;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
         }
-        .nav-links a::after {
-            content: ''; position: absolute; bottom: 0; left: 0;
-            width: 0; height: 1px; background: var(--color-primary);
-            transition: width 0.3s ease;
-        }
-        .nav-links a:hover, .nav-links a.active { color: var(--color-primary); }
-        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .topbar-back:hover { border-bottom-color: var(--gold); transform: translateX(-3px); }
+        .topbar-back svg { width: 14px; height: 14px; }
 
-        /* ============ Hero 海报 ============ */
+        /* ============ Hero ============ */
         .hero {
             position: relative;
-            height: 100vh; min-height: 720px;
+            min-height: 100vh;
             display: flex; align-items: center; justify-content: center;
+            text-align: center;
+            background: var(--bg-deep);
+            padding: 6rem 1.5rem 4rem;
             overflow: hidden;
-            background: #06060a;
         }
         .hero-bg {
             position: absolute; inset: 0;
             background-size: cover; background-position: center;
-            opacity: 0; transition: opacity 1.5s ease-in-out;
-            filter: brightness(0.5) saturate(1.1);
+            opacity: 0; transition: opacity 2s ease-in-out;
+            filter: brightness(0.4) saturate(1.05);
         }
         .hero-bg.active { opacity: 1; }
         .hero-bg::after {
             content: ''; position: absolute; inset: 0;
             background:
-                radial-gradient(ellipse at center, transparent 0%, rgba(6,6,10,0.55) 60%, rgba(6,6,10,0.95) 100%),
-                linear-gradient(180deg, rgba(6,6,10,0.3) 0%, rgba(6,6,10,0.5) 50%, rgba(6,6,10,0.95) 100%);
+                radial-gradient(ellipse at center, transparent 0%, rgba(6,6,10,0.65) 55%, rgba(6,6,10,0.98) 100%),
+                linear-gradient(180deg, rgba(6,6,10,0.55) 0%, rgba(6,6,10,0.35) 50%, rgba(6,6,10,0.95) 100%);
         }
-        #hero-canvas {
+        #starfield {
             position: absolute; inset: 0; z-index: 2; pointer-events: none;
+            opacity: 0.85;
         }
-        .hero-content {
-            position: relative; z-index: 5;
-            text-align: center; max-width: 720px; padding: 0 1.5rem;
+        .hero-inner {
+            position: relative; z-index: 3;
+            max-width: 900px; margin: 0 auto;
         }
         .hero-title {
-            display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
-            margin-bottom: 1.8rem;
-        }
-        .hero-title .ch {
             font-family: var(--font-display);
-            font-size: clamp(3.5rem, 9vw, 6.5rem);
-            color: var(--color-text);
-            letter-spacing: 0.5em;
-            margin-right: -0.5em;
-            line-height: 1;
-            text-shadow: 0 0 40px rgba(201, 169, 98, 0.35), 0 4px 30px rgba(0, 0, 0, 0.8);
+            font-size: clamp(3.2rem, 9vw, 6.2rem);
+            font-weight: 400;
+            color: var(--gold);
+            letter-spacing: 0.35em;
+            text-indent: 0.35em;
+            line-height: 1.1;
+            text-shadow:
+                0 0 40px rgba(201, 163, 90, 0.35),
+                0 0 80px rgba(201, 163, 90, 0.15);
+            margin-bottom: 1.4rem;
         }
-        .hero-title .sub-en {
+        .hero-sub-en {
             font-family: var(--font-serif);
-            font-size: clamp(0.7rem, 1.2vw, 0.95rem);
-            color: var(--color-text-muted);
-            letter-spacing: 0.6em; text-transform: uppercase;
-            margin-right: -0.6em;
+            font-size: clamp(0.8rem, 1.4vw, 1rem);
+            letter-spacing: 0.55em;
+            text-indent: 0.55em;
+            color: var(--gold-soft);
+            opacity: 0.85;
+            font-weight: 300;
+            margin-bottom: 3.2rem;
         }
-        .hero-poem {
+        .hero-quote {
             font-family: var(--font-serif);
-            font-size: clamp(0.95rem, 1.5vw, 1.1rem);
-            color: var(--color-text);
-            letter-spacing: 0.3em;
-            margin-bottom: 0.5rem;
+            font-size: clamp(1rem, 1.6vw, 1.15rem);
+            color: var(--text);
+            letter-spacing: 0.4em;
+            text-indent: 0.4em;
+            margin-bottom: 0.7rem;
+            font-weight: 300;
         }
-        .hero-source {
+        .hero-quote-author {
             font-family: var(--font-serif);
-            font-size: 0.85rem; color: var(--color-text-muted);
-            letter-spacing: 0.2em; margin-bottom: 3rem;
+            font-size: 0.8rem;
+            color: var(--text-mute);
+            letter-spacing: 0.45em;
+            text-indent: 0.45em;
+            margin-bottom: 4.5rem;
         }
+
+        /* ============ 三栏手写数字 ============ */
         .hero-stats {
-            display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap;
-            margin-bottom: 3rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            max-width: 760px;
+            margin: 0 auto 4rem;
+            position: relative;
         }
-        .stat-item {
-            text-align: center;
-            padding: 0 1.5rem;
-            border-left: 1px solid rgba(201,169,98,0.25);
+        .hero-stats::before, .hero-stats::after {
+            content: ''; position: absolute; top: 50%;
+            width: 1px; height: 70px;
+            background: linear-gradient(180deg, transparent, var(--gold-line), transparent);
+            transform: translateY(-50%);
         }
-        .stat-item:first-child { border-left: none; }
+        .hero-stats::before { left: 33.333%; }
+        .hero-stats::after { left: 66.666%; }
+        .stat-item { text-align: center; padding: 0 1rem; }
         .stat-num {
-            font-family: var(--font-display);
-            font-size: clamp(2rem, 4vw, 2.8rem);
-            color: var(--color-primary);
-            line-height: 1; margin-bottom: 0.4rem;
+            font-family: var(--font-num);
+            font-size: clamp(2.4rem, 4.5vw, 3.4rem);
+            color: var(--gold);
+            font-weight: 500;
+            line-height: 1.1;
+            margin-bottom: 0.6rem;
         }
+        .stat-num .plus { font-size: 0.7em; }
         .stat-label {
             font-family: var(--font-serif);
-            font-size: 0.85rem; color: var(--color-text-muted);
-            letter-spacing: 0.2em;
+            font-size: 0.85rem;
+            color: var(--text-mute);
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            font-weight: 300;
         }
-        .hero-action {
+
+        /* ============ CTA ============ */
+        .hero-cta {
             display: inline-block;
-            padding: 1.1rem 3.8rem;
-            background: linear-gradient(135deg, #d4a544 0%, #b8902f 100%);
-            color: #1a1505;
-            text-decoration: none;
+            padding: 1.05rem 3.4rem;
+            background: linear-gradient(135deg, #d4a85a 0%, #b8902e 100%);
+            color: #1a1208;
             font-family: var(--font-serif);
-            font-size: 1.1rem;
-            letter-spacing: 0.4em;
-            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.5em;
+            text-indent: 0.5em;
+            border-radius: 4px;
+            box-shadow: 0 6px 28px rgba(201, 163, 90, 0.4);
+            transition: all 0.4s ease;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 30px rgba(212, 165, 68, 0.35), 0 0 0 1px rgba(255,255,255,0.1) inset;
         }
-        .hero-action:hover {
+        .hero-cta:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(212, 165, 68, 0.55), 0 0 0 1px rgba(255,255,255,0.2) inset;
-            background: linear-gradient(135deg, #e6b758 0%, #c89c34 100%);
+            box-shadow: 0 10px 40px rgba(201, 163, 90, 0.55);
         }
-        .hero-scroll {
-            position: absolute; bottom: 2.5rem; left: 50%;
-            transform: translateX(-50%); z-index: 5;
-            color: var(--color-text-muted);
-            font-size: 0.75rem; letter-spacing: 0.3em;
-            display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+        .scroll-hint {
+            position: absolute; bottom: 1.6rem; left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-mute);
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            z-index: 3;
+            animation: float 2.4s ease-in-out infinite;
         }
-        .hero-scroll::after {
-            content: ''; width: 1px; height: 36px;
-            background: linear-gradient(to bottom, var(--color-primary), transparent);
-            animation: scroll-pulse 2s ease-in-out infinite;
+        .scroll-hint::after {
+            content: '⌄';
+            display: block;
+            font-size: 1.2rem;
+            margin-top: 0.3rem;
         }
-        @keyframes scroll-pulse {
-            0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
-            50% { opacity: 1; transform: scaleY(1.1); }
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, 0); opacity: 0.5; }
+            50% { transform: translate(-50%, 6px); opacity: 1; }
         }
 
-        /* ============ 横向滚动时间轴 ============ */
+        /* ============ 横向时间轴 ============ */
         .timeline-section {
-            padding: 5rem 0 6rem;
-            background: linear-gradient(180deg, var(--color-bg-dark) 0%, #0a0a12 100%);
-            position: relative;
+            padding: 6rem 0 8rem;
+            background: var(--bg);
         }
-        .section-header {
-            padding: 0 2rem; max-width: 1400px; margin: 0 auto 3rem;
-            text-align: left;
+        .timeline-head {
+            text-align: center;
+            margin-bottom: 5rem;
+            padding: 0 1.5rem;
         }
-        .section-eyebrow {
-            display: inline-block;
-            padding: 0.3rem 0.9rem;
-            font-size: 0.7rem; letter-spacing: 0.4em;
-            color: var(--color-primary);
-            border: 1px solid var(--glass-border);
-            border-radius: 999px;
-            background: rgba(201, 169, 98, 0.06);
-            margin-bottom: 1rem;
-        }
-        .section-title {
+        .timeline-head h2 {
             font-family: var(--font-display);
-            font-size: clamp(2rem, 3.5vw, 2.8rem);
-            color: var(--color-text);
-            letter-spacing: 0.15em;
-            margin-bottom: 0.5rem;
+            font-size: clamp(2rem, 3.6vw, 2.8rem);
+            color: var(--gold);
+            letter-spacing: 0.25em;
+            text-indent: 0.25em;
+            margin-bottom: 0.8rem;
+            font-weight: 400;
         }
-        .section-sub {
+        .timeline-head p {
             font-family: var(--font-serif);
-            font-size: 0.95rem; color: var(--color-text-muted);
-            letter-spacing: 0.2em;
+            color: var(--text-mute);
+            font-size: 0.9rem;
+            letter-spacing: 0.35em;
+            text-indent: 0.35em;
         }
-        .timeline-hint {
-            display: flex; align-items: center; gap: 0.6rem;
-            color: var(--color-text-muted); font-size: 0.8rem;
-            letter-spacing: 0.15em; margin-top: 1rem;
-        }
-        .timeline-hint .arrow {
-            display: inline-block; width: 28px; height: 1px;
-            background: var(--color-primary);
-            position: relative;
-        }
-        .timeline-hint .arrow::after {
-            content: ''; position: absolute; right: 0; top: -3px;
-            width: 7px; height: 7px;
-            border-top: 1px solid var(--color-primary);
-            border-right: 1px solid var(--color-primary);
-            transform: rotate(45deg);
-        }
-        .timeline-track {
-            display: flex; gap: 0;
-            overflow-x: auto; overflow-y: hidden;
-            padding: 0 3rem 2.5rem;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: thin;
-            scrollbar-color: var(--color-primary) transparent;
-        }
-        .timeline-track::-webkit-scrollbar { height: 6px; }
-        .timeline-track::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); }
-        .timeline-track::-webkit-scrollbar-thumb { background: var(--color-primary); border-radius: 3px; }
 
-        .t-card {
-            flex: 0 0 220px;
-            height: 460px;
-            margin-right: -40px;
+        .timeline-rail {
             position: relative;
-            scroll-snap-align: start;
-            transform: skewX(-8deg);
-            transform-origin: top left;
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) transparent;
+            padding: 2.5rem 4rem 3.5rem;
+            -webkit-overflow-scrolling: touch;
+        }
+        .timeline-rail::-webkit-scrollbar { height: 4px; }
+        .timeline-rail::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+        .timeline-rail::-webkit-scrollbar-track { background: rgba(201,163,90,0.08); }
+
+        .timeline-track {
+            display: flex;
+            gap: 0;
+            min-width: max-content;
+            position: relative;
+        }
+        .timeline-track::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--gold-line) 8%, var(--gold-line) 92%, transparent 100%);
+        }
+        .relic-card {
+            flex: 0 0 240px;
+            position: relative;
+            padding: 0 1.2rem;
             cursor: pointer;
+            transition: transform 0.4s ease;
         }
-        .t-card-inner {
-            position: absolute; inset: 0;
-            background: linear-gradient(180deg, rgba(20,20,30,0.7) 0%, rgba(20,20,30,0.9) 100%);
-            border: 1px solid var(--glass-border);
-            padding: 1.5rem 1.2rem;
-            display: flex; flex-direction: column;
-            transform: skewX(8deg);
-            transform-origin: top left;
+        .relic-card:hover { transform: translateY(-8px); }
+        .relic-idx {
+            font-family: var(--font-num);
+            font-size: 2rem;
+            color: var(--gold);
+            font-weight: 500;
+            text-align: center;
+            line-height: 1;
+            margin-bottom: 0.8rem;
+            position: relative;
+            z-index: 2;
         }
-        .t-card:hover {
-            z-index: 10;
-            transform: skewX(-8deg) translateY(-12px);
+        .relic-card:nth-child(odd) .relic-media { margin-top: 2.5rem; }
+        .relic-card:nth-child(even) .relic-media { margin-bottom: 2.5rem; }
+        .relic-dot {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px; height: 10px;
+            background: var(--gold);
+            border-radius: 50%;
+            z-index: 2;
+            box-shadow: 0 0 0 4px var(--bg), 0 0 16px var(--gold);
         }
-        .t-card:hover .t-card-inner {
-            border-color: var(--color-primary);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px var(--color-primary);
-            background: linear-gradient(180deg, rgba(40,30,15,0.85) 0%, rgba(20,20,30,0.95) 100%);
+        .relic-media {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #111;
+            border: 1px solid var(--gold-line);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 1.1rem;
         }
-        .t-card.active .t-card-inner {
-            border-color: var(--color-primary);
-            background: linear-gradient(180deg, rgba(50,40,20,0.85) 0%, rgba(20,20,30,0.95) 100%);
-        }
-        .t-num {
-            position: absolute; top: 1rem; right: 1rem;
-            font-family: var(--font-display);
-            font-size: 2.4rem;
-            color: var(--color-primary);
-            opacity: 0.6;
-            letter-spacing: 0.05em;
-        }
-        .t-img {
-            width: 100%; height: 130px;
-            margin-top: 2.5rem; margin-bottom: 1rem;
-            overflow: hidden; flex-shrink: 0;
-            background: #0d0d14;
-        }
-        .t-img img {
+        .relic-media img {
             width: 100%; height: 100%;
             object-fit: cover;
             transition: transform 0.6s ease;
+            filter: brightness(0.95) saturate(1.05);
         }
-        .t-card:hover .t-img img { transform: scale(1.1); }
-        .t-era {
-            display: inline-block;
-            padding: 0.15rem 0.6rem;
-            background: rgba(201, 169, 98, 0.12);
-            color: var(--color-primary);
-            font-size: 0.7rem; letter-spacing: 0.15em;
-            border-radius: 2px;
-            margin-bottom: 0.6rem;
-            align-self: flex-start;
+        .relic-card:hover .relic-media img { transform: scale(1.06); }
+        .relic-media::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.4) 100%);
+            pointer-events: none;
         }
-        .t-name {
-            font-family: var(--font-display);
-            font-size: 1.2rem;
-            color: var(--color-text);
-            letter-spacing: 0.08em;
-            margin-bottom: 0.4rem;
-            line-height: 1.2;
-        }
-        .t-loc {
+        .relic-era {
             font-family: var(--font-serif);
-            font-size: 0.75rem;
-            color: var(--color-text-muted);
-            letter-spacing: 0.1em;
-            margin-top: auto;
-            padding-top: 0.6rem;
-            border-top: 1px dashed rgba(201, 169, 98, 0.2);
-        }
-        .t-arrow {
-            position: absolute; bottom: 0.6rem; right: 0.8rem;
-            color: var(--color-primary);
-            font-size: 0.8rem;
-            opacity: 0; transition: opacity 0.3s, transform 0.3s;
-        }
-        .t-card:hover .t-arrow { opacity: 1; transform: translateX(4px); }
-
-        /* ============ 情感诗句 ============ */
-        .poem-section {
-            padding: 5rem 2rem;
+            font-size: 0.7rem;
+            color: var(--gold);
+            letter-spacing: 0.3em;
             text-align: center;
-            background: #06060a;
+            margin-bottom: 0.5rem;
+            padding: 0.15rem 0;
+            border: 1px solid var(--gold-line);
+            border-radius: 999px;
+            display: inline-block;
+            padding: 0.2rem 0.7rem;
+        }
+        .relic-era-wrap { text-align: center; margin-bottom: 0.5rem; }
+        .relic-name {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            color: var(--text);
+            text-align: center;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+        }
+        .relic-now {
+            font-family: var(--font-serif);
+            font-size: 0.72rem;
+            color: var(--text-mute);
+            text-align: center;
+            letter-spacing: 0.15em;
+            line-height: 1.7;
+            min-height: 2.4em;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        /* ============ 介绍段 ============ */
+        .intro-section {
+            padding: 6rem 1.5rem;
+            background:
+                radial-gradient(ellipse at center, rgba(201,163,90,0.04) 0%, transparent 60%),
+                var(--bg);
             position: relative;
         }
-        .poem-section::before, .poem-section::after {
-            content: ''; position: absolute; left: 50%; transform: translateX(-50%);
-            width: 1px; height: 60px;
-            background: linear-gradient(to bottom, transparent, var(--color-primary), transparent);
-        }
-        .poem-section::before { top: 0; }
-        .poem-section::after { bottom: 0; }
-        .poem-line {
-            font-family: var(--font-display);
-            font-size: clamp(1.6rem, 3vw, 2.4rem);
-            color: var(--color-text);
-            letter-spacing: 0.3em;
-            line-height: 1.8;
-            margin: 0.6rem 0;
-        }
-        .poem-em {
-            color: var(--color-primary);
-            font-size: 1.4em;
-        }
-
-        /* ============ 行动 / 介绍区 ============ */
-        .intro-section {
-            padding: 4rem 2rem 5rem;
-            max-width: 980px; margin: 0 auto;
+        .intro-inner {
+            max-width: 880px; margin: 0 auto;
             text-align: center;
+        }
+        .intro-quote {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 3.2vw, 2.4rem);
+            color: var(--gold);
+            line-height: 1.6;
+            letter-spacing: 0.18em;
+            text-indent: 0.18em;
+            margin-bottom: 2.5rem;
+            font-weight: 400;
         }
         .intro-text {
             font-family: var(--font-serif);
+            color: var(--text);
             font-size: 1rem;
-            color: var(--color-text-muted);
+            line-height: 2.2;
             letter-spacing: 0.1em;
-            line-height: 2;
+            max-width: 720px;
+            margin: 0 auto;
         }
-        .intro-text em {
-            color: var(--color-primary);
-            font-style: normal;
+        .divider {
+            width: 60px; height: 1px;
+            background: var(--gold);
+            margin: 4rem auto;
+            position: relative;
         }
-        .back-link {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            margin-top: 2.5rem;
-            padding: 0.8rem 2rem;
-            color: var(--color-primary);
-            text-decoration: none;
-            font-family: var(--font-serif);
-            font-size: 0.95rem;
-            letter-spacing: 0.2em;
-            border: 1px solid var(--color-primary);
-            border-radius: 999px;
-            transition: all 0.3s ease;
+        .divider::before, .divider::after {
+            content: '◆';
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--gold);
+            font-size: 0.5rem;
         }
-        .back-link:hover {
-            background: var(--color-primary);
-            color: var(--color-bg-dark);
-        }
+        .divider::before { left: -10px; }
+        .divider::after { left: calc(100% + 10px); }
 
-        /* ============ Footer ============ */
+        /* ============ 底部 ============ */
         .footer {
-            padding: 2.5rem 2rem; text-align: center;
-            border-top: 1px solid var(--glass-border);
-            background: var(--color-bg-dark);
-        }
-        .footer p {
-            color: var(--color-text-muted);
-            font-size: 0.85rem; letter-spacing: 0.2em;
+            padding: 3rem 1.5rem;
+            text-align: center;
+            background: var(--bg-deep);
+            color: var(--text-mute);
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            border-top: 1px solid var(--gold-line);
         }
 
-        @media (max-width: 1024px) {
-            .nav { padding: 1rem 1.5rem; }
-            .t-card { flex: 0 0 180px; }
-        }
-        @media (max-width: 768px) {
-            .nav { padding: 0.8rem 1rem; }
-            .nav-links { display: none; }
-            .hero { min-height: 100vh; }
-            .hero-stats { gap: 1.5rem; }
-            .stat-item { padding: 0 0.8rem; }
-            .timeline-track { padding: 0 1.5rem 2rem; }
-            .t-card { flex: 0 0 200px; }
+        /* ============ 响应式 ============ */
+        @media (max-width: 720px) {
+            .topbar { padding: 1rem 1.2rem; }
+            .hero { padding: 5rem 1rem 3rem; min-height: 90vh; }
+            .hero-stats { gap: 0.5rem; }
+            .hero-stats::before, .hero-stats::after { height: 50px; }
+            .stat-num { font-size: 2.2rem; }
+            .stat-label { font-size: 0.7rem; }
+            .hero-cta { padding: 0.9rem 2.4rem; font-size: 0.85rem; }
+            .timeline-rail { padding: 2rem 1.5rem 3rem; }
+            .relic-card { flex: 0 0 200px; }
         }
     </style>
 </head>
 <body>
-    <!-- 导航 -->
-    <nav class="nav">
-        <a href="index.html" class="nav-logo">中华文物</a>
-        <ul class="nav-links">
-            <li><a href="index.html">首页</a></li>
-            <li><a href="heritage-unified.html">文明长卷</a></li>
-            <li><a href="restoration-cover.html">文物修复</a></li>
-            <li><a href="shanhe-pangui.html" class="active">山河盼归</a></li>
-            <li><a href="promotion-cover.html">推广</a></li>
-        </ul>
-    </nav>
 
-    <!-- ============ Hero ============ -->
-    <section class="hero" id="hero">
-        <div class="hero-bg active" data-bg="images/yishu-1.jpg"></div>
-        <div class="hero-bg" data-bg="images/yishu-2.jpg"></div>
-        <div class="hero-bg" data-bg="images/yishu-3.jpg"></div>
-        <div class="hero-bg" data-bg="images/yishu-4.jpg"></div>
-        <div class="hero-bg" data-bg="images/yishu-5.jpg"></div>
-        <div class="hero-bg" data-bg="images/yishu-6.jpg"></div>
-        <canvas id="hero-canvas"></canvas>
+<div class="topbar">
+    <a href="index.html" class="topbar-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        返回首页
+    </a>
+    <span style="font-family: var(--font-display); color: var(--gold); font-size: 1.2rem; letter-spacing: 0.2em;">山河盼归</span>
+</div>
 
-        <div class="hero-content">
-            <div class="hero-title">
-                <span class="ch">山河盼归</span>
-                <span class="sub-en">Lost Treasures Awaiting Homecoming</span>
+<!-- ============ Hero ============ -->
+<section class="hero">
+    <div class="hero-bg active" style="background-image: url('images/shanhe-bg-1.jpg');"></div>
+    <div class="hero-bg" style="background-image: url('images/shanhe-bg-2.jpg');"></div>
+    <div class="hero-bg" style="background-image: url('images/shanhe-bg-3.jpg');"></div>
+    <div class="hero-bg" style="background-image: url('images/shanhe-bg-4.jpg');"></div>
+    <div class="hero-bg" style="background-image: url('images/shanhe-bg-5.jpg');"></div>
+    <div class="hero-bg" style="background-image: url('images/shanhe-bg-6.jpg');"></div>
+    <canvas id="starfield"></canvas>
+
+    <div class="hero-inner">
+        <h1 class="hero-title">山河盼归</h1>
+        <p class="hero-sub-en">LOST TREASURES AWAITING HOMECOMING</p>
+        <p class="hero-quote">漂泊百年的游子 · 家里还亮着灯</p>
+        <p class="hero-quote-author">唐贞观 · 昭陵六骏 · 飒露紫</p>
+
+        <div class="hero-stats">
+            <div class="stat-item">
+                <div class="stat-num">1000万<span class="plus">+</span></div>
+                <div class="stat-label">文物流失海外</div>
             </div>
-            <p class="hero-poem">漂泊百年的游子 · 家里还亮着灯</p>
-            <p class="hero-source" id="hero-source">敦煌莫高窟第320窟 · 飞天藻井</p>
-
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <div class="stat-num">1000万+</div>
-                    <div class="stat-label">文物流失海外</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-num">47国</div>
-                    <div class="stat-label">皆有它们身影</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-num">12</div>
-                    <div class="stat-label">件等你记得</div>
-                </div>
+            <div class="stat-item">
+                <div class="stat-num">47<span style="font-size:0.6em;letter-spacing:0.1em;">国</span></div>
+                <div class="stat-label">皆有它们身影</div>
             </div>
-
-            <a href="#timeline" class="hero-action">去 记 得 它 们</a>
-        </div>
-
-        <div class="hero-scroll">向下滚动</div>
-    </section>
-
-    <!-- ============ 时间轴 ============ -->
-    <section class="timeline-section" id="timeline">
-        <div class="section-header">
-            <span class="section-eyebrow">12 LOST TREASURES</span>
-            <h2 class="section-title">山 河 盼 归</h2>
-            <p class="section-sub">每一件都是中华文明的游子 · 等待归家</p>
-            <div class="timeline-hint">
-                <span class="arrow"></span>
-                <span>左右滑动浏览 · 点击查看遗失详情与拼图</span>
+            <div class="stat-item">
+                <div class="stat-num">12</div>
+                <div class="stat-label">件等你记得</div>
             </div>
         </div>
-        <div class="timeline-track" id="timelineTrack">
-            <a class="t-card" href="shanhe-detail.html?id=1" data-index="1">
-                <div class="t-card-inner">
-                    <span class="t-num">01</span>
-                    <div class="t-img"><img src="images/yishu-1.jpg" alt="敦煌飞天藻井" loading="lazy"></div>
-                    <span class="t-era">北魏</span>
-                    <h3 class="t-name">敦煌飞天藻井</h3>
-                    <p class="t-loc">大英博物馆 · 第33号展厅</p>
-                    <span class="t-arrow">→</span>
-                </div>
-            </a>
-            <a class="t-card" href="shanhe-detail.html?id=2" data-index="2">
-                <div class="t-card-inner">
-                    <span class="t-num">02</span>
-                    <div class="t-img"><img src="images/yishu-2.jpg" alt="女史箴图" loading="lazy"></div>
-                    <span class="t-era">东晋 · 顾恺之</span>
-                    <h3 class="t-name">女史箴图</h3>
-                    <p class="t-loc">大英博物馆 · 第33号展厅</p>
-                    <span class="t-arrow">→</span>
-                </div>
-            </a>
-            <a class="t-card" href="shanhe-detail.html?id=3" data-index="3">
-                <div class="t-card-inner">
-                    <span class="t-num">03</span>
-                    <div class="t-img"><img src="images/yishu-3.jpg" alt="商晚兽面纹铜鼎" loading="lazy"></div>
-                    <span class="t-era">商代晚期</span>
-                    <h3 class="t-name">商晚兽面纹铜鼎</h3>
-                    <p class="t-loc">大英博物馆 · 东方馆</p>
-                    <span class="t-arrow">→</span>
-                </div>
-            </a>
-            <a class="t-card" href="shanhe-detail.html?id=4" data-index="4">
-                <div class="t-card-inner">
-                    <span class="t-num">04</span>
-                    <div class="t-img"><img src="images/yishu-4.jpg" alt="昭陵六骏·飒露紫" loading="lazy"></div>
-                    <span class="t-era">唐贞观</span>
-                    <h3 class="t-name">昭陵六骏 · 飒露紫</h3>
-                    <p class="t-loc">宾夕法尼亚大学博物馆</p>
-                    <span class="t-arrow">→</span>
-                </div>
-            </a>
-            <a class="t-card" href="shanhe-detail.html?id=5" data-index="5">
-                <div class="t-card-inner">
-                    <span class="t-num">05</span>
-                    <div class="t-img"><img src="images/yishu-5.jpg" alt="铜镀金錾花坛城" loading="lazy"></div>
-                    <span class="t-era">清代 · 乾隆</span>
-                    <h3 class="t-name">铜镀金錾花坛城</h3>
-                    <p class="t-loc">法国 · 枫丹白露宫</p>
-                    <span class="t-arrow">→</span>
-                </div>
-            </a>
-            <a class="t-card" href="shanhe-detail.html?id=6" data-index="6">
-                <div class="t-card-inner">
-                    <span class="t-num">06</span>
-                    <div class="t-img"><img src="images/yishu-6.jpg" alt="点翠凤冠" loading="lazy"></div>
-                    <span class="t-era">明代</span>
-                    <h3 class="t-name">点翠凤冠</h3>
-                    <p class="t-loc">美国大都会艺术博物馆</p>
-                    <span class="t-arrow">→</span>
-                </div>
-            </a>
-            <a class="t-card" href="shanhe-detail.html?id=7" data-index="7">
-                <div class="t-card-inner">
-                    <span class="t-num">07</span>
-                    <div class="t-img"><img src="images/yishu-7.jpg" alt="元青花云龙纹罐" loading="lazy"></div>
-                    <span class="t-era">元代</span>
-                    <h3 class="t-name">元青花云龙纹罐</h3>
-                    <p class="t-loc">土耳其 · 托普卡比宫</p>
-                    <span class="t-arrow">→</span>
-                </div>
-            </a>
-            <a class="t-card" href="shanhe-detail.html?id=8" data-index="8">
-                <div class="t-card-inner">
-                    <span class="t-num">08</span>
-                    <div class="t-img"><img src="images/yishu-8.jpg" alt="圆明园四十景图" loading="lazy"></div>
-                    <span class="t-era">清 · 乾隆</span>
-                    <h3 class="t-name">圆明园四十景图</h3>
-                    <p class="t-loc">法国 · 巴黎国家图书馆</p>
-                    <span class="t-arrow">→</span>
-                </div>
-            </a>
-            <a class="t-card" href="shanhe-detail.html?id=9" data-index="9">
-                <div class="t-card-inner">
-                    <span class="t-num">09</span>
-                    <div class="t-img"><img src="images/yishu-9.jpg" alt="永乐大典" loading="lazy"></div>
-                    <span class="t-era">明 · 永乐</span>
-                    <h3 class="t-name">永乐大典</h3>
-                    <p class="t-loc">英美俄等八国图书馆</p>
-                    <span class="t-arrow">→</span>
-                </div>
-            </a>
-            <a class="t-card" href="shanhe-detail.html?id=10" data-index="10">
-                <div class="t-card-inner">
-                    <span class="t-num">10</span>
-                    <div class="t-img"><img src="images/yishu-10.jpg" alt="金瓯永固杯" loading="lazy"></div>
-                    <span class="t-era">清 · 乾隆</span>
-                    <h3 class="t-name">金瓯永固杯</h3>
-                    <p class="t-loc">英国 · 华莱士收藏馆</p>
-                    <span class="t-arrow">→</span>
-                </div>
-            </a>
-            <a class="t-card" href="shanhe-detail.html?id=11" data-index="11">
-                <div class="t-card-inner">
-                    <span class="t-num">11</span>
-                    <div class="t-img"><img src="images/yishu-11.jpg" alt="摇钱树" loading="lazy"></div>
-                    <span class="t-era">东汉</span>
-                    <h3 class="t-name">摇钱树</h3>
-                    <p class="t-loc">广汉三星堆博物馆等</p>
-                    <span class="t-arrow">→</span>
-                </div>
-            </a>
-            <a class="t-card" href="shanhe-detail.html?id=12" data-index="12">
-                <div class="t-card-inner">
-                    <span class="t-num">12</span>
-                    <div class="t-img"><img src="images/yishu-12.jpg" alt="五色鹦鹉图" loading="lazy"></div>
-                    <span class="t-era">唐代</span>
-                    <h3 class="t-name">五色鹦鹉图</h3>
-                    <p class="t-loc">美国波士顿博物馆</p>
-                    <span class="t-arrow">→</span>
-                </div>
-            </a>
-        </div>
-    </section>
 
-    <!-- ============ 情感诗句 ============ -->
-    <section class="poem-section">
-        <p class="poem-line">拼的是<span class="poem-em">图像</span></p>
-        <p class="poem-line">盼的是<span class="poem-em">归期</span></p>
-    </section>
+        <a href="#timeline" class="hero-cta">去 记 得 它 们</a>
+    </div>
 
-    <!-- ============ 介绍 ============ -->
-    <section class="intro-section">
+    <div class="scroll-hint">向下滑动</div>
+</section>
+
+<!-- ============ 介绍 ============ -->
+<section class="intro-section">
+    <div class="intro-inner">
+        <p class="intro-quote">"那一件件流落在外的器物<br>是历史留给我们的信物"</p>
+        <div class="divider"></div>
         <p class="intro-text">
-            近代以来，由于战争劫掠、非法走私与不平等贸易，
-            超过<em>1000万件</em>中华文物散佚海外，分布在全球<em>47个</em>国家的200余座博物馆与私人藏家手中。
-            每一件漂泊的文物，都是中华文明被割裂的血脉。
-            我们整理出其中<em>12件</em>具有代表性的遗珍，希望通过<em>拼图</em>这一最朴素的方式，
-            让每一段历史的碎片回到一起，让每一件游子重新被记得。
+            自1840年起，战火、盗掘、走私，让超过一千万件中国珍贵文物散佚海外。
+            它们被陈列在异乡的玻璃柜里，标注着陌生的编号与陌生的名字。
+            这里，我们用十二件最具代表性的海外遗珍，试着把它们的身影与故事重新拾起。
         </p>
-        <a href="index.html" class="back-link">← 返回首页</a>
-    </section>
+    </div>
+</section>
 
-    <footer class="footer">
-        <p>中华文物 · 山河盼归 | 漂泊百年的游子，家里还亮着灯</p>
-    </footer>
+<!-- ============ 横向时间轴 ============ -->
+<section class="timeline-section" id="timeline">
+    <div class="timeline-head">
+        <h2>十 二 件 等 你 记 得</h2>
+        <p>从西周到明清 · 从青铜到书画</p>
+    </div>
+    <div class="timeline-rail">
+        <div class="timeline-track" id="track"></div>
+    </div>
+</section>
 
-    <script>
-        // ============ Hero 背景轮播 ============
-        const heroBgs = document.querySelectorAll('.hero-bg');
-        const heroSource = document.getElementById('hero-source');
-        const sourceTexts = [
-            '敦煌莫高窟第320窟 · 飞天藻井',
-            '东晋 · 顾恺之《女史箴图》',
-            '商代晚期 · 兽面纹铜鼎',
-            '唐贞观 · 昭陵六骏·飒露紫',
-            '清乾隆 · 铜镀金錾花坛城',
-            '明代 · 点翠凤冠'
-        ];
-        let bgIndex = 0;
-        function rotateBg() {
-            heroBgs.forEach(b => b.classList.remove('active'));
-            heroBgs[bgIndex].classList.add('active');
-            if (heroSource) heroSource.textContent = sourceTexts[bgIndex];
-        }
-        // 预加载
-        heroBgs.forEach(b => {
-            const img = new Image();
-            img.src = b.dataset.bg;
-        });
-        rotateBg();
-        setInterval(() => {
-            bgIndex = (bgIndex + 1) % heroBgs.length;
-            rotateBg();
-        }, 5000);
+<!-- ============ Footer ============ -->
+<footer class="footer">
+    山河虽远 · 终有归途 · 中华文物
+</footer>
 
-        // ============ Hero Canvas 飘尘 ============
-        const canvas = document.getElementById('hero-canvas');
-        const ctx = canvas.getContext('2d');
-        let dust = [];
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.offsetWidth;
-            canvas.height = canvas.parentElement.offsetHeight;
-        }
-        resizeCanvas();
-        for (let i = 0; i < 80; i++) {
-            dust.push({
-                x: Math.random(), y: Math.random(),
-                size: Math.random() * 2 + 0.5,
-                sx: (Math.random() - 0.5) * 0.0003,
-                sy: (Math.random() - 0.5) * 0.0002,
-                op: Math.random() * 0.5 + 0.2,
-                ph: Math.random() * 6.28
+<script>
+    // ========== 12 件遗失文物数据 ==========
+    const relics = [
+        { idx: '01', era: '西周', name: '夔龙纹大铜鼎', img: 'images/yishu-1.jpg', now: '大英博物馆 · 第33号展厅', id: 'kui-long-ding' },
+        { idx: '02', era: '东周 · 错银云纹', name: '女史箴图', img: 'images/yishu-2.jpg', now: '大英博物馆 · 第33号展厅', id: 'nushi-zhentu' },
+        { idx: '03', era: '唐代晚期', name: '青铜鎏金摩羯纹镜', img: 'images/yishu-3.jpg', now: '大英博物馆 · 东方馆', id: 'qingtong-mojie' },
+        { idx: '04', era: '唐贞观', name: '昭陵六骏 · 飒露紫', img: 'images/yishu-4.jpg', now: '宾夕法尼亚大学博物馆', id: 'zhaoling-saluzi' },
+        { idx: '05', era: '清代 · 乾隆', name: '铜镀金累丝坛城', img: 'images/yishu-5.jpg', now: '法国 · 枫丹白露宫', id: 'tongdu-jin' },
+        { idx: '06', era: '明代', name: '三果凤冠', img: 'images/yishu-6.jpg', now: '美国大都会艺术博物馆', id: 'sanguo-fengguan' },
+        { idx: '07', era: '元代', name: '元青花云龙纹罐', img: 'images/yishu-7.jpg', now: '土耳其 · 托普卡比宫', id: 'yuan-qinghua' },
+        { idx: '08', era: '清 · 乾隆', name: '圆明园四十景图', img: 'images/yishu-8.jpg', now: '法国 · 巴黎国家图书馆', id: 'yuanmingyuan' },
+        { idx: '09', era: '明 · 永乐', name: '永乐大典 · 卷册', img: 'images/yishu-9.jpg', now: '英美俄等八国图书馆', id: 'yongle-dadian' },
+        { idx: '10', era: '东晋 · 顾恺之', name: '洛神赋图 · 摹本', img: 'images/yishu-10.jpg', now: '大英博物馆 · 第33号展厅', id: 'luoshen-futu' },
+        { idx: '11', era: '商代', name: '虎鎏金铜神像', img: 'images/yishu-11.jpg', now: '日本 · 泉屋博古馆', id: 'shang-shenxiang' },
+        { idx: '12', era: '唐代', name: '敦煌藏经洞写经', img: 'images/yishu-12.jpg', now: '英 · 大英图书馆', id: 'dunhuang-xiejing' }
+    ];
+
+    // ========== 渲染时间轴 ==========
+    const track = document.getElementById('track');
+    track.innerHTML = relics.map(r => `
+        <a class="relic-card" href="shanhe-detail.html?id=${r.id}">
+            <div class="relic-idx">${r.idx}</div>
+            <div class="relic-media">
+                <img src="${r.img}" alt="${r.name}" loading="lazy">
+            </div>
+            <div class="relic-era-wrap"><span class="relic-era">${r.era}</span></div>
+            <div class="relic-name">${r.name}</div>
+            <div class="relic-now">${r.now}</div>
+        </a>
+    `).join('');
+
+    // ========== Hero 背景轮播 ==========
+    const bgs = document.querySelectorAll('.hero-bg');
+    let bgIdx = 0;
+    setInterval(() => {
+        bgs[bgIdx].classList.remove('active');
+        bgIdx = (bgIdx + 1) % bgs.length;
+        bgs[bgIdx].classList.add('active');
+    }, 5500);
+
+    // ========== 星空粒子 ==========
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        initStars();
+    }
+    function initStars() {
+        const n = Math.min(180, Math.floor((canvas.width * canvas.height) / 9000));
+        stars = [];
+        for (let i = 0; i < n; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 1.2 + 0.2,
+                a: Math.random(),
+                s: Math.random() * 0.012 + 0.004,
+                o: Math.random() * Math.PI * 2
             });
         }
-        window.addEventListener('resize', resizeCanvas);
-        function animateDust() {
-            requestAnimationFrame(animateDust);
-            const w = canvas.width, h = canvas.height;
-            ctx.clearRect(0, 0, w, h);
-            for (const p of dust) {
-                p.x += p.sx; p.y += p.sy; p.ph += 0.012;
-                if (p.x < 0) p.x = 1; if (p.x > 1) p.x = 0;
-                if (p.y < 0) p.y = 1; if (p.y > 1) p.y = 0;
-                const fl = Math.sin(p.ph) * 0.3 + 0.7;
-                ctx.beginPath();
-                ctx.arc(p.x * w, p.y * h, p.size, 0, 6.28);
-                ctx.fillStyle = `rgba(201, 169, 98, ${p.op * fl})`;
-                ctx.fill();
-            }
+    }
+    function draw(t) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (const s of stars) {
+            const tw = (Math.sin(t * s.s + s.o) + 1) / 2;
+            ctx.globalAlpha = 0.15 + tw * 0.55;
+            ctx.fillStyle = '#d9b97a';
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fill();
         }
-        animateDust();
-
-        // ============ 时间轴拖拽 ============
-        const track = document.getElementById('timelineTrack');
-        let isDown = false, startX, scrollLeft;
-        track.addEventListener('mousedown', (e) => {
-            isDown = true;
-            track.style.cursor = 'grabbing';
-            startX = e.pageX - track.offsetLeft;
-            scrollLeft = track.scrollLeft;
-        });
-        track.addEventListener('mouseleave', () => { isDown = false; track.style.cursor = ''; });
-        track.addEventListener('mouseup', () => { isDown = false; track.style.cursor = ''; });
-        track.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
-            e.preventDefault();
-            const x = e.pageX - track.offsetLeft;
-            const walk = (x - startX) * 1.5;
-            track.scrollLeft = scrollLeft - walk;
-        });
-
-        // 滚轮支持
-        track.addEventListener('wheel', (e) => {
-            if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) {
-                e.preventDefault();
-                track.scrollLeft += e.deltaY;
-            }
-        }, { passive: false });
-    </script>
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(draw);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    requestAnimationFrame(draw);
+</script>
 </body>
 </html>

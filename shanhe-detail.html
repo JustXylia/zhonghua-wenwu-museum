@@ -6,19 +6,18 @@
     <title>遗失详情 · 山河盼归 | 中华文物</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Caveat:wght@500;700&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --color-primary: #c9a962;
-            --color-primary-dark: #8b7355;
-            --color-bg-dark: #0a0a0f;
-            --color-bg-medium: #12121a;
-            --color-bg-light: #1a1a25;
-            --glass-bg: rgba(20, 20, 30, 0.7);
-            --glass-border: rgba(201, 169, 98, 0.15);
-            --color-text: #f5f0e8;
-            --color-text-muted: #8a8578;
-            --font-display: 'Ma Shan Zheng', cursive;
+            --gold: #c9a35a;
+            --gold-soft: #d9b97a;
+            --gold-line: rgba(201, 163, 90, 0.28);
+            --bg-deep: #06060a;
+            --bg: #0a0a0e;
+            --text: #f5f0e8;
+            --text-mute: #8a8578;
+            --font-display: 'Ma Shan Zheng', 'KaiTi', 'STKaiti', cursive;
+            --font-num: 'Caveat', cursive;
             --font-serif: 'Noto Serif SC', serif;
             --font-sans: 'Noto Sans SC', sans-serif;
         }
@@ -26,849 +25,947 @@
         html { scroll-behavior: smooth; }
         body {
             font-family: var(--font-sans);
-            background: var(--color-bg-dark);
-            color: var(--color-text);
+            background: var(--bg);
+            color: var(--text);
             overflow-x: hidden;
             line-height: 1.8;
         }
+        a { color: inherit; text-decoration: none; }
 
-        /* ============ 导航 ============ */
-        .nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-            padding: 1rem 2.5rem;
+        /* ============ 顶部固定返回 ============ */
+        .topbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 1.2rem 2.4rem;
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
+            background: linear-gradient(180deg, rgba(6,6,10,0.85) 0%, rgba(6,6,10,0) 100%);
         }
-        .nav-back {
+        .topbar-back {
             display: inline-flex; align-items: center; gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            color: var(--color-primary);
-            text-decoration: none;
+            color: var(--gold);
             font-family: var(--font-serif);
             font-size: 0.9rem;
             letter-spacing: 0.15em;
-            border: 1px solid var(--color-primary);
-            border-radius: 999px;
-            background: rgba(201, 169, 98, 0.08);
+            padding: 0.4rem 0;
             transition: all 0.3s ease;
         }
-        .nav-back:hover {
-            background: var(--color-primary);
-            color: var(--color-bg-dark);
-            transform: translateX(-2px);
-        }
-        .nav-logo {
+        .topbar-back:hover { transform: translateX(-3px); }
+        .topbar-back svg { width: 14px; height: 14px; }
+        .topbar-title {
             font-family: var(--font-display);
-            font-size: 1.4rem;
-            color: var(--color-primary);
-            text-decoration: none;
-            letter-spacing: 0.1em;
-        }
-        .nav-counter {
-            color: var(--color-text-muted);
-            font-family: var(--font-serif);
-            font-size: 0.85rem;
+            color: var(--gold);
+            font-size: 1.2rem;
             letter-spacing: 0.2em;
-        }
-        .nav-counter b {
-            color: var(--color-primary);
-            font-weight: 500;
         }
 
         /* ============ Hero ============ */
-        .hero {
+        .detail-hero {
             position: relative;
-            min-height: 70vh;
-            padding: 7rem 2rem 4rem;
-            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh;
+            display: flex; align-items: center;
+            background: var(--bg-deep);
             overflow: hidden;
         }
-        .hero-bg {
+        .detail-hero-bg {
             position: absolute; inset: 0;
             background-size: cover; background-position: center;
-            filter: brightness(0.4) saturate(1.1);
+            filter: brightness(0.32) saturate(1.05);
             z-index: 1;
         }
-        .hero-bg::after {
+        .detail-hero-bg::after {
             content: ''; position: absolute; inset: 0;
-            background: linear-gradient(180deg,
-                rgba(10,10,15,0.5) 0%,
-                rgba(10,10,15,0.7) 50%,
-                rgba(10,10,15,0.98) 100%);
+            background:
+                radial-gradient(ellipse at center, transparent 0%, rgba(6,6,10,0.65) 60%, rgba(6,6,10,0.98) 100%),
+                linear-gradient(90deg, rgba(6,6,10,0.85) 0%, rgba(6,6,10,0.4) 50%, rgba(6,6,10,0.95) 100%);
         }
-        .hero-content {
+        .detail-hero-inner {
             position: relative; z-index: 2;
-            text-align: center; max-width: 800px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 7rem 3rem 4rem;
+            width: 100%;
+            align-items: center;
         }
-        .hero-eyebrow {
+        .hero-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .hero-era {
             display: inline-block;
-            padding: 0.3rem 1rem;
-            font-size: 0.72rem; letter-spacing: 0.4em;
-            color: var(--color-primary);
-            border: 1px solid var(--glass-border);
+            padding: 0.35rem 1rem;
+            border: 1px solid var(--gold-line);
+            color: var(--gold);
+            font-family: var(--font-serif);
+            font-size: 0.8rem;
+            letter-spacing: 0.4em;
+            text-indent: 0.4em;
             border-radius: 999px;
-            background: rgba(201, 169, 98, 0.06);
-            margin-bottom: 1.4rem;
+            margin-bottom: 1.5rem;
+            background: rgba(201, 163, 90, 0.06);
         }
         .hero-title {
             font-family: var(--font-display);
-            font-size: clamp(2.5rem, 5vw, 3.8rem);
-            color: var(--color-text);
-            letter-spacing: 0.25em;
-            margin-bottom: 0.8rem;
-            text-shadow: 0 0 40px rgba(201, 169, 98, 0.3);
-        }
-        .hero-era {
-            font-family: var(--font-serif);
-            font-size: 1.05rem;
-            color: var(--color-text-muted);
-            letter-spacing: 0.4em;
-            margin-bottom: 0.4rem;
-        }
-        .hero-loc {
-            font-family: var(--font-serif);
-            font-size: 0.95rem;
-            color: var(--color-primary);
-            letter-spacing: 0.3em;
-        }
-
-        /* ============ 主体两栏 ============ */
-        .main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem 5rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-        }
-
-        /* ============ 遗失信息 ============ */
-        .info-panel {
-            padding: 2rem 0;
-        }
-        .info-section {
-            margin-bottom: 2.5rem;
-        }
-        .info-h {
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            color: var(--color-primary);
-            letter-spacing: 0.15em;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--glass-border);
-            position: relative;
-        }
-        .info-h::before {
-            content: ''; position: absolute;
-            bottom: -1px; left: 0;
-            width: 50px; height: 1px;
-            background: var(--color-primary);
-        }
-        .info-text {
-            font-family: var(--font-serif);
-            font-size: 0.98rem;
-            color: var(--color-text);
-            line-height: 2;
-            letter-spacing: 0.05em;
-        }
-        .info-text em {
-            color: var(--color-primary);
-            font-style: normal;
-            font-weight: 500;
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem 1.5rem;
-            margin-top: 1rem;
-            padding: 1.4rem;
-            background: rgba(201, 169, 98, 0.04);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-        }
-        .info-grid-item {
-            display: flex; flex-direction: column; gap: 0.3rem;
-        }
-        .info-grid-label {
-            font-family: var(--font-serif);
-            font-size: 0.75rem;
-            color: var(--color-text-muted);
+            font-size: clamp(2.4rem, 5vw, 3.6rem);
+            color: var(--gold);
             letter-spacing: 0.2em;
+            text-indent: 0.2em;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 30px rgba(201, 163, 90, 0.3);
         }
-        .info-grid-value {
-            font-family: var(--font-display);
-            font-size: 1.1rem;
-            color: var(--color-primary);
-            letter-spacing: 0.05em;
-        }
-
-        /* ============ 拼图游戏 ============ */
-        .puzzle-panel {
-            padding: 2rem 0;
-        }
-        .puzzle-header {
-            display: flex; justify-content: space-between; align-items: baseline;
-            margin-bottom: 1rem;
-        }
-        .puzzle-title {
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            color: var(--color-primary);
-            letter-spacing: 0.15em;
-        }
-        .puzzle-progress {
+        .hero-now {
             font-family: var(--font-serif);
-            font-size: 0.85rem;
-            color: var(--color-text-muted);
-            letter-spacing: 0.2em;
-        }
-        .puzzle-progress b {
-            color: var(--color-primary);
-            font-weight: 500;
-        }
-        .puzzle-board {
-            position: relative;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 4px;
-            aspect-ratio: 1;
-            width: 100%;
-            padding: 4px;
-            background: rgba(201, 169, 98, 0.1);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-        }
-        .puzzle-cell {
-            position: relative;
-            background: rgba(20, 20, 30, 0.6);
-            border: 1px dashed rgba(201, 169, 98, 0.15);
-            aspect-ratio: 1;
-            overflow: hidden;
-        }
-        .puzzle-cell .hint-num {
-            position: absolute; top: 4px; left: 4px;
-            font-family: var(--font-serif);
-            font-size: 0.7rem;
-            color: var(--color-text-muted);
-            opacity: 0.4;
-            z-index: 2;
-        }
-        .puzzle-cell.occupied {
-            border: 1px solid var(--color-primary);
-            background: transparent;
-        }
-        .puzzle-piece {
-            position: absolute;
-            width: 100%; height: 100%;
-            background-size: 400% 400%;
-            background-repeat: no-repeat;
-            cursor: grab;
-            transition: transform 0.18s ease, box-shadow 0.18s ease;
-            z-index: 5;
-        }
-        .puzzle-piece:hover { transform: scale(1.04); z-index: 10; }
-        .puzzle-piece.dragging { cursor: grabbing; z-index: 20; }
-        .puzzle-piece.placed { cursor: default; box-shadow: 0 0 0 2px var(--color-primary) inset; }
-        .puzzle-tray {
-            margin-top: 1rem;
-            min-height: 90px;
-            padding: 0.8rem;
-            background: rgba(20, 20, 30, 0.5);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            display: flex; flex-wrap: wrap;
-            gap: 6px;
-            align-content: flex-start;
-        }
-        .puzzle-tray .puzzle-piece {
-            position: relative;
-            width: 60px; height: 60px;
-            background-size: 400% 400%;
-        }
-        .puzzle-controls {
-            display: flex; gap: 0.8rem; margin-top: 1rem;
-        }
-        .p-btn {
-            flex: 1;
-            padding: 0.8rem 1rem;
-            font-family: var(--font-serif);
+            color: var(--text-mute);
             font-size: 0.9rem;
             letter-spacing: 0.2em;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+        .hero-now b { color: var(--gold-soft); font-weight: 600; }
+        .hero-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #111;
+            border: 1px solid var(--gold-line);
+            overflow: hidden;
+            box-shadow: 0 12px 60px rgba(0, 0, 0, 0.6);
+        }
+        .hero-img img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        /* ============ 时间轴 (视频风格) ============ */
+        .timeline-card {
+            background: rgba(15, 15, 22, 0.6);
+            border: 1px solid var(--gold-line);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 2.5rem 2rem;
+            position: relative;
+        }
+        .timeline-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+        .tl-title {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            color: var(--gold);
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            margin-bottom: 0.4rem;
+            text-align: center;
+        }
+        .tl-subtitle {
+            font-family: var(--font-serif);
+            font-size: 0.75rem;
+            color: var(--text-mute);
+            letter-spacing: 0.4em;
+            text-indent: 0.4em;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .tl-list {
+            list-style: none;
+            position: relative;
+        }
+        .tl-list::before {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0;
+            left: 8px;
+            width: 1px;
+            background: linear-gradient(180deg, transparent, var(--gold-line) 8%, var(--gold-line) 92%, transparent);
+        }
+        .tl-item {
+            position: relative;
+            padding: 0 0 1.5rem 2.4rem;
+        }
+        .tl-item:last-child { padding-bottom: 0; }
+        .tl-item::before {
+            content: '◆';
+            position: absolute;
+            left: 0; top: 0.2rem;
+            color: var(--gold);
+            font-size: 0.7rem;
+            line-height: 1;
+        }
+        .tl-time {
+            font-family: var(--font-serif);
+            font-size: 0.78rem;
+            color: var(--gold);
+            letter-spacing: 0.25em;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+        .tl-text {
+            font-family: var(--font-serif);
+            font-size: 0.9rem;
+            color: var(--text);
+            letter-spacing: 0.08em;
+            line-height: 1.8;
+        }
+        .tl-text em {
+            font-style: normal;
+            color: var(--gold-soft);
+        }
+
+        /* ============ 文物故事 ============ */
+        .story-section {
+            padding: 5rem 1.5rem;
+            background: var(--bg);
+        }
+        .story-inner {
+            max-width: 880px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .story-section h2 {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+            color: var(--gold);
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            margin-bottom: 0.6rem;
+            font-weight: 400;
+        }
+        .story-section .sub {
+            font-family: var(--font-serif);
+            color: var(--text-mute);
+            font-size: 0.85rem;
+            letter-spacing: 0.4em;
+            text-indent: 0.4em;
+            margin-bottom: 2.5rem;
+        }
+        .story-text {
+            font-family: var(--font-serif);
+            color: var(--text);
+            font-size: 1rem;
+            line-height: 2.2;
+            letter-spacing: 0.1em;
+            text-align: justify;
+        }
+        .story-text p { margin-bottom: 1.4rem; }
+
+        /* ============ 拼图游戏 ============ */
+        .puzzle-section {
+            padding: 4rem 1.5rem 6rem;
+            background:
+                radial-gradient(ellipse at center, rgba(201, 163, 90, 0.04), transparent 60%),
+                var(--bg);
+        }
+        .puzzle-head {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .puzzle-head h2 {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+            color: var(--gold);
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            margin-bottom: 0.4rem;
+            font-weight: 400;
+        }
+        .puzzle-head p {
+            font-family: var(--font-serif);
+            color: var(--text-mute);
+            font-size: 0.85rem;
+            letter-spacing: 0.4em;
+            text-indent: 0.4em;
+        }
+        .puzzle-wrap {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .puzzle-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.4rem;
+            margin-bottom: 1.4rem;
+        }
+        .puzzle-frame {
+            background: rgba(15, 15, 22, 0.5);
+            border: 1px solid var(--gold-line);
+            padding: 0.8rem;
+            aspect-ratio: 1 / 1;
+        }
+        .puzzle-board {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 2px;
+            background: var(--bg-deep);
+        }
+        .puzzle-cell {
+            background: rgba(201, 163, 90, 0.04);
+            border: 1px dashed rgba(201, 163, 90, 0.12);
+            background-size: 400% 400%;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        .puzzle-cell.placed {
+            border-style: solid;
+            border-color: transparent;
+            box-shadow: inset 0 0 0 1px rgba(201, 163, 90, 0.4);
+        }
+        .puzzle-cell.correct-flash {
+            animation: flash 0.4s ease;
+        }
+        @keyframes flash {
+            0%, 100% { box-shadow: inset 0 0 0 1px rgba(201, 163, 90, 0.4); }
+            50% { box-shadow: inset 0 0 0 2px var(--gold); }
+        }
+        .puzzle-tray {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            overflow: hidden;
+        }
+        .puzzle-piece {
+            background-size: 400% 400%;
+            cursor: grab;
+            transition: transform 0.15s ease;
+            border: 1px solid rgba(201, 163, 90, 0.18);
+            background-color: #111;
+        }
+        .puzzle-piece:active { cursor: grabbing; transform: scale(0.95); }
+        .puzzle-piece.dragging { opacity: 0.4; }
+        .puzzle-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.2rem;
+            font-family: var(--font-serif);
+            color: var(--text-mute);
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+        }
+        .puzzle-info b { color: var(--gold); font-size: 1.2rem; font-weight: 600; }
+        .puzzle-actions { display: flex; gap: 0.8rem; margin-top: 1.2rem; }
+        .puzzle-btn {
+            flex: 1;
+            padding: 0.8rem 1.2rem;
             background: transparent;
-            color: var(--color-primary);
-            border: 1px solid var(--color-primary);
-            border-radius: 6px;
+            border: 1px solid var(--gold-line);
+            color: var(--gold);
+            font-family: var(--font-serif);
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        .p-btn:hover { background: var(--color-primary); color: var(--color-bg-dark); }
-        .p-btn.primary {
-            background: linear-gradient(135deg, #d4a544 0%, #b8902f 100%);
-            color: #1a1505;
+        .puzzle-btn:hover { background: rgba(201, 163, 90, 0.1); }
+        .puzzle-btn.primary {
+            background: linear-gradient(135deg, #d4a85a 0%, #b8902e 100%);
+            color: #1a1208;
             border-color: transparent;
+            font-weight: 600;
         }
-        .p-btn.primary:hover { background: linear-gradient(135deg, #e6b758 0%, #c89c34 100%); }
+        .puzzle-btn.primary:hover { transform: translateY(-2px); }
 
-        /* ============ 完成模态 ============ */
-        .puzzle-success {
+        /* 完成弹窗 */
+        .modal-mask {
             position: fixed; inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 2000;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.5s ease;
+            background: rgba(6, 6, 10, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center; justify-content: center;
+            z-index: 200;
         }
-        .puzzle-success.active { opacity: 1; pointer-events: auto; }
-        .success-card {
-            text-align: center;
-            padding: 3rem 4rem;
-            background: linear-gradient(180deg, rgba(40, 30, 15, 0.9) 0%, rgba(20, 20, 30, 0.95) 100%);
-            border: 1px solid var(--color-primary);
-            box-shadow: 0 20px 60px rgba(201, 169, 98, 0.3);
-            transform: scale(0.85);
-            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        .modal-mask.show { display: flex; }
+        .modal-card {
+            background: linear-gradient(160deg, #1a1a25 0%, #0a0a0e 100%);
+            border: 1px solid var(--gold);
+            padding: 3rem 2.5rem;
             max-width: 420px;
+            text-align: center;
+            position: relative;
         }
-        .puzzle-success.active .success-card { transform: scale(1); }
-        .success-icon {
-            font-family: var(--font-display);
-            font-size: 4rem;
-            color: var(--color-primary);
-            margin-bottom: 0.8rem;
+        .modal-card::before, .modal-card::after {
+            content: '';
+            position: absolute;
+            width: 30px; height: 30px;
+            border: 1px solid var(--gold);
         }
-        .success-title {
+        .modal-card::before { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+        .modal-card::after { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+        .modal-card h3 {
             font-family: var(--font-display);
             font-size: 1.8rem;
-            color: var(--color-primary);
-            letter-spacing: 0.2em;
-            margin-bottom: 0.6rem;
+            color: var(--gold);
+            letter-spacing: 0.4em;
+            text-indent: 0.4em;
+            margin-bottom: 1rem;
         }
-        .success-text {
+        .modal-card p {
             font-family: var(--font-serif);
+            color: var(--text);
             font-size: 0.95rem;
-            color: var(--color-text);
+            line-height: 1.9;
             letter-spacing: 0.1em;
-            margin-bottom: 1.8rem;
-            line-height: 1.8;
+            margin-bottom: 2rem;
         }
-
-        /* ============ 上下页导航 ============ */
-        .pager {
-            max-width: 1200px;
-            margin: 2rem auto 5rem;
-            padding: 0 2rem;
-            display: flex; justify-content: space-between; gap: 1rem;
-        }
-        .pager a {
-            flex: 1;
-            padding: 1.5rem 1.5rem;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            text-decoration: none;
-            color: var(--color-text);
-            transition: all 0.3s ease;
-            display: flex; flex-direction: column; gap: 0.4rem;
-        }
-        .pager a:hover {
-            border-color: var(--color-primary);
-            background: rgba(201, 169, 98, 0.08);
-        }
-        .pager .label {
+        .modal-close {
+            display: inline-block;
+            padding: 0.7rem 2rem;
+            background: linear-gradient(135deg, #d4a85a 0%, #b8902e 100%);
+            color: #1a1208;
             font-family: var(--font-serif);
-            font-size: 0.78rem;
-            color: var(--color-text-muted);
+            font-weight: 600;
             letter-spacing: 0.2em;
+            cursor: pointer;
+            border: none;
         }
-        .pager .name {
-            font-family: var(--font-display);
-            font-size: 1.3rem;
-            color: var(--color-primary);
-            letter-spacing: 0.1em;
-        }
-        .pager .empty { opacity: 0.3; pointer-events: none; }
 
         /* ============ Footer ============ */
         .footer {
-            padding: 2.5rem 2rem; text-align: center;
-            border-top: 1px solid var(--glass-border);
-            background: var(--color-bg-dark);
-        }
-        .footer p {
-            color: var(--color-text-muted);
-            font-size: 0.85rem; letter-spacing: 0.2em;
+            padding: 3rem 1.5rem;
+            text-align: center;
+            background: var(--bg-deep);
+            color: var(--text-mute);
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            border-top: 1px solid var(--gold-line);
         }
 
         /* ============ 响应式 ============ */
-        @media (max-width: 1024px) {
-            .main { grid-template-columns: 1fr; gap: 2rem; }
+        @media (max-width: 900px) {
+            .detail-hero-inner {
+                grid-template-columns: 1fr;
+                padding: 6rem 1.5rem 3rem;
+                gap: 2.5rem;
+            }
+            .hero-left { order: 2; }
+            .timeline-card { order: 1; }
+            .puzzle-area { grid-template-columns: 1fr; }
         }
-        @media (max-width: 768px) {
-            .nav { padding: 0.8rem 1rem; }
-            .hero { min-height: 60vh; padding: 6rem 1rem 3rem; }
-            .puzzle-board { gap: 2px; }
-            .puzzle-tray .puzzle-piece { width: 50px; height: 50px; }
+        @media (max-width: 480px) {
+            .topbar { padding: 1rem 1.2rem; }
+            .topbar-title { display: none; }
+            .timeline-card { padding: 1.8rem 1.2rem; }
         }
     </style>
 </head>
 <body>
-    <!-- 导航 -->
-    <nav class="nav">
-        <a href="shanhe-pangui.html" class="nav-back">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            返回
-        </a>
-        <a href="shanhe-pangui.html" class="nav-logo">山河盼归</a>
-        <div class="nav-counter"><b id="navNum">01</b> / 12</div>
-    </nav>
 
-    <!-- Hero -->
-    <section class="hero">
-        <div class="hero-bg" id="heroBg"></div>
-        <div class="hero-content">
-            <div class="hero-eyebrow" id="heroEyebrow">LOST TREASURE</div>
-            <h1 class="hero-title" id="heroTitle">敦煌飞天藻井</h1>
-            <p class="hero-era" id="heroEra">北魏</p>
-            <p class="hero-loc" id="heroLoc">大英博物馆 · 第33号展厅</p>
+<div class="topbar">
+    <a href="shanhe-pangui.html" class="topbar-back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        返回山河盼归
+    </a>
+    <span class="topbar-title">山河盼归</span>
+</div>
+
+<!-- ============ Hero ============ -->
+<section class="detail-hero">
+    <div class="detail-hero-bg" id="heroBg"></div>
+    <div class="detail-hero-inner">
+        <div class="hero-left">
+            <span class="hero-era" id="relicEra">西周</span>
+            <h1 class="hero-title" id="relicName">夔龙纹大铜鼎</h1>
+            <p class="hero-now" id="relicNow"><b>现藏：</b>大英博物馆 · 第33号展厅</p>
+            <div class="hero-img">
+                <img id="relicImg" src="" alt="">
+            </div>
         </div>
-    </section>
 
-    <!-- 主体 -->
-    <main class="main">
-        <!-- 遗失信息 -->
-        <section class="info-panel">
-            <div class="info-section">
-                <h2 class="info-h">遗 失 始 末</h2>
-                <p class="info-text" id="lossText">载入中...</p>
-            </div>
-            <div class="info-section">
-                <h2 class="info-h">文 物 档 案</h2>
-                <div class="info-grid" id="infoGrid"></div>
-            </div>
-            <div class="info-section">
-                <h2 class="info-h">回 家 之 路</h2>
-                <p class="info-text" id="returnText">载入中...</p>
-            </div>
-        </section>
-
-        <!-- 拼图 -->
-        <section class="puzzle-panel">
-            <div class="puzzle-header">
-                <h2 class="puzzle-title">拼 图 · 唤 醒 记 忆</h2>
-                <span class="puzzle-progress">已完成 <b id="pDone">0</b> / 16</span>
-            </div>
-            <div class="puzzle-board" id="puzzleBoard"></div>
-            <p style="margin-top:0.8rem;font-family:var(--font-serif);font-size:0.8rem;color:var(--color-text-muted);letter-spacing:0.15em;">
-                ↓ 拖动下方碎片到对应位置 · 拼回它原本的模样
-            </p>
-            <div class="puzzle-tray" id="puzzleTray"></div>
-            <div class="puzzle-controls">
-                <button class="p-btn" id="pReset">重 置</button>
-                <button class="p-btn" id="pShuffle">打 乱</button>
-                <button class="p-btn primary" id="pPreview">预 览</button>
-            </div>
-        </section>
-    </main>
-
-    <!-- 上下页 -->
-    <div class="pager">
-        <a id="pPrev" href="#"><span class="label">← 上一件</span><span class="name"></span></a>
-        <a id="pNext" href="#"><span class="label">下一件 →</span><span class="name"></span></a>
-    </div>
-
-    <!-- 完成模态 -->
-    <div class="puzzle-success" id="puzzleSuccess">
-        <div class="success-card">
-            <div class="success-icon">家</div>
-            <h3 class="success-title">归 位 完 成</h3>
-            <p class="success-text" id="successText">每一件游子都值得被记得</p>
-            <button class="p-btn primary" id="successClose">继 续 唤 醒</button>
+        <div class="timeline-card">
+            <h2 class="tl-title">流 散 印 记</h2>
+            <p class="tl-subtitle">THE TRAIL OF A LOST TREASURE</p>
+            <ul class="tl-list" id="timelineList">
+                <!-- 时间轴动态生成 -->
+            </ul>
         </div>
     </div>
+</section>
 
-    <footer class="footer">
-        <p>中华文物 · 山河盼归 | 漂泊百年的游子，家里还亮着灯</p>
-    </footer>
+<!-- ============ 文物故事 ============ -->
+<section class="story-section">
+    <div class="story-inner">
+        <h2>它 的 故 事</h2>
+        <p class="sub">THE STORY</p>
+        <div class="story-text" id="storyText">
+            <!-- 动态生成 -->
+        </div>
+    </div>
+</section>
 
-    <script>
-        // ============ 12 件文物数据 ============
-        const artifacts = [
-            {
-                id: 1, num: '01', name: '敦煌飞天藻井', era: '北魏',
-                loc: '大英博物馆 · 第33号展厅',
-                img: 'images/yishu-1.jpg',
-                loss: '敦煌藏经洞于清光绪二十六年（1900年）被道士王圆箓发现后，<em>英国考古学家斯坦因</em>于1907年以五百两白银从王圆箓处骗购走包括飞天藻井在内的大量绢画、佛经与丝织品，运抵伦敦后入藏大英博物馆。自此，这批凝结北魏画师心血的藻井图案便再未回到莫高窟的穹顶之上。',
-                archive: [['年代', '北魏'], ['类别', '壁画 · 藻井'], ['材质', '矿物颜料 · 敦煌土'], ['尺寸', '约 120×120cm'], ['馆藏', '大英博物馆'], ['编号', 'OA 1919,0101,0.74']],
-                return: '目前大英博物馆未归还该藻井原件。2010年起，敦煌研究院与多家海外机构开展<em>数字化合作</em>，以高精度扫描方式让藻井图案"数字回家"，重现于莫高窟数字展示中心。'
-            },
-            {
-                id: 2, num: '02', name: '女史箴图', era: '东晋 · 顾恺之',
-                loc: '大英博物馆 · 第33号展厅',
-                img: 'images/yishu-2.jpg',
-                loss: '《女史箴图》原为清宫旧藏，<em>1900年八国联军侵华</em>时被英军从颐和园劫走，先入藏英王爱德华七世之手，后被大英博物馆以25英镑的价格购入。由于英国人不了解中国画的装裱传统，将原本的卷轴切割成四段，并以日式屏风形式重新装裱，造成画心断裂与磨损，是中国书画流散史上最痛心的一例。',
-                archive: [['年代', '东晋'], ['类别', '绢本设色 · 画卷'], ['作者', '顾恺之（传）'], ['原作年代', '公元4世纪'], ['现存', '唐代摹本'], ['馆藏', '大英博物馆']],
-                return: '原作九段现存于大英博物馆，<em>前三段已失</em>。2013年大英博物馆启动《女史箴图》修复项目，邀请中国故宫博物院文保专家参与会诊，让这件国宝在异国他乡得到最专业的呵护。'
-            },
-            {
-                id: 3, num: '03', name: '商晚兽面纹铜鼎', era: '商代晚期',
-                loc: '大英博物馆 · 东方馆',
-                img: 'images/yishu-3.jpg',
-                loss: '晚商青铜鼎是青铜时代的巅峰之作，纹饰繁缛、庄严肃穆。本件兽面纹方鼎出土于河南安阳殷墟一带，<em>20世纪初</em>随着盗掘之风盛行而流失海外，先后辗转于伦敦古董商之间，最终被大英博物馆收藏。其器身的饕餮纹（兽面纹）以云雷纹为地，主纹突出，体现了商代晚期"三层花"装饰的极致工艺。',
-                archive: [['年代', '商代晚期'], ['类别', '青铜礼器 · 方鼎'], ['材质', '青铜'], ['纹饰', '兽面纹 · 夔龙纹'], ['馆藏', '大英博物馆'], ['出土', '河南安阳']],
-                return: '中国国家博物馆与国内多家机构长期致力于通过<em>外交协商与商业回购</em>追索非法流失的商代青铜重器，目前已有包括子龙鼎、皿方罍等代表性器物成功归国。'
-            },
-            {
-                id: 4, num: '04', name: '昭陵六骏 · 飒露紫', era: '唐贞观',
-                loc: '美国宾夕法尼亚大学博物馆',
-                img: 'images/yishu-4.jpg',
-                loss: '昭陵六骏石刻是唐太宗李世民为纪念其六匹战马而雕的浮雕，每块高约 1.7 米、宽约 2 米。<em>1914年</em>，古玩商卢芹斋以 12.5 万美元将"飒露紫"和"拳毛䯄"两块石刻盗运出境，售予宾夕法尼亚大学博物馆。其中"飒露紫"刻画丘行恭为战马拔箭的瞬间，是六骏中唯一有人物形象的一块。',
-                archive: [['年代', '唐贞观十年'], ['类别', '石刻 · 浮雕'], ['材质', '青石'], ['原址', '陕西礼泉昭陵'], ['馆藏', '宾大博物馆'], ['流失', '1914年']],
-                return: '中国方面多次与美方接洽，2010年西安碑林博物馆与多家机构联合启动<em>"昭陵六骏"数字化复原</em>，让两块流失石刻以 3D 打印与 AR 方式"重聚"昭陵。'
-            },
-            {
-                id: 5, num: '05', name: '铜镀金錾花坛城', era: '清代 · 乾隆',
-                loc: '法国 · 枫丹白露宫',
-                img: 'images/yishu-5.jpg',
-                loss: '此坛城为清乾隆时期宫廷造办处专为承德外八庙之一普陀宗乘之庙铸造的藏传佛教法器，工艺繁复，集<em>錾花、累丝、镶嵌</em>于一身。1860年英法联军火烧圆明园时，<em>法军司令孟托邦</em>将大量宫廷珍玩掠夺回国，包括这件金光灿灿的坛城。战后作为"战利品"入藏枫丹白露宫中国馆，是法军劫掠圆明园最有力的实物证据。',
-                archive: [['年代', '清乾隆'], ['类别', '法器 · 坛城'], ['材质', '铜鎏金 · 镶嵌'], ['原址', '承德普陀宗乘之庙'], ['馆藏', '枫丹白露宫'], ['流失', '1860年']],
-                return: '2009年起，国内文物部门启动<em>"圆明园海外流失文物调查"</em>，建立流失文物目录。中法双方在文物追索领域开展合作研究，部分小型文物已通过商业回购途径归国。'
-            },
-            {
-                id: 6, num: '06', name: '点翠凤冠', era: '明代',
-                loc: '美国大都会艺术博物馆',
-                img: 'images/yishu-6.jpg',
-                loss: '点翠工艺以翠鸟羽毛镶嵌于金银底胎之上，色彩千年不褪。本件凤冠为明代皇后或亲王妃所佩戴，镶嵌珍珠、宝石与点翠凤鸟、九龙。<em>20世纪初</em>，因战乱与皇族流散，宫廷服饰流入海外市场，被大都会艺术博物馆收藏。点翠工艺在清末民初几近失传，更使这件凤冠成为无法再生的稀世珍品。',
-                archive: [['年代', '明代'], ['类别', '服饰 · 凤冠'], ['工艺', '点翠 · 累丝 · 镶嵌'], ['材质', '金 · 翠羽 · 珍珠'], ['馆藏', '大都会博物馆'], ['流失', '20世纪初']],
-                return: '目前故宫博物院已成功复原<em>非遗点翠工艺</em>，并以现代材料替代翠羽。本件流失凤冠虽未回归，但其工艺已通过 3D 数字扫描完整记录，让传统技艺重获新生。'
-            },
-            {
-                id: 7, num: '07', name: '元青花云龙纹罐', era: '元代',
-                loc: '土耳其 · 托普卡比宫',
-                img: 'images/yishu-7.jpg',
-                loss: '元青花瓷是中国陶瓷艺术的高峰，使用进口"苏麻离青"料绘制。本件云龙纹罐造型浑厚、纹饰大气，是<em>至正型</em>元青花的代表作。其原为元代宫廷或高级寺庙供奉之物，<em>15世纪前后</em>经丝绸之路贸易流入奥斯曼土耳其，成为托普卡比宫最珍贵的中国瓷器藏品之一。',
-                archive: [['年代', '元代至正年间'], ['类别', '瓷器 · 罐'], ['材质', '青花瓷'], ['纹饰', '云龙纹 · 海水纹'], ['馆藏', '托普卡比宫'], ['流失', '约15世纪']],
-                return: '元青花作为中国陶瓷史的瑰宝，<em>土耳其方面视其为国家珍宝</em>，暂无归还计划。但中土两国在陶瓷文化交流上持续开展，2018年伊斯坦布尔举办"中国瓷"专题展，让这段丝路记忆重新鲜活。'
-            },
-            {
-                id: 8, num: '08', name: '圆明园四十景图', era: '清 · 乾隆',
-                loc: '法国 · 巴黎国家图书馆',
-                img: 'images/yishu-8.jpg',
-                loss: '《圆明园四十景图》由清代宫廷画师沈源、唐岱绘制，乾隆御笔题诗，绢本设色，每景一幅，共四十幅。<em>1860年英法联军劫毁圆明园</em>后，原作被法军掠走，后入藏巴黎国家图书馆。这是圆明园真实面貌最重要、最直观的史料，今圆明园已成废墟，唯此图仍存。<em>原件于2013年首次以全本形式数字化回归</em>。',
-                archive: [['年代', '清乾隆'], ['类别', '绢本设色 · 册页'], ['作者', '沈源 · 唐岱 · 乾隆'], ['数量', '四十景'], ['馆藏', '巴黎国家图书馆'], ['流失', '1860年']],
-                return: '2013年圆明园管理处与法方合作，将此图以<em>高精度数字化方式</em>"请回"圆明园数字展馆，并出版学术研究图录，让圆明园盛景"重生"于国人眼前。'
-            },
-            {
-                id: 9, num: '09', name: '永乐大典', era: '明 · 永乐',
-                loc: '英美俄等八国图书馆',
-                img: 'images/yishu-9.jpg',
-                loss: '《永乐大典》是明永乐年间编纂的大型类书，全书 22,937 卷，<em>11095 册</em>，是中国古代最大的百科全书。历经明清战乱，至清末仅存约 800 余册。<em>1900年八国联军侵华</em>，翰林院被焚，剩余副本被各国侵略者掠夺、盗卖，散佚于英、美、俄、德、法、日等八国图书馆与私人藏家手中，成为中华文献最惨痛的流失事件。',
-                archive: [['年代', '明永乐'], ['类别', '类书'], ['编纂', '解缙 · 姚广孝'], ['原数', '11095册'], ['现存', '约800余册'], ['分布', '八国']],
-                return: '新中国成立后，通过<em>国家征集、商业回购、海外捐赠</em>等途径，已陆续收集到 224 册入藏国家图书馆。中华书局出版了《永乐大典》高清仿真本，让这部典籍以"另一种形式"回归故土。'
-            },
-            {
-                id: 10, num: '10', name: '金瓯永固杯', era: '清 · 乾隆',
-                loc: '英国 · 华莱士收藏馆',
-                img: 'images/yishu-10.jpg',
-                loss: '金瓯永固杯是清乾隆年间为新年开笔仪式特制的金杯，每年正月初一子时，乾隆帝在养心殿东暖阁用此杯屠苏酒，<em>祈愿大清疆土如金瓯般完整永固</em>。杯身镶嵌珍珠、宝石，由内务府造办处用纯金打造。1860年英法联军劫掠圆明园时流失，现藏于英国华莱士收藏馆，是"金瓯永固"这一成语最直接的文物见证。',
-                archive: [['年代', '清乾隆'], ['类别', '金器 · 酒杯'], ['材质', '纯金 · 宝石'], ['用途', '元旦开笔'], ['馆藏', '华莱士收藏馆'], ['流失', '1860年']],
-                return: '北京故宫博物院藏有<em>金瓯永固杯复制品</em>。每逢元旦，故宫会按清宫旧例举行仿制开笔仪式，让这件虽已漂泊海外的国之重器，以文化记忆的形式"留"在家中。'
-            },
-            {
-                id: 11, num: '11', name: '东汉摇钱树', era: '东汉',
-                loc: '广汉三星堆博物馆等',
-                img: 'images/yishu-11.jpg',
-                loss: '摇钱树是东汉时期流行于西南地区的特殊丧葬明器，<em>青铜铸造的树形装饰</em>，枝叶间缀满祈求财富的神兽与仙人。本组摇钱树出土于四川广汉与河南南阳一带，<em>20世纪90年代</em>盗墓之风盛行时大量流失海外，欧美多家博物馆与古董商均有收藏。摇钱树所反映的"羽化升仙"信仰，是研究汉代宇宙观与西南文化的重要实物。',
-                archive: [['年代', '东汉'], ['类别', '青铜明器 · 摇钱树'], ['材质', '青铜 · 鎏金'], ['出土', '四川广汉 · 河南南阳'], ['馆藏', '多家海外机构'], ['流失', '20世纪后期']],
-                return: '2018年以来，国家文物局联合公安部开展<em>"中国被盗文物信息平台"</em>建设，将包括摇钱树在内的多批汉代青铜纳入追索目录，部分小型器物已通过法律途径成功追回。'
-            },
-            {
-                id: 12, num: '12', name: '五色鹦鹉图', era: '唐代',
-                loc: '美国波士顿博物馆',
-                img: 'images/yishu-12.jpg',
-                loss: '《五色鹦鹉图》传为唐代画家<em>边鸾</em>所作，描绘一只五色鹦鹉栖于折枝海棠之上，赋色浓丽、勾勒精工，是唐代花鸟画的稀世珍本。原为清宫旧藏，著录于《石渠宝笈》。民国初年由溥仪以"赏赐"名义带出宫，后辗转流落海外，<em>1934年</em>由美国波士顿博物馆购入。画中鹦鹉与海棠的组合，被宋徽宗御题"杏嘴莺声尽日听"以赞其神韵。',
-                archive: [['年代', '唐代'], ['类别', '绢本设色 · 立轴'], ['作者', '边鸾（传）'], ['题材', '花鸟'], ['馆藏', '波士顿博物馆'], ['流失', '民国初期']],
-                return: '虽然原作未能归国，但其<em>数字高清图像</em>已被多家国内机构收录研究。台北故宫博物院在花鸟画研究中多次引用此图，延续着中华花鸟画的血脉传承。'
-            }
-        ];
+<!-- ============ 拼图游戏 ============ -->
+<section class="puzzle-section">
+    <div class="puzzle-head">
+        <h2>拼 回 它 的 模 样</h2>
+        <p>PUZZLE THE TREASURE BACK</p>
+    </div>
+    <div class="puzzle-wrap">
+        <div class="puzzle-area">
+            <div class="puzzle-frame">
+                <div class="puzzle-board" id="puzzleBoard"></div>
+            </div>
+            <div class="puzzle-frame">
+                <div class="puzzle-tray" id="puzzleTray"></div>
+            </div>
+        </div>
+        <div class="puzzle-info">
+            <span>已完成 <b id="progressNum">0</b> / 16 块</span>
+            <span id="statusText">拖动拼图块到对应位置</span>
+        </div>
+        <div class="puzzle-actions">
+            <button class="puzzle-btn" id="resetBtn">重 置</button>
+            <button class="puzzle-btn primary" id="showBtn">查 看 完 整 图</button>
+        </div>
+    </div>
+</section>
 
-        // ============ 初始化 ============
-        const params = new URLSearchParams(window.location.search);
-        const id = parseInt(params.get('id') || '1');
-        const idx = Math.max(0, Math.min(11, id - 1));
-        const a = artifacts[idx];
+<!-- ============ 完成弹窗 ============ -->
+<div class="modal-mask" id="successModal">
+    <div class="modal-card">
+        <h3>归 途 已 启</h3>
+        <p id="modalText">你用十六块碎片，重新拼回这件漂泊海外的器物的模样。<br>愿山河无恙，愿游子早归。</p>
+        <button class="modal-close" id="modalClose">继 续 记 得</button>
+    </div>
+</div>
 
-        document.title = `${a.name} · 山河盼归 | 中华文物`;
-        document.getElementById('heroBg').style.backgroundImage = `url('${a.img}')`;
-        document.getElementById('heroTitle').textContent = a.name;
-        document.getElementById('heroEra').textContent = a.era;
-        document.getElementById('heroLoc').textContent = a.loc;
-        document.getElementById('navNum').textContent = a.num;
-        document.getElementById('lossText').innerHTML = a.loss;
-        document.getElementById('returnText').innerHTML = a.return;
+<footer class="footer">
+    山河虽远 · 终有归途 · 中华文物
+</footer>
 
-        const grid = document.getElementById('infoGrid');
-        grid.innerHTML = a.archive.map(([k, v]) =>
-            `<div class="info-grid-item">
-                <span class="info-grid-label">${k}</span>
-                <span class="info-grid-value">${v}</span>
-            </div>`).join('');
-
-        // 上下页
-        const prev = document.getElementById('pPrev');
-        const next = document.getElementById('pNext');
-        if (idx === 0) {
-            prev.classList.add('empty');
-        } else {
-            prev.href = `shanhe-detail.html?id=${idx}`;
-            prev.querySelector('.name').textContent = artifacts[idx - 1].name;
+<script>
+    // ========== 12 件遗失文物数据 ==========
+    const relics = {
+        'kui-long-ding': {
+            era: '西周',
+            name: '夔龙纹大铜鼎',
+            img: 'images/yishu-1.jpg',
+            bg: 'images/shanhe-bg-1.jpg',
+            now: '大英博物馆 · 第33号展厅',
+            timeline: [
+                { time: '西周早期', text: '约公元前11世纪，此鼎于中原铸造，纹饰取夔龙纹饰，重以礼器身份随葬于贵族墓。' },
+                { time: '清末 · 光绪年间', text: '原器出土于陕西，后辗转流入民间收藏家之手。' },
+                { time: '1900年前后', text: '由英国古董商 Eumorfopoulos 收购，自此漂洋过海。' },
+                { time: '1936年', text: '入藏大英博物馆，编号 1936,1112.1，陈列于第33号中国青铜器展厅。' },
+                { time: '今', text: '安静地伫立在伦敦的玻璃柜里，标签上写着“CHINESE BRONZE VESSEL”。' }
+            ],
+            story: [
+                '夔龙纹是西周礼器上最庄严的纹饰之一。一只脚、一只眼、身躯蜿蜒成龙形，是商周人对雷声与力量的想象。',
+                '这尊铜鼎的命运，是一百多年前无数中国文物命运的缩影——当战火与盗掘在中原肆虐，它们被装上轮船，贴上编号，送进了别人的博物馆。',
+                '今天我们看到的，只是它们漂泊的终点。而它们真正的家，还在黄河边、在洛水旁、在那片古老的土地深处。'
+            ],
+            modalText: '西周的礼器四海归心，<br>夔龙的纹饰仍在等一声回响。'
+        },
+        'nushi-zhentu': {
+            era: '东晋 · 顾恺之',
+            name: '女史箴图',
+            img: 'images/yishu-2.jpg',
+            bg: 'images/shanhe-bg-2.jpg',
+            now: '大英博物馆 · 第33号展厅',
+            timeline: [
+                { time: '东晋 · 公元400年前后', text: '顾恺之依西晋张华《女史箴》作此图，借古喻今，劝诫宫廷。' },
+                { time: '唐宋时期', text: '历代宫廷珍藏，宋徽宗时曾入宣和内府。' },
+                { time: '明清之际', text: '转入民间收藏，钤印累累，递藏有序。' },
+                { time: '1900年', text: '八国联军侵华时自清宫流出，为英军上尉 John D. FRY 所得。' },
+                { time: '1903年', text: '以 25 英镑售予大英博物馆，至今未被追索。' },
+                { time: '今', text: '存有 5 段残卷，为现存最早的中国绢本绘画之一。' }
+            ],
+            story: [
+                '顾恺之用笔如春蚕吐丝，画中女子衣袂飘飘、仪态端庄，是中国"以形写神"的鼻祖之作。',
+                '可叹这件千年杰作被以25英镑的价格卖到伦敦，而它身后的文化分量，又岂是英镑可以称量？',
+                '女史箴图所画的，是"修德"二字。而一个国家对自己的文物的态度，也是一面最深的镜子。'
+            ],
+            modalText: '千年绢本一卷残，<br>春蚕吐丝故人难。'
+        },
+        'qingtong-mojie': {
+            era: '唐代晚期',
+            name: '青铜鎏金摩羯纹镜',
+            img: 'images/yishu-3.jpg',
+            bg: 'images/shanhe-bg-3.jpg',
+            now: '大英博物馆 · 东方馆',
+            timeline: [
+                { time: '唐代晚期 · 9世纪', text: '铸于南方扬州地区，镜背浮雕摩羯纹与瑞兽，工艺极精。' },
+                { time: '明清之际', text: '入藏清宫，曾入乾隆《西清古鉴》著录。' },
+                { time: '1860年', text: '英法联军火烧圆明园后，掠往欧洲。' },
+                { time: '1870年代', text: '由英国藏家 W.T. Hartshorn 收藏。' },
+                { time: '今', text: '陈列于大英博物馆东方馆，列为"镇馆之宝"候选。' }
+            ],
+            story: [
+                '摩羯本是印度神话中的鱼形神兽，自汉代随佛教东来，与中国龙鱼结合，成为唐镜上最祥瑞的图案。',
+                '这面铜镜的镜面早已照不见故人，但镜背的纹样还清晰如昨——那是大唐最自信、最包容的一个时代的回声。',
+                '它在异乡的展厅里静默地讲述着：何为盛世气象，何为文化交融。'
+            ],
+            modalText: '镜中无影照乡音，<br>摩羯衔珠待归云。'
+        },
+        'zhaoling-saluzi': {
+            era: '唐贞观',
+            name: '昭陵六骏 · 飒露紫',
+            img: 'images/yishu-4.jpg',
+            bg: 'images/shanhe-bg-4.jpg',
+            now: '宾夕法尼亚大学博物馆',
+            timeline: [
+                { time: '唐贞观十年 · 公元636年', text: '唐太宗李世民诏令画家阎立本画稿，雕刻家依其战死沙场的六匹爱马形象，刻于昭陵北阙。' },
+                { time: '唐宋元明清', text: '陪伴太宗一千三百年于九嵕山下。' },
+                { time: '1914年', text: '由古董商 L. C. Waltham 与 G. E. Bohun 勾结当地人，将"飒露紫"与"拳毛䯄"盗运出中国。' },
+                { time: '1918年', text: '辗转售予美国宾夕法尼亚大学博物馆。' },
+                { time: '今', text: '两骏石刻藏于宾大，两骏藏于西安碑林——而国，却已分离近百年。' }
+            ],
+            story: [
+                '"飒露紫"是李世民平定洛阳时身中九箭的战马。浮雕中，将军丘行恭正俯身为它拔出箭头，那一人一马的深情，是大唐最动人的一瞬。',
+                '讽刺的是，为了盗运这两块石刻，盗凿者竟将其打碎成数块，再粘合运出。直到今天，浮雕上仍有当年的裂痕。',
+                '这两件石刻，是"国耻"二字最具体的注脚。'
+            ],
+            modalText: '昭陵六骏今分二，<br>九嵕山前盼归鞍。'
+        },
+        'tongdu-jin': {
+            era: '清代 · 乾隆',
+            name: '铜镀金累丝坛城',
+            img: 'images/yishu-5.jpg',
+            bg: 'images/shanhe-bg-5.jpg',
+            now: '法国 · 枫丹白露宫中国馆',
+            timeline: [
+                { time: '清乾隆二十二年 · 1757年', text: '清宫造办处奉敕铸造，藏于紫禁城佛堂。' },
+                { time: '1860年', text: '英法联军劫掠圆明园，此件法军将其掠走。' },
+                { time: '1861年', text: '由拿破仑第三之妻欧仁妮皇后接受，入藏枫丹白露宫。' },
+                { time: '今', text: '陈列于枫丹白露宫中国馆，为"镇馆之宝"之一。' }
+            ],
+            story: [
+                '累丝是清代宫廷最耗工时的工艺之一。一件坛城，需工匠将金丝抽至发丝粗细，再编出佛国的山川殿宇。',
+                '1860年，一把大火将圆明园化为灰烬，无数累丝精品自此消失于火光中。这一件幸存于异乡，剩下同伴，皆成焦土。',
+                '它的存在，本身就是对那个年代暴行的一份最完整的证词。'
+            ],
+            modalText: '累丝成山佛国在，<br>圆明火后问谁归？'
+        },
+        'sanguo-fengguan': {
+            era: '明代',
+            name: '三果凤冠',
+            img: 'images/yishu-6.jpg',
+            bg: 'images/shanhe-bg-6.jpg',
+            now: '美国大都会艺术博物馆',
+            timeline: [
+                { time: '明代 · 16世纪', text: '为明神宗孝靖皇后所制，凤冠上嵌三枚宝石，故名"三果凤冠"。' },
+                { time: '明清之际', text: '随清宫旧藏入清廷，登记于清宫物品点查报告。' },
+                { time: '20世纪初', text: '清室衰微，宫藏流散。' },
+                { time: '今', text: '存于美国大都会艺术博物馆中国馆，列入核心藏品。' }
+            ],
+            story: [
+                '凤冠是皇后在大典时戴的礼冠。一只凤，九龙九凤，是最严整的礼制符号。',
+                '冠上"三果"是佛家吉祥纹——石榴、桃子、佛手，寓意多子多寿。',
+                '当皇后被冠压着额顶的那一刻，她便不再是某个女人，而是礼制与王朝的化身。'
+            ],
+            modalText: '凤冠九凤三果，<br>皇冠明月照归程。'
+        },
+        'yuan-qinghua': {
+            era: '元代',
+            name: '元青花云龙纹罐',
+            img: 'images/yishu-7.jpg',
+            bg: 'images/shanhe-bg-1.jpg',
+            now: '土耳其 · 托普卡比宫',
+            timeline: [
+                { time: '元代至正年间 · 14世纪中', text: '景德镇窑烧制，进口"苏麻离青"料绘制云龙。' },
+                { time: '明清之际', text: '一度隐于民间收藏。' },
+                { time: '20世纪上半叶', text: '被古董商带至欧洲，辗转入土耳其收藏家手中。' },
+                { time: '今', text: '陈列于伊斯坦布尔托普卡比宫，为该馆元青花藏品之代表。' }
+            ],
+            story: [
+                '元青花是中西文化交融的结晶——青花料来自波斯，胎土来自景德镇，纹饰属于中国。',
+                '罐上一条龙翻腾在云中，那是 14 世纪中国最辽阔版图下的气象，也是丝绸之路最繁荣的见证。',
+                '今天它安放在伊斯坦布尔，那是丝绸之路的西端。它跨越了 700 年，又一次沿着古道，在异乡展出。'
+            ],
+            modalText: '青花一罐七百年，<br>云中龙腾丝路连。'
+        },
+        'yuanmingyuan': {
+            era: '清 · 乾隆',
+            name: '圆明园四十景图',
+            img: 'images/yishu-8.jpg',
+            bg: 'images/shanhe-bg-2.jpg',
+            now: '法国 · 巴黎国家图书馆',
+            timeline: [
+                { time: '清乾隆九年 · 1744年', text: '唐岱、沈源等宫廷画家依实景绘制四十景图，由乾隆亲题诗。' },
+                { time: '1860年', text: '英法联军入园，掠走铜版画印版及画作。' },
+                { time: '1862年', text: '由法国外交官 M. Rondot 携回巴黎。' },
+                { time: '今', text: '藏于法国国家图书馆，是圆明园视觉档案的核心。' }
+            ],
+            story: [
+                '圆明园是"万园之园"，集合了江南名园与西洋楼。乾隆令宫廷画师将四十处最美景致绘成册页，每一处都附御诗。',
+                '可惜 1860 年那一把火之后，画中的亭台楼阁尽成焦土——我们今天所见的圆明园，恰恰是这本图册里的"原貌"。',
+                '而它的故乡，仅剩断壁残垣。'
+            ],
+            modalText: '四十景图写万园，<br>万园火后一卷残。'
+        },
+        'yongle-dadian': {
+            era: '明 · 永乐',
+            name: '永乐大典 · 卷册',
+            img: 'images/yishu-9.jpg',
+            bg: 'images/shanhe-bg-3.jpg',
+            now: '英美俄等八国图书馆',
+            timeline: [
+                { time: '明永乐五年 · 1407年', text: '解缙、姚广孝奉敕编修，动员 3000 余文人，3 年成书 11095 册。' },
+                { time: '明清之际', text: '历经战乱，副本大量散失。' },
+                { time: '1860年与1900年', text: '英法联军与八国联军两度劫掠，副本再遭损失。' },
+                { time: '20世纪', text: '陆续被各国图书馆与私人藏家收藏。' },
+                { time: '今', text: '存世约 800 余册，分藏于英、美、俄、德、日等八国。' }
+            ],
+            story: [
+                '《永乐大典》是世界上最早、最大的一部百科全书，全书按洪武正韵编排，辑录先秦至明初典籍七八千种。',
+                '可惜 1860 年与 1900 年两次浩劫，副本大半流散。我们现在所见的一册一叶，都可能永远不能成完璧。',
+                '它是世界记忆的一部分，却被分割在八个国家。'
+            ],
+            modalText: '永乐一典藏万卷，<br>八国分藏盼合篇。'
+        },
+        'luoshen-futu': {
+            era: '东晋 · 顾恺之',
+            name: '洛神赋图 · 摹本',
+            img: 'images/yishu-10.jpg',
+            bg: 'images/shanhe-bg-4.jpg',
+            now: '大英博物馆 · 第33号展厅',
+            timeline: [
+                { time: '东晋 · 公元400年前后', text: '顾恺之依曹植《洛神赋》绘成长卷，开创"诗画一体"之先河。' },
+                { time: '唐宋元明清', text: '历代摹本众多，宋摹本为现存最早之本。' },
+                { time: '明清之际', text: '清宫珍藏，钤有乾隆、嘉庆、宣统御览印。' },
+                { time: '1860年', text: '英法联军劫掠圆明园时流出。' },
+                { time: '今', text: '藏于大英博物馆，列为"镇馆之宝"。' }
+            ],
+            story: [
+                '"翩若惊鸿，婉若游龙"——这是曹植对洛神最美的形容，也是顾恺之笔下最美的画面。',
+                '画中曹植立于岸，洛神御风而来又远去，那一段人神之恋，被画成中国绘画史上最缠绵的告别。',
+                '如今它被装在伦敦恒温恒湿的玻璃柜里，每一位中国人看到它，都难免要轻声问一句：何时归？'
+            ],
+            modalText: '洛神一去不复返，<br>惊鸿游龙待归时。'
+        },
+        'shang-shenxiang': {
+            era: '商代',
+            name: '虎鎏金铜神像',
+            img: 'images/yishu-11.jpg',
+            bg: 'images/shanhe-bg-5.jpg',
+            now: '日本 · 泉屋博古馆',
+            timeline: [
+                { time: '商代晚期 · 公元前13世纪', text: '铸于安阳殷墟，纹饰虎与人面神徽结合，为商代祭祀重器。' },
+                { time: '20世纪初', text: '出土于河南安阳殷墟遗址。' },
+                { time: '1920年代', text: '流入日本，由住友家族收藏。' },
+                { time: '今', text: '藏于日本大阪泉屋博古馆，列为"重要文化财"。' }
+            ],
+            story: [
+                '商代人相信鬼神。这件器物上的虎面神徽，是商人沟通天地的中介。',
+                '三千多年过去，那只虎眼仍在瞪着——瞪着它听不懂的异国文字，瞪着它再也回不去的土地。',
+                '中华文明的早期密码，至今有一半留在海外。'
+            ],
+            modalText: '虎目圆睁三千年，<br>神徽不解异国言。'
+        },
+        'dunhuang-xiejing': {
+            era: '唐代',
+            name: '敦煌藏经洞写经',
+            img: 'images/yishu-12.jpg',
+            bg: 'images/shanhe-bg-6.jpg',
+            now: '英 · 大英图书馆',
+            timeline: [
+                { time: '唐 · 公元8至10世纪', text: '僧人于敦煌莫高窟藏经洞中抄写佛经，年代跨越数百年。' },
+                { time: '1900年', text: '道士王圆箓无意中打开藏经洞，发现近 5 万件经卷与文书。' },
+                { time: '1907-1914年', text: '英国人斯坦因、法国人伯希和相继骗取大批经卷，运往伦敦与巴黎。' },
+                { time: '今', text: '大英图书馆藏经卷超过 16000 件，是馆藏敦煌文物的主要部分。' }
+            ],
+            story: [
+                '敦煌藏经洞是中国近代最痛心的文化损失之一。5 万件经卷与文书，被斯坦因用 40 块马蹄银、伯希和用 500 两白银，骗运出境。',
+                '那一洞的经卷，写的是大唐盛世的佛法与丝绸之路上的人间烟火。',
+                '我们今天仍能看到它们——只是隔着万水千山，隔着"不列颠图书馆 OR.8210"的陌生编号。'
+            ],
+            modalText: '藏经一洞五万卷，<br>斯坦因骗马蹄银。'
         }
-        if (idx === artifacts.length - 1) {
-            next.classList.add('empty');
-        } else {
-            next.href = `shanhe-detail.html?id=${idx + 2}`;
-            next.querySelector('.name').textContent = artifacts[idx + 1].name;
-        }
+    };
 
-        // ============ 拼图游戏 ============
-        const SIZE = 4;
-        let pieces = [];
-        let cells = [];
-        let placedCount = 0;
-        let dragPiece = null;
-        let offsetX = 0, offsetY = 0;
-        let startX = 0, startY = 0;
+    // ========== 根据 URL 参数选择文物 ==========
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id') || 'kui-long-ding';
+    const r = relics[id] || relics['kui-long-ding'];
 
-        const board = document.getElementById('puzzleBoard');
-        const tray = document.getElementById('puzzleTray');
-        const pDone = document.getElementById('pDone');
-        const pReset = document.getElementById('pReset');
-        const pShuffle = document.getElementById('pShuffle');
-        const pPreview = document.getElementById('pPreview');
+    // 填充数据
+    document.getElementById('relicEra').textContent = r.era;
+    document.getElementById('relicName').textContent = r.name;
+    document.getElementById('relicNow').innerHTML = '<b>现藏：</b>' + r.now;
+    document.getElementById('relicImg').src = r.img;
+    document.getElementById('relicImg').alt = r.name;
+    document.getElementById('heroBg').style.backgroundImage = `url('${r.bg}')`;
+    document.getElementById('modalText').innerHTML = r.modalText;
+    document.title = r.name + ' · 山河盼归';
 
-        function buildBoard() {
-            board.innerHTML = '';
-            cells = [];
-            for (let i = 0; i < SIZE * SIZE; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'puzzle-cell';
-                cell.dataset.idx = i;
-                const hint = document.createElement('span');
-                hint.className = 'hint-num';
-                const r = Math.floor(i / SIZE) + 1;
-                const c = (i % SIZE) + 1;
-                hint.textContent = `${r},${c}`;
-                cell.appendChild(hint);
-                cell.addEventListener('dragover', e => e.preventDefault());
-                cell.addEventListener('drop', e => {
-                    e.preventDefault();
-                    if (dragPiece) onDrop(cell);
-                });
-                board.appendChild(cell);
-                cells.push(cell);
-            }
-        }
+    // 渲染时间轴
+    const tlList = document.getElementById('timelineList');
+    tlList.innerHTML = r.timeline.map(t => `
+        <li class="tl-item">
+            <div class="tl-time">${t.time}</div>
+            <div class="tl-text">${t.text}</div>
+        </li>
+    `).join('');
 
-        function buildPieces() {
-            pieces.forEach(p => p.el.remove());
-            pieces = [];
-            placedCount = 0;
-            tray.innerHTML = '';
-            for (let i = 0; i < SIZE * SIZE; i++) {
-                const r = Math.floor(i / SIZE);
-                const c = i % SIZE;
-                const el = document.createElement('div');
-                el.className = 'puzzle-piece';
-                el.style.backgroundImage = `url('${a.img}')`;
-                el.style.backgroundPosition = `${c * 100 / (SIZE - 1)}% ${r * 100 / (SIZE - 1)}%`;
-                el.dataset.idx = i;
-                el.draggable = true;
-                el.addEventListener('dragstart', onDragStart);
-                el.addEventListener('dragend', onDragEnd);
-                // touch
-                el.addEventListener('touchstart', onTouchStart, { passive: false });
-                el.addEventListener('touchmove', onTouchMove, { passive: false });
-                el.addEventListener('touchend', onTouchEnd);
-                tray.appendChild(el);
-                pieces.push({ idx: i, el, placed: false });
-            }
-            pDone.textContent = '0';
-        }
+    // 渲染故事
+    const story = document.getElementById('storyText');
+    story.innerHTML = r.story.map(p => `<p>${p}</p>`).join('');
 
-        function onDragStart(e) {
-            const p = pieces.find(x => x.el === e.target);
-            if (!p || p.placed) { e.preventDefault(); return; }
-            dragPiece = p;
-            p.el.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', String(p.idx));
-        }
-        function onDragEnd() {
-            if (dragPiece) dragPiece.el.classList.remove('dragging');
-            dragPiece = null;
-        }
-        function onDrop(cell) {
-            if (!dragPiece) return;
-            const target = parseInt(cell.dataset.idx);
-            if (target === dragPiece.idx) {
-                placePiece(dragPiece, cell);
-            } else {
-                // 弹回
-                dragPiece.el.style.transform = 'scale(1)';
-            }
-        }
+    // ========== 拼图游戏 ==========
+    const SIZE = 4;
+    const board = document.getElementById('puzzleBoard');
+    const tray = document.getElementById('puzzleTray');
+    const progressNum = document.getElementById('progressNum');
+    const statusText = document.getElementById('statusText');
+    const modal = document.getElementById('successModal');
+    let placedCount = 0;
+    let pieces = []; // { idx, placed: false, el }
 
-        // 触摸支持
-        let touchPiece = null;
-        function onTouchStart(e) {
-            const p = pieces.find(x => x.el === e.target);
-            if (!p || p.placed) return;
-            touchPiece = p;
-            const t = e.touches[0];
-            const rect = p.el.getBoundingClientRect();
-            offsetX = t.clientX - rect.left;
-            offsetY = t.clientY - rect.top;
-            startX = rect.left; startY = rect.top;
-            p.el.classList.add('dragging');
-            document.body.style.overflow = 'hidden';
+    function buildBoard() {
+        board.innerHTML = '';
+        for (let i = 0; i < SIZE * SIZE; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'puzzle-cell';
+            cell.dataset.idx = i;
+            const row = Math.floor(i / SIZE);
+            const col = i % SIZE;
+            cell.style.backgroundImage = `url('${r.img}')`;
+            cell.style.backgroundPosition = `${(col / (SIZE - 1)) * 100}% ${(row / (SIZE - 1)) * 100}%`;
+            cell.addEventListener('dragover', e => e.preventDefault());
+            cell.addEventListener('drop', e => {
+                e.preventDefault();
+                const id = parseInt(e.dataTransfer.getData('text/plain'));
+                tryPlace(id, i, cell);
+            });
+            cell.addEventListener('touchmove', e => {
+                e.preventDefault();
+            }, { passive: false });
+            board.appendChild(cell);
         }
-        function onTouchMove(e) {
-            if (!touchPiece) return;
-            e.preventDefault();
-            const t = e.touches[0];
-            touchPiece.el.style.position = 'fixed';
-            touchPiece.el.style.left = (t.clientX - offsetX) + 'px';
-            touchPiece.el.style.top = (t.clientY - offsetY) + 'px';
-            touchPiece.el.style.width = (board.offsetWidth / SIZE - 8) + 'px';
-            touchPiece.el.style.height = (board.offsetWidth / SIZE - 8) + 'px';
+    }
+
+    function buildPieces() {
+        tray.innerHTML = '';
+        pieces = [];
+        // 洗牌
+        const arr = Array.from({ length: SIZE * SIZE }, (_, i) => i);
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
         }
-        function onTouchEnd(e) {
-            if (!touchPiece) return;
-            const t = e.changedTouches[0];
-            // 找到落点
-            let target = null;
-            for (const cell of cells) {
-                const rect = cell.getBoundingClientRect();
-                if (t.clientX >= rect.left && t.clientX <= rect.right &&
-                    t.clientY >= rect.top && t.clientY <= rect.bottom) {
-                    target = cell; break;
+        for (const idx of arr) {
+            const p = document.createElement('div');
+            p.className = 'puzzle-piece';
+            p.draggable = true;
+            const row = Math.floor(idx / SIZE);
+            const col = idx % SIZE;
+            p.style.backgroundImage = `url('${r.img}')`;
+            p.style.backgroundPosition = `${(col / (SIZE - 1)) * 100}% ${(row / (SIZE - 1)) * 100}%`;
+            p.dataset.idx = idx;
+            p.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', idx);
+                p.classList.add('dragging');
+            });
+            p.addEventListener('dragend', () => p.classList.remove('dragging'));
+            // 触摸支持
+            let touchCell = null;
+            p.addEventListener('touchstart', e => {
+                e.preventDefault();
+                p.classList.add('dragging');
+            }, { passive: false });
+            p.addEventListener('touchmove', e => {
+                e.preventDefault();
+                const t = e.touches[0];
+                const el = document.elementFromPoint(t.clientX, t.clientY);
+                if (el && el.classList.contains('puzzle-cell')) {
+                    if (touchCell !== el) {
+                        if (touchCell) touchCell.style.boxShadow = '';
+                        touchCell = el;
+                        touchCell.style.boxShadow = 'inset 0 0 0 2px var(--gold)';
+                    }
+                } else if (touchCell) {
+                    touchCell.style.boxShadow = '';
+                    touchCell = null;
                 }
-            }
-            touchPiece.el.classList.remove('dragging');
-            document.body.style.overflow = '';
-            if (target && parseInt(target.dataset.idx) === touchPiece.idx) {
-                placePiece(touchPiece, target);
-            } else {
-                // 重置
-                touchPiece.el.style.position = '';
-                touchPiece.el.style.left = '';
-                touchPiece.el.style.top = '';
-                touchPiece.el.style.width = '';
-                touchPiece.el.style.height = '';
-            }
-            touchPiece = null;
-        }
-
-        function placePiece(p, cell) {
-            if (cell.querySelector('.puzzle-piece')) return;
-            p.placed = true;
-            p.el.classList.add('placed');
-            p.el.classList.remove('dragging');
-            p.el.style.position = 'absolute';
-            p.el.style.left = '0';
-            p.el.style.top = '0';
-            p.el.style.width = '100%';
-            p.el.style.height = '100%';
-            p.el.draggable = false;
-            cell.appendChild(p.el);
-            cell.classList.add('occupied');
-            placedCount++;
-            pDone.textContent = placedCount;
-            if (placedCount === SIZE * SIZE) {
-                setTimeout(showSuccess, 600);
-            }
-        }
-
-        function showSuccess() {
-            const s = document.getElementById('puzzleSuccess');
-            document.getElementById('successText').textContent =
-                `《${a.name}》归位完成 · 每一件游子都值得被记得`;
-            s.classList.add('active');
-        }
-
-        document.getElementById('successClose').addEventListener('click', () => {
-            document.getElementById('puzzleSuccess').classList.remove('active');
-            shufflePieces();
-        });
-
-        function shufflePieces() {
-            // 已放置的移除回托盘
-            pieces.forEach(p => {
-                if (p.placed) {
-                    p.el.style.position = '';
-                    p.el.style.left = '';
-                    p.el.style.top = '';
-                    p.el.style.width = '';
-                    p.el.style.height = '';
-                    p.el.draggable = true;
-                    p.placed = false;
+            }, { passive: false });
+            p.addEventListener('touchend', e => {
+                e.preventDefault();
+                p.classList.remove('dragging');
+                if (touchCell) {
+                    tryPlace(idx, parseInt(touchCell.dataset.idx), touchCell);
+                    touchCell.style.boxShadow = '';
+                    touchCell = null;
                 }
-            });
-            cells.forEach(c => c.classList.remove('occupied'));
-            cells.forEach(c => {
-                const p = c.querySelector('.puzzle-piece');
-                if (p) p.remove();
-            });
-            tray.innerHTML = '';
-            // 重新随机顺序加入托盘
-            const shuffled = [...pieces].sort(() => Math.random() - 0.5);
-            shuffled.forEach(p => {
-                p.el.classList.remove('placed');
-                tray.appendChild(p.el);
-            });
-            placedCount = 0;
-            pDone.textContent = '0';
+            }, { passive: false });
+            tray.appendChild(p);
+            pieces.push({ idx, placed: false, el: p });
         }
+    }
 
-        pReset.addEventListener('click', buildPieces);
-        pShuffle.addEventListener('click', shufflePieces);
-        let previewing = false;
-        pPreview.addEventListener('click', () => {
-            if (previewing) {
-                buildPieces();
-                pPreview.textContent = '预 览';
-                previewing = false;
-            } else {
-                tray.innerHTML = '';
-                cells.forEach(c => c.classList.remove('occupied'));
-                cells.forEach(c => {
-                    const p = c.querySelector('.puzzle-piece');
-                    if (p) p.remove();
-                });
-                pieces.forEach(p => {
-                    p.el.classList.add('placed');
-                    p.el.style.position = 'absolute';
-                    p.el.style.left = '0';
-                    p.el.style.top = '0';
-                    p.el.style.width = '100%';
-                    p.el.style.height = '100%';
-                    p.el.draggable = false;
-                    cells[p.idx].appendChild(p.el);
-                    p.placed = true;
-                });
-                placedCount = SIZE * SIZE;
-                pDone.textContent = placedCount;
-                pPreview.textContent = '重 新 来 过';
-                previewing = true;
+    function tryPlace(pieceIdx, cellIdx, cell) {
+        if (pieceIdx === cellIdx) {
+            // 正确
+            const piece = pieces.find(p => p.idx === pieceIdx);
+            if (piece && !piece.placed) {
+                const row = Math.floor(pieceIdx / SIZE);
+                const col = pieceIdx % SIZE;
+                cell.classList.add('placed', 'correct-flash');
+                cell.style.backgroundImage = `url('${r.img}')`;
+                cell.style.backgroundPosition = `${(col / (SIZE - 1)) * 100}% ${(row / (SIZE - 1)) * 100}%`;
+                cell.innerHTML = '';
+                piece.placed = true;
+                piece.el.style.opacity = '0.2';
+                piece.el.style.pointerEvents = 'none';
+                placedCount++;
+                progressNum.textContent = placedCount;
+                if (placedCount === SIZE * SIZE) {
+                    statusText.textContent = '拼图完成 ✨';
+                    setTimeout(() => modal.classList.add('show'), 600);
+                } else {
+                    statusText.textContent = '继续 · 越来越近';
+                }
+                setTimeout(() => cell.classList.remove('correct-flash'), 400);
             }
-        });
+        } else {
+            // 错误 - 抖动提示
+            cell.animate([
+                { transform: 'translateX(0)' },
+                { transform: 'translateX(-6px)' },
+                { transform: 'translateX(6px)' },
+                { transform: 'translateX(0)' }
+            ], { duration: 200 });
+        }
+    }
 
-        // 启动
+    // 初始化
+    buildBoard();
+    buildPieces();
+    placedCount = 0;
+    progressNum.textContent = '0';
+    statusText.textContent = '拖动拼图块到对应位置';
+
+    // 按钮
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        placedCount = 0;
+        progressNum.textContent = '0';
+        statusText.textContent = '拖动拼图块到对应位置';
         buildBoard();
         buildPieces();
-    </script>
+    });
+    document.getElementById('showBtn').addEventListener('click', () => {
+        const img = document.getElementById('relicImg').cloneNode();
+        img.style.cssText = 'width:90vw;max-width:600px;height:auto;border:1px solid var(--gold);';
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:300;cursor:pointer;';
+        wrap.appendChild(img);
+        wrap.addEventListener('click', () => wrap.remove());
+        document.body.appendChild(wrap);
+    });
+    document.getElementById('modalClose').addEventListener('click', () => modal.classList.remove('show'));
+    modal.addEventListener('click', e => {
+        if (e.target === modal) modal.classList.remove('show');
+    });
+</script>
 </body>
 </html>
