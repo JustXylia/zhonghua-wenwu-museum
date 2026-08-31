@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文明长卷 · 器石史三韵 | 中华文物</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #c9a962;
+            --color-primary-dark: #8b7355;
+            --color-bg-dark: #0a0a0f;
+            --color-bg-medium: #12121a;
+            --color-bg-light: #1a1a25;
+            --glass-bg: rgba(20, 20, 30, 0.7);
+            --glass-border: rgba(201, 169, 98, 0.15);
+            --color-text: #f5f0e8;
+            --color-text-muted: #8a8578;
+            --font-display: 'Ma Shan Zheng', cursive;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-sans);
+            background: var(--color-bg-dark);
+            color: var(--color-text);
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* 导航栏 */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 1.2rem 3rem;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(10,10,15,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.6rem; color: var(--color-primary);
+            text-decoration: none; letter-spacing: 0.1em;
+        }
+        .nav-links { display: flex; list-style: none; gap: 1.8rem; }
+        .nav-links a {
+            color: var(--color-text-muted); text-decoration: none;
+            font-size: 0.9rem; transition: color 0.3s ease; position: relative;
+            padding: 0.4rem 0;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 0; height: 1px; background: var(--color-primary);
+            transition: width 0.3s ease;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--color-primary); }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+        /* Hero 三个板块横向并排展示 */
+        .hero-unified {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #0a0a0f;
+            padding: 100px 2rem 60px;
+        }
+        #hero-bg-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+        }
+        .hero-unified-content {
+            position: relative; z-index: 5;
+            width: 100%; max-width: 1400px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .pillar {
+            position: relative;
+            aspect-ratio: 4/3;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid var(--glass-border);
+        }
+        .pillar::before {
+            content: ''; position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+            transition: transform 0.8s ease;
+            z-index: 1;
+        }
+        .pillar::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(10,10,15,0.1) 0%, rgba(10,10,15,0.85) 100%);
+            z-index: 2;
+        }
+        .pillar-1::before { background-image: url('images/hero-vessels.jpg'); }
+        .pillar-2::before { background-image: url('images/hero-stone.jpg'); }
+        .pillar-3::before { background-image: url('images/hero-history.jpg'); }
+        .pillar:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.5); border-color: var(--color-primary); }
+        .pillar:hover::before { transform: scale(1.08); }
+        .pillar-text {
+            position: absolute; bottom: 0; left: 0; right: 0; z-index: 3;
+            padding: 2rem 1.5rem; text-align: center;
+        }
+        .pillar-roman {
+            font-family: var(--font-serif);
+            font-size: 0.85rem; color: var(--color-primary);
+            letter-spacing: 0.5em; margin-bottom: 0.5rem;
+            opacity: 0.85;
+        }
+        .pillar-title {
+            font-family: var(--font-display);
+            font-size: 3.2rem; color: #f5f0e8;
+            line-height: 1.2; letter-spacing: 0.1em;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+        .pillar-tagline {
+            font-family: var(--font-serif);
+            font-size: 0.95rem; color: rgba(245,240,232,0.8);
+            margin-top: 0.8rem; letter-spacing: 0.2em;
+        }
+        .hero-intro {
+            position: absolute; top: 7rem; left: 0; right: 0; z-index: 5;
+            text-align: center; padding: 0 2rem;
+        }
+        .hero-intro .badge {
+            display: inline-block;
+            padding: 0.4rem 1.5rem;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary); font-size: 0.8rem;
+            letter-spacing: 0.3em; margin-bottom: 1rem;
+            background: rgba(10,10,15,0.6);
+        }
+        .hero-intro h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4.5vw, 3.4rem);
+            color: var(--color-text); letter-spacing: 0.15em;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.8);
+        }
+
+        /* 通用Section */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 2.4rem; color: var(--color-primary);
+            text-align: center; margin-bottom: 0.8rem;
+            letter-spacing: 0.15em;
+        }
+        .section-subtitle {
+            font-family: var(--font-serif);
+            font-size: 1rem; color: var(--color-text-muted);
+            text-align: center; margin-bottom: 3.5rem;
+            letter-spacing: 0.2em;
+        }
+        .divider {
+            display: flex; align-items: center; justify-content: center;
+            gap: 1rem; padding: 1rem 0; max-width: 600px; margin: 0 auto;
+        }
+        .divider::before, .divider::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+        }
+        .divider span {
+            display: inline-block; width: 8px; height: 8px;
+            background: var(--color-primary);
+            transform: rotate(45deg); opacity: 0.7;
+        }
+
+        /* 三大主题分区 */
+        .theme-block {
+            padding: 4rem 0;
+        }
+        .theme-block:nth-child(even) {
+            background: var(--color-bg-medium);
+        }
+        .theme-header {
+            display: flex; align-items: center; gap: 2rem;
+            margin-bottom: 3rem; padding: 0 1rem;
+        }
+        .theme-num {
+            font-family: var(--font-display);
+            font-size: 5rem; color: var(--color-primary);
+            opacity: 0.5; line-height: 1;
+        }
+        .theme-info h2 {
+            font-family: var(--font-display);
+            font-size: 2.6rem; color: var(--color-primary);
+            letter-spacing: 0.15em; margin-bottom: 0.5rem;
+        }
+        .theme-info .pinyin {
+            font-family: var(--font-serif);
+            font-size: 0.9rem; color: var(--color-text-muted);
+            letter-spacing: 0.3em;
+        }
+        .theme-info p {
+            font-family: var(--font-serif);
+            font-size: 1.05rem; color: var(--color-text-muted);
+            line-height: 2; margin-top: 1rem; max-width: 800px;
+        }
+
+        /* 详情卡片网格 */
+        .detail-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 2.5rem; padding: 0 1rem;
+        }
+        .detail-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px; overflow: hidden;
+            transition: all 0.4s ease; position: relative;
+        }
+        .detail-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            border-color: rgba(201,169,98,0.3);
+        }
+        .detail-card-image {
+            width: 100%; height: 280px;
+            overflow: hidden; position: relative;
+        }
+        .detail-card-image img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.6s ease;
+            background: #0d0d14;
+        }
+        .detail-card:hover .detail-card-image img { transform: scale(1.08); }
+        .detail-card-image::after {
+            content: ''; position: absolute;
+            bottom: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(to top, rgba(10,10,15,0.9), transparent);
+        }
+        .detail-card-tag {
+            position: absolute; top: 1.2rem; left: 1.2rem;
+            padding: 0.3rem 0.8rem;
+            background: rgba(201,169,98,0.2);
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary); font-size: 0.75rem;
+            border-radius: 4px; z-index: 2;
+            backdrop-filter: blur(10px);
+        }
+        .detail-card-content { padding: 1.8rem; }
+        .detail-card-content h3 {
+            font-family: var(--font-display);
+            font-size: 1.6rem; color: var(--color-primary);
+            margin-bottom: 0.8rem;
+        }
+        .detail-card-content .era {
+            display: inline-block;
+            padding: 0.2rem 0.7rem;
+            background: rgba(201,169,98,0.15);
+            color: var(--color-primary); font-size: 0.75rem;
+            border-radius: 4px; margin-bottom: 0.8rem;
+        }
+        .detail-card-content p {
+            color: var(--color-text-muted);
+            font-size: 0.92rem; line-height: 1.85;
+            margin-bottom: 0.8rem;
+        }
+        .features {
+            display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.2rem;
+        }
+        .features span {
+            padding: 0.25rem 0.7rem;
+            background: rgba(201,169,98,0.1);
+            border: 1px solid rgba(201,169,98,0.2);
+            color: var(--color-text-muted);
+            font-size: 0.75rem; border-radius: 20px;
+        }
+
+        /* 返回按钮 */
+        .back-section { padding: 4rem 2rem; text-align: center; }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary); font-size: 1rem;
+            text-decoration: none; border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: var(--color-primary);
+            color: var(--color-bg-dark);
+        }
+        .footer {
+            padding: 2.5rem 2rem; text-align: center;
+            border-top: 1px solid var(--glass-border);
+            background: var(--color-bg-dark);
+        }
+        .footer p {
+            color: var(--color-text-muted);
+            font-size: 0.9rem; letter-spacing: 0.2em;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-unified-content { gap: 1rem; }
+            .pillar-title { font-size: 2.4rem; }
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav { padding: 0.8rem 1.5rem; }
+            .nav-links { display: none; }
+            .hero-unified { padding: 80px 1rem 40px; }
+            .hero-unified-content { grid-template-columns: 1fr; gap: 1rem; }
+            .pillar { aspect-ratio: 16/9; }
+            .pillar-title { font-size: 2rem; }
+            .theme-header { flex-direction: column; text-align: center; gap: 1rem; }
+            .theme-num { font-size: 3.5rem; }
+            .theme-info h2 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">中华文物</a>
+        <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="heritage-unified.html" class="active">文明长卷</a></li>
+            <li><a href="restoration-cover.html">文物修复</a></li>
+            <li><a href="promotion-cover.html">推广</a></li>
+            <li><a href="shanhe-pangui.html">山河盼归</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero 三大板块横向并排 -->
+    <section class="hero-unified">
+        <canvas id="hero-bg-canvas"></canvas>
+        <div class="hero-intro">
+            <span class="badge">壹 · 贰 · 叁</span>
+            <h1>文明长卷 · 器石史三韵</h1>
+        </div>
+        <div class="hero-unified-content">
+            <a href="#section-vessels" class="pillar pillar-1">
+                <div class="pillar-text">
+                    <div class="pillar-roman">壹</div>
+                    <div class="pillar-title">器之灵</div>
+                    <div class="pillar-tagline">青铜礼器 · 玉石珍品</div>
+                </div>
+            </a>
+            <a href="#section-stone" class="pillar pillar-2">
+                <div class="pillar-text">
+                    <div class="pillar-roman">贰</div>
+                    <div class="pillar-title">石之韵</div>
+                    <div class="pillar-tagline">大足石刻 · 万佛千窟</div>
+                </div>
+            </a>
+            <a href="#section-history" class="pillar pillar-3">
+                <div class="pillar-text">
+                    <div class="pillar-roman">叁</div>
+                    <div class="pillar-title">史之痕</div>
+                    <div class="pillar-tagline">魏晋书画 · 千年非遗</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- 壹 · 器之灵 -->
+    <div class="theme-block" id="section-vessels">
+        <div class="section">
+            <div class="theme-header">
+                <div class="theme-num">壹</div>
+                <div class="theme-info">
+                    <h2>器之灵</h2>
+                    <div class="pinyin">QÌ ZHĪ LÍNG · 青铜器与石器</div>
+                    <p>从远古石器到商周青铜，从战汉玉器到唐宋金银，每一件器物都承载着中华文明的辉煌记忆。器以载道，礼乐文明的精神血脉在此凝聚。</p>
+                </div>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">礼器之首</span>
+                        <img src="images/vessel-bronze-canvas.jpg" alt="青铜礼器" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">商周时期 · 公元前1600-256年</span>
+                        <h3>青铜礼器</h3>
+                        <p>青铜礼器是中国古代青铜器的核心类别，主要包括鼎、簋、爵、觚、尊等器型。鼎是权力的象征，天子用九鼎，诸侯用七鼎；商代青铜器以厚重的造型和神秘的饕餮纹著称，西周时期则更注重铭文记载。</p>
+                        <div class="features">
+                            <span>饕餮纹</span><span>云雷纹</span><span>铭文</span><span>失蜡法</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">礼天祭地</span>
+                        <img src="images/stone-tool.jpg" alt="玉石礼器" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">新石器时代-商周 · 公元前5000-256年</span>
+                        <h3>玉石礼器</h3>
+                        <p>"以玉作六器，以礼天地四方"——玉璧礼天，玉琮礼地，玉圭礼东方，玉璋礼南方，玉璜礼北方，玉琥礼西方。良渚文化的玉琮以其精美的神人兽面纹闻名，红山文化的玉龙是中华龙文化的重要源头。</p>
+                        <div class="features">
+                            <span>玉璧</span><span>玉琮</span><span>玉圭</span><span>玉龙</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">盛世华章</span>
+                        <img src="images/gold-silver.jpg" alt="金银器皿" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">唐代 · 公元618-907年</span>
+                        <h3>金银器皿</h3>
+                        <p>唐代是中国金银器工艺的黄金时代。1970年西安何家村出土的窖藏金银器，包括鎏金舞马衔杯纹银壶、鸳鸯莲瓣纹金碗等，展现了极高的工艺水平，是丝绸之路文化交流的珍贵见证。</p>
+                        <div class="features">
+                            <span>锤揲</span><span>錾刻</span><span>鎏金</span><span>镶嵌</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">瓷国瑰宝</span>
+                        <img src="images/porcelain.jpg" alt="陶瓷精品" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">唐宋元明清 · 公元7-20世纪</span>
+                        <h3>陶瓷精品</h3>
+                        <p>中国瓷器以其精湛工艺和独特美学享誉世界。宋代五大名窑（汝、官、哥、钧、定）各具特色，汝窑天青釉被誉为"雨过天青云破处"。明清时期斗彩、粉彩、珐琅彩将瓷器艺术推向巅峰。</p>
+                        <div class="features">
+                            <span>唐三彩</span><span>五大名窑</span><span>青花瓷</span><span>珐琅彩</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align:center; margin-top:2.5rem;">
+                <a href="vessels-detail.html" class="back-btn">查看完整器物发展史 →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"><span></span></div>
+
+    <!-- 贰 · 石之韵 -->
+    <div class="theme-block" id="section-stone">
+        <div class="section">
+            <div class="theme-header">
+                <div class="theme-num">贰</div>
+                <div class="theme-info">
+                    <h2>石之韵</h2>
+                    <div class="pinyin">SHÍ ZHĪ YÙN · 石刻艺术</div>
+                    <p>以刀为笔，以石为纸，从云冈到龙门，从敦煌到大足，石刻艺术将信仰与世俗镌刻于岩壁之间。重庆大足石刻以其世俗化、生活化的特点，融合了佛教教义与民间生活场景。</p>
+                </div>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">世界文化遗产</span>
+                        <img src="images/three-buddhas.jpg" alt="大足石刻" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">唐宋时期 · 公元7-13世纪</span>
+                        <h3>大足石刻</h3>
+                        <p>位于重庆市大足区，是中国晚期石窟艺术的代表作。以北山、宝顶山、南山为代表，共有造像5万余尊。宝顶山千手观音像有1007只手，是中国石刻艺术中最大的千手观音像。</p>
+                        <div class="features">
+                            <span>千手观音</span><span>卧佛</span><span>牧牛图</span><span>六道轮回</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">皇家石窟</span>
+                        <img src="images/reclining-buddha.jpg" alt="云冈石窟" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">北魏时期 · 公元5-6世纪</span>
+                        <h3>云冈石窟</h3>
+                        <p>位于山西省大同市，是中国第一座由皇家主持开凿的大型石窟。现存主要洞窟45个，造像5.9万余尊。第20窟露天大佛高13.7米，是云冈石窟的标志性造像。</p>
+                        <div class="features">
+                            <span>昙曜五窟</span><span>露天大佛</span><span>犍陀罗风格</span><span>飞天造像</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">中国石刻巅峰</span>
+                        <img src="images/guanyin.jpg" alt="龙门石窟" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">北魏-唐代 · 公元5-10世纪</span>
+                        <h3>龙门石窟</h3>
+                        <p>位于河南省洛阳市，现存窟龛2345个，造像10万余尊。奉先寺的卢舍那大佛高17.14米，相传以武则天为原型雕刻，是中国石刻艺术的最高峰。</p>
+                        <div class="features">
+                            <span>卢舍那大佛</span><span>奉先寺</span><span>宾阳三洞</span><span>龙门二十品</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">东方雕塑馆</span>
+                        <img src="images/herdboy.jpg" alt="麦积山石窟" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">后秦-清代 · 公元4-19世纪</span>
+                        <h3>麦积山石窟</h3>
+                        <p>位于甘肃省天水市，因山形酷似麦垛而得名。现存窟龛221个，造像1万余尊，以精美的泥塑艺术闻名于世，被誉为"东方雕塑馆"。第133窟的释迦会子像被誉为"东方蒙娜丽莎"。</p>
+                        <div class="features">
+                            <span>泥塑艺术</span><span>微笑造像</span><span>栈道奇观</span><span>壁画精品</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">沙漠艺术殿堂</span>
+                        <img src="images/six-realms.jpg" alt="敦煌莫高窟" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">前秦-元代 · 公元4-14世纪</span>
+                        <h3>敦煌莫高窟</h3>
+                        <p>位于甘肃省敦煌市，是世界上现存规模最大、内容最丰富的佛教艺术圣地。现存洞窟735个，壁画4.5万平方米，泥质彩塑2415尊。藏经洞出土的5万余件文献是20世纪最重要的考古发现之一。</p>
+                        <div class="features">
+                            <span>飞天壁画</span><span>藏经洞</span><span>反弹琵琶</span><span>经变画</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">世界最大石刻佛像</span>
+                        <img src="images/dharma-wheel.jpg" alt="乐山大佛" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">唐代 · 公元713-803年</span>
+                        <h3>乐山大佛</h3>
+                        <p>位于四川省乐山市，是世界上最大的石刻弥勒佛坐像，通高71米。大佛开凿于唐玄宗开元元年，历时90年完成。"山是一尊佛，佛是一座山"，大佛的设计巧妙地融入了排水系统。</p>
+                        <div class="features">
+                            <span>弥勒坐像</span><span>排水系统</span><span>凌云寺</span><span>三江汇流</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align:center; margin-top:2.5rem;">
+                <a href="stone-detail.html" class="back-btn">查看完整石窟艺术发展史 →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"><span></span></div>
+
+    <!-- 叁 · 史之痕 -->
+    <div class="theme-block" id="section-history">
+        <div class="section">
+            <div class="theme-header">
+                <div class="theme-num">叁</div>
+                <div class="theme-info">
+                    <h2>史之痕</h2>
+                    <div class="pinyin">SHǏ ZHĪ HÉN · 书画与非遗</div>
+                    <p>笔墨丹青流转千年，匠心手艺薪火相传。从魏晋风骨到宋元山水，从景泰蓝到苏绣，书画与非遗共同书写着中华美学的精神谱系。</p>
+                </div>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">书圣之作</span>
+                        <img src="images/calligraphy.jpg" alt="魏晋风骨" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">魏晋时期 · 公元3-5世纪</span>
+                        <h3>魏晋风骨</h3>
+                        <p>王羲之《兰亭序》被誉为"天下第一行书"，记述了永和九年兰亭雅集的盛况，全文324字，字字珠玑。父子二人确立了书法艺术的美学标准，魏晋书法成为中国书法史上不可逾越的高峰。</p>
+                        <div class="features">
+                            <span>兰亭序</span><span>行书</span><span>楷书</span><span>草书</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">笔墨山水</span>
+                        <img src="images/landscape-painting.jpg" alt="山水画卷" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">五代-宋代 · 公元10-13世纪</span>
+                        <h3>山水画卷</h3>
+                        <p>范宽《溪山行旅图》以雄健的笔触描绘北方山水的壮阔，郭熙《早春图》展现了春天山水的灵动。宋代是中国山水画的黄金时代，李成、范宽、郭熙确立了"高远、深远、平远"的三远构图法则。</p>
+                        <div class="features">
+                            <span>三远法</span><span>皴法</span><span>写意</span><span>工笔</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">百工之美</span>
+                        <img src="images/heritage-craft.jpg" alt="非遗技艺" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">明清时期 · 公元14-20世纪</span>
+                        <h3>百工之美</h3>
+                        <p>景泰蓝以铜胎掐丝、点蓝烧制的繁复工艺著称；苏绣以"平、齐、细、密、匀、顺、和、光"八字诀闻名，双面绣《猫》令人叹为观止；宜兴紫砂壶成为茶具之首，福州脱胎漆器享誉世界。</p>
+                        <div class="features">
+                            <span>景泰蓝</span><span>苏绣</span><span>紫砂壶</span><span>漆器</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-image">
+                        <span class="detail-card-tag">数字传承</span>
+                        <img src="images/digital-archive.jpg" alt="薪火相传" loading="lazy">
+                    </div>
+                    <div class="detail-card-content">
+                        <span class="era">当代 · 21世纪</span>
+                        <h3>薪火相传</h3>
+                        <p>传统书画与非遗技艺在当代焕发新生。数字化技术让千年书画得以高清保存和全球传播，3D扫描和虚拟现实技术让观众可以身临其境地欣赏文物细节。文创产品让传统文化走进现代生活。</p>
+                        <div class="features">
+                            <span>数字化保护</span><span>VR体验</span><span>文创产品</span><span>传承计划</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align:center; margin-top:2.5rem;">
+                <a href="history-detail.html" class="back-btn">查看完整书画艺术发展史 →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 返回按钮 -->
+    <section class="back-section">
+        <a href="index.html" class="back-btn">← 返回首页</a>
+    </section>
+
+    <footer class="footer">
+        <p>中华文物 · 守护千年文明 | 文明长卷，器石史三韵</p>
+    </footer>
+
+    <script>
+        // Hero背景 Canvas：金色粉尘 + 鼠标视差
+        const canvas = document.getElementById('hero-bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let mouseX = 0.5, mouseY = 0.5;
+        let targetX = 0.5, targetY = 0.5;
+        let dust = [];
+
+        function resize() {
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+        }
+        resize();
+
+        for (let i = 0; i < 80; i++) {
+            dust.push({
+                x: Math.random(), y: Math.random(),
+                size: Math.random() * 2 + 0.5,
+                sx: (Math.random() - 0.5) * 0.0005,
+                sy: (Math.random() - 0.5) * 0.0003,
+                op: Math.random() * 0.5 + 0.2,
+                ph: Math.random() * 6.28
+            });
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            targetX = e.clientX / window.innerWidth;
+            targetY = e.clientY / window.innerHeight;
+        });
+        window.addEventListener('resize', resize);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const w = canvas.width, h = canvas.height;
+            mouseX += (targetX - mouseX) * 0.05;
+            mouseY += (targetY - mouseY) * 0.05;
+            ctx.fillStyle = '#0a0a0f';
+            ctx.fillRect(0, 0, w, h);
+
+            // 背景径向光晕
+            const grad = ctx.createRadialGradient(
+                w * (0.3 + mouseX * 0.4), h * (0.3 + mouseY * 0.3), 0,
+                w * 0.5, h * 0.5, Math.max(w, h) * 0.7
+            );
+            grad.addColorStop(0, 'rgba(201,169,98,0.08)');
+            grad.addColorStop(1, 'rgba(10,10,15,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+
+            // 粉尘
+            for (const p of dust) {
+                p.x += p.sx; p.y += p.sy; p.ph += 0.01;
+                if (p.x < 0) p.x = 1; if (p.x > 1) p.x = 0;
+                if (p.y < 0) p.y = 1; if (p.y > 1) p.y = 0;
+                const fl = Math.sin(p.ph) * 0.3 + 0.7;
+                ctx.beginPath();
+                ctx.arc(p.x * w, p.y * h, p.size, 0, 6.28);
+                ctx.fillStyle = `rgba(201,169,98,${p.op * fl})`;
+                ctx.fill();
+            }
+        }
+        animate();
+    </script>
+</body>
+</html>
