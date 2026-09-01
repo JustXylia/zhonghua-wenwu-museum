@@ -1,17 +1,339 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <link rel="preload" as="image" href="images/vessel-bronze-canvas.jpg">
-    <link rel="dns-prefetch" href="//fonts.loli.net">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文明长卷 · 器石史三韵 | 中华文物</title>
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-    <link rel="preconnect" href="https://fonts.loli.net">
-    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-    <link href="https://fonts.loli.net/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>:root{--color-primary:#c9a962;--color-primary-dark:#8b7355;--color-bg-dark:#0a0a0f;--color-bg-medium:#12121a;--color-bg-light:#1a1a25;--glass-bg:rgba(20,20,30,0.7);--glass-border:rgba(201,169,98,0.15);--color-text:#f5f0e8;--color-text-muted:#8a8578;--font-display:'Ma Shan Zheng',cursive;--font-serif:'Noto Serif SC',serif;--font-sans:'Noto Sans SC',sans-serif;}*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}body{font-family:var(--font-sans);background:var(--color-bg-dark);color:var(--color-text);overflow-x:hidden;line-height:1.8;}.hero-unified{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0a0a0f;padding:100px 2rem 60px;}#hero-bg-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;}.hero-unified-content{position:relative;z-index:5;width:100%;max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}.pillar{position:relative;aspect-ratio:4/3;border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.6s cubic-bezier(0.16,1,0.3,1);border:1px solid var(--glass-border);}.pillar::before{content:'';position:absolute;inset:0;background-size:cover;background-position:center;transition:transform 0.8s ease;z-index:1;}.pillar::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,15,0.1) 0%,rgba(10,10,15,0.85) 100%);z-index:2;}.pillar-1::before{background-image:url('images/hero-vessels.jpg');}.pillar-2::before{background-image:url('images/hero-stone.jpg');}.pillar-3::before{background-image:url('images/hero-history.jpg');}.pillar:hover{transform:translateY(-10px);box-shadow:0 30px 60px rgba(0,0,0,0.5);border-color:var(--color-primary);}.pillar:hover::before{transform:scale(1.08);}.pillar-text{position:absolute;bottom:0;left:0;right:0;z-index:3;padding:2rem 1.5rem;text-align:center;}.pillar-roman{font-family:var(--font-serif);font-size:0.85rem;color:var(--color-primary);letter-spacing:0.5em;margin-bottom:0.5rem;opacity:0.85;}.pillar-title{font-family:var(--font-display);font-size:3.2rem;color:#f5f0e8;line-height:1.2;letter-spacing:0.1em;text-shadow:0 4px 20px rgba(0,0,0,0.8);}.pillar-tagline{font-family:var(--font-serif);font-size:0.95rem;color:rgba(245,240,232,0.8);margin-top:0.8rem;letter-spacing:0.2em;}.hero-intro{position:absolute;top:7rem;left:0;right:0;z-index:5;text-align:center;padding:0 2rem;}.hero-intro .badge{display:inline-block;padding:0.4rem 1.5rem;border:1px solid var(--color-primary);color:var(--color-primary);font-size:0.8rem;letter-spacing:0.3em;margin-bottom:1rem;background:rgba(10,10,15,0.6);}.hero-intro h1{font-family:var(--font-display);font-size:clamp(2rem,4.5vw,3.4rem);color:var(--color-text);letter-spacing:0.15em;text-shadow:0 4px 30px rgba(0,0,0,0.8);}.section{padding:5rem 2rem;max-width:1400px;margin:0 auto;}.section-title{font-family:var(--font-display);font-size:2.4rem;color:var(--color-primary);text-align:center;margin-bottom:0.8rem;letter-spacing:0.15em;}.section-subtitle{font-family:var(--font-serif);font-size:1rem;color:var(--color-text-muted);text-align:center;margin-bottom:3.5rem;letter-spacing:0.2em;}.divider{display:flex;align-items:center;justify-content:center;gap:1rem;padding:1rem 0;max-width:600px;margin:0 auto;}.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--glass-border),transparent);}.divider span{display:inline-block;width:8px;height:8px;background:var(--color-primary);transform:rotate(45deg);opacity:0.7;}.theme-block{padding:4rem 0;}.theme-block:nth-child(even){background:var(--color-bg-medium);}.theme-header{display:flex;align-items:center;gap:2rem;margin-bottom:3rem;padding:0 1rem;}.theme-num{font-family:var(--font-display);font-size:5rem;color:var(--color-primary);opacity:0.5;line-height:1;}.theme-info h2{font-family:var(--font-display);font-size:2.6rem;color:var(--color-primary);letter-spacing:0.15em;margin-bottom:0.5rem;}.theme-info .pinyin{font-family:var(--font-serif);font-size:0.9rem;color:var(--color-text-muted);letter-spacing:0.3em;}.theme-info p{font-family:var(--font-serif);font-size:1.05rem;color:var(--color-text-muted);line-height:2;margin-top:1rem;max-width:800px;}.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2.5rem;padding:0 1rem;}.detail-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;transition:all 0.4s ease;position:relative;}.detail-card:hover{transform:translateY(-8px);box-shadow:0 30px 60px rgba(0,0,0,0.4);border-color:rgba(201,169,98,0.3);}.detail-card-image{width:100%;height:280px;overflow:hidden;position:relative;}.detail-card-image img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease;background:#0d0d14;}.detail-card:hover .detail-card-image img{transform:scale(1.08);}.detail-card-image::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(to top,rgba(10,10,15,0.9),transparent);}.detail-card-tag{position:absolute;top:1.2rem;left:1.2rem;padding:0.3rem 0.8rem;background:rgba(201,169,98,0.2);border:1px solid var(--color-primary);color:var(--color-primary);font-size:0.75rem;border-radius:4px;z-index:2;backdrop-filter:blur(10px);}.detail-card-content{padding:1.8rem;}.detail-card-content h3{font-family:var(--font-display);font-size:1.6rem;color:var(--color-primary);margin-bottom:0.8rem;}.detail-card-content .era{display:inline-block;padding:0.2rem 0.7rem;background:rgba(201,169,98,0.15);color:var(--color-primary);font-size:0.75rem;border-radius:4px;margin-bottom:0.8rem;}.detail-card-content p{color:var(--color-text-muted);font-size:0.92rem;line-height:1.85;margin-bottom:0.8rem;}.features{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:1.2rem;}.features span{padding:0.25rem 0.7rem;background:rgba(201,169,98,0.1);border:1px solid rgba(201,169,98,0.2);color:var(--color-text-muted);font-size:0.75rem;border-radius:20px;}.back-section{padding:4rem 2rem;text-align:center;}.footer{padding:2.5rem 2rem;text-align:center;border-top:1px solid var(--glass-border);background:var(--color-bg-dark);}.footer p{color:var(--color-text-muted);font-size:0.9rem;letter-spacing:0.2em;}@media (max-width:1024px){.hero-unified-content{gap:1rem;}.pillar-title{font-size:2.4rem;}.detail-grid{grid-template-columns:1fr;}}@media (max-width:768px){.hero-unified{padding:80px 1rem 40px;}.hero-unified-content{grid-template-columns:1fr;gap:1rem;}.pillar{aspect-ratio:16/9;}.pillar-title{font-size:2rem;}.theme-header{flex-direction:column;text-align:center;gap:1rem;}.theme-num{font-size:3.5rem;}.theme-info h2{font-size:2rem;}}.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1.2rem 3rem;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(201,169,98,0.15);}.nav-logo{font-family:'Ma Shan Zheng',cursive;font-size:1.6rem;color:#c9a962;text-decoration:none;letter-spacing:0.1em;}.nav-links{display:flex;list-style:none;gap:1.8rem;}.nav-links a{color:#8a8578;text-decoration:none;font-size:0.9rem;transition:color 0.3s ease;position:relative;padding:0.4rem 0;}.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:#c9a962;transition:width 0.3s ease;}.nav-links a:hover,.nav-links a.active{color:#c9a962;}.nav-links a:hover::after,.nav-links a.active::after{width:100%;}@media (max-width:768px){.nav{padding:0.8rem 1.2rem;}.nav-logo{font-size:1.3rem;}.nav-links{gap:1rem;}.nav-links a{font-size:0.78rem;}}</style>
+    <link href="https://fonts.loli.net/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #c9a962;
+            --color-primary-dark: #8b7355;
+            --color-bg-dark: #0a0a0f;
+            --color-bg-medium: #12121a;
+            --color-bg-light: #1a1a25;
+            --glass-bg: rgba(20, 20, 30, 0.7);
+            --glass-border: rgba(201, 169, 98, 0.15);
+            --color-text: #f5f0e8;
+            --color-text-muted: #8a8578;
+            --font-display: 'Ma Shan Zheng', cursive;
+            --font-serif: 'Noto Serif SC', serif;
+            --font-sans: 'Noto Sans SC', sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-sans);
+            background: var(--color-bg-dark);
+            color: var(--color-text);
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        
+        
+        
+        
+        
+        
+        
+        
+
+        /* Hero 三个板块横向并排展示 */
+        .hero-unified {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #0a0a0f;
+            padding: 100px 2rem 60px;
+        }
+        #hero-bg-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+        }
+        .hero-unified-content {
+            position: relative; z-index: 5;
+            width: 100%; max-width: 1400px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .pillar {
+            position: relative;
+            aspect-ratio: 4/3;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid var(--glass-border);
+        }
+        .pillar::before {
+            content: ''; position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+            transition: transform 0.8s ease;
+            z-index: 1;
+        }
+        .pillar::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(10,10,15,0.1) 0%, rgba(10,10,15,0.85) 100%);
+            z-index: 2;
+        }
+        .pillar-1::before { background-image: url('images/hero-vessels.jpg'); }
+        .pillar-2::before { background-image: url('images/hero-stone.jpg'); }
+        .pillar-3::before { background-image: url('images/hero-history.jpg'); }
+        .pillar:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.5); border-color: var(--color-primary); }
+        .pillar:hover::before { transform: scale(1.08); }
+        .pillar-text {
+            position: absolute; bottom: 0; left: 0; right: 0; z-index: 3;
+            padding: 2rem 1.5rem; text-align: center;
+        }
+        .pillar-roman {
+            font-family: var(--font-serif);
+            font-size: 0.85rem; color: var(--color-primary);
+            letter-spacing: 0.5em; margin-bottom: 0.5rem;
+            opacity: 0.85;
+        }
+        .pillar-title {
+            font-family: var(--font-display);
+            font-size: 3.2rem; color: #f5f0e8;
+            line-height: 1.2; letter-spacing: 0.1em;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+        .pillar-tagline {
+            font-family: var(--font-serif);
+            font-size: 0.95rem; color: rgba(245,240,232,0.8);
+            margin-top: 0.8rem; letter-spacing: 0.2em;
+        }
+        .hero-intro {
+            position: absolute; top: 7rem; left: 0; right: 0; z-index: 5;
+            text-align: center; padding: 0 2rem;
+        }
+        .hero-intro .badge {
+            display: inline-block;
+            padding: 0.4rem 1.5rem;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary); font-size: 0.8rem;
+            letter-spacing: 0.3em; margin-bottom: 1rem;
+            background: rgba(10,10,15,0.6);
+        }
+        .hero-intro h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4.5vw, 3.4rem);
+            color: var(--color-text); letter-spacing: 0.15em;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.8);
+        }
+
+        /* 通用Section */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 2.4rem; color: var(--color-primary);
+            text-align: center; margin-bottom: 0.8rem;
+            letter-spacing: 0.15em;
+        }
+        .section-subtitle {
+            font-family: var(--font-serif);
+            font-size: 1rem; color: var(--color-text-muted);
+            text-align: center; margin-bottom: 3.5rem;
+            letter-spacing: 0.2em;
+        }
+        .divider {
+            display: flex; align-items: center; justify-content: center;
+            gap: 1rem; padding: 1rem 0; max-width: 600px; margin: 0 auto;
+        }
+        .divider::before, .divider::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+        }
+        .divider span {
+            display: inline-block; width: 8px; height: 8px;
+            background: var(--color-primary);
+            transform: rotate(45deg); opacity: 0.7;
+        }
+
+        /* 三大主题分区 */
+        .theme-block {
+            padding: 4rem 0;
+        }
+        .theme-block:nth-child(even) {
+            background: var(--color-bg-medium);
+        }
+        .theme-header {
+            display: flex; align-items: center; gap: 2rem;
+            margin-bottom: 3rem; padding: 0 1rem;
+        }
+        .theme-num {
+            font-family: var(--font-display);
+            font-size: 5rem; color: var(--color-primary);
+            opacity: 0.5; line-height: 1;
+        }
+        .theme-info h2 {
+            font-family: var(--font-display);
+            font-size: 2.6rem; color: var(--color-primary);
+            letter-spacing: 0.15em; margin-bottom: 0.5rem;
+        }
+        .theme-info .pinyin {
+            font-family: var(--font-serif);
+            font-size: 0.9rem; color: var(--color-text-muted);
+            letter-spacing: 0.3em;
+        }
+        .theme-info p {
+            font-family: var(--font-serif);
+            font-size: 1.05rem; color: var(--color-text-muted);
+            line-height: 2; margin-top: 1rem; max-width: 800px;
+        }
+
+        /* 详情卡片网格 */
+        .detail-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 2.5rem; padding: 0 1rem;
+        }
+        .detail-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px; overflow: hidden;
+            transition: all 0.4s ease; position: relative;
+        }
+        .detail-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            border-color: rgba(201,169,98,0.3);
+        }
+        .detail-card-image {
+            width: 100%; height: 280px;
+            overflow: hidden; position: relative;
+        }
+        .detail-card-image img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.6s ease;
+            background: #0d0d14;
+        }
+        .detail-card:hover .detail-card-image img { transform: scale(1.08); }
+        .detail-card-image::after {
+            content: ''; position: absolute;
+            bottom: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(to top, rgba(10,10,15,0.9), transparent);
+        }
+        .detail-card-tag {
+            position: absolute; top: 1.2rem; left: 1.2rem;
+            padding: 0.3rem 0.8rem;
+            background: rgba(201,169,98,0.2);
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary); font-size: 0.75rem;
+            border-radius: 4px; z-index: 2;
+            backdrop-filter: blur(10px);
+        }
+        .detail-card-content { padding: 1.8rem; }
+        .detail-card-content h3 {
+            font-family: var(--font-display);
+            font-size: 1.6rem; color: var(--color-primary);
+            margin-bottom: 0.8rem;
+        }
+        .detail-card-content .era {
+            display: inline-block;
+            padding: 0.2rem 0.7rem;
+            background: rgba(201,169,98,0.15);
+            color: var(--color-primary); font-size: 0.75rem;
+            border-radius: 4px; margin-bottom: 0.8rem;
+        }
+        .detail-card-content p {
+            color: var(--color-text-muted);
+            font-size: 0.92rem; line-height: 1.85;
+            margin-bottom: 0.8rem;
+        }
+        .features {
+            display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.2rem;
+        }
+        .features span {
+            padding: 0.25rem 0.7rem;
+            background: rgba(201,169,98,0.1);
+            border: 1px solid rgba(201,169,98,0.2);
+            color: var(--color-text-muted);
+            font-size: 0.75rem; border-radius: 20px;
+        }
+
+        /* 返回按钮 */
+        .back-section { padding: 4rem 2rem; text-align: center; }
+        
+        
+        .footer {
+            padding: 2.5rem 2rem; text-align: center;
+            border-top: 1px solid var(--glass-border);
+            background: var(--color-bg-dark);
+        }
+        .footer p {
+            color: var(--color-text-muted);
+            font-size: 0.9rem; letter-spacing: 0.2em;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-unified-content { gap: 1rem; }
+            .pillar-title { font-size: 2.4rem; }
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            
+            
+            .hero-unified { padding: 80px 1rem 40px; }
+            .hero-unified-content { grid-template-columns: 1fr; gap: 1rem; }
+            .pillar { aspect-ratio: 16/9; }
+            .pillar-title { font-size: 2rem; }
+            .theme-header { flex-direction: column; text-align: center; gap: 1rem; }
+            .theme-num { font-size: 3.5rem; }
+            .theme-info h2 { font-size: 2rem; }
+        }
+    
+/* ===== Unified Navigation ===== */
+.nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    padding: 1.2rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(201, 169, 98, 0.15);
+}
+.nav-logo {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 1.6rem;
+    color: #c9a962;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+}
+.nav-links { display: flex; list-style: none; gap: 1.8rem; }
+.nav-links a {
+    color: #8a8578;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+    position: relative;
+    padding: 0.4rem 0;
+}
+.nav-links a::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: #c9a962;
+    transition: width 0.3s ease;
+}
+.nav-links a:hover, .nav-links a.active { color: #c9a962; }
+.nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+@media (max-width: 768px) {
+    .nav { padding: 0.8rem 1.2rem; }
+    .nav-logo { font-size: 1.3rem; }
+    .nav-links { gap: 1rem; }
+    .nav-links a { font-size: 0.78rem; }
+}
+
+</style>
 </head>
 <body>
     <!-- 导航栏 -->
