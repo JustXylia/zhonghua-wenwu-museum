@@ -129,7 +129,7 @@
         .hero-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            max-width: 760px;
+            max-width: 880px;
             margin: 0 auto 4rem;
             position: relative;
         }
@@ -141,20 +141,21 @@
         }
         .hero-stats::before { left: 33.333%; }
         .hero-stats::after { left: 66.666%; }
-        .stat-item { text-align: center; padding: 0 1rem; }
+        .stat-item { text-align: center; padding: 0 0.6rem; }
         .stat-num {
             font-family: var(--font-num);
-            font-size: clamp(2.6rem, 5vw, 3.8rem);
+            font-size: clamp(2.1rem, 3.6vw, 2.8rem);
             color: var(--gold);
             font-weight: 400;
-            line-height: 1.1;
+            line-height: 1.15;
             margin-bottom: 0.6rem;
-            letter-spacing: 0.05em;
+            letter-spacing: 0;
+            white-space: nowrap;
             text-shadow:
                 0 0 20px rgba(201, 163, 90, 0.25),
                 0 0 40px rgba(201, 163, 90, 0.1);
         }
-        .stat-num .plus { font-size: 0.7em; }
+        .stat-num .plus { font-size: 0.7em; margin-left: 0.05em; }
         .stat-label {
             font-family: var(--font-serif);
             font-size: 0.85rem;
@@ -696,10 +697,10 @@
         @media (max-width: 720px) {
             .topbar { padding: 1rem 1.2rem; }
             .hero { padding: 5rem 1rem 3rem; min-height: 90vh; }
-            .hero-stats { gap: 0.5rem; }
+            .hero-stats { gap: 0.3rem; }
             .hero-stats::before, .hero-stats::after { height: 50px; }
-            .stat-num { font-size: 2.2rem; }
-            .stat-label { font-size: 0.7rem; }
+            .stat-num { font-size: 1.5rem; }
+            .stat-label { font-size: 0.7rem; letter-spacing: 0.2em; }
             .hero-cta { padding: 0.9rem 2.4rem; font-size: 0.85rem; }
             .timeline-rail { padding: 2rem 1.5rem 3rem; }
             .relic-card { flex: 0 0 200px; }
