@@ -34,24 +34,10 @@
         a { color: inherit; text-decoration: none; }
 
         /* ============ 顶部固定返回 ============ */
-        .topbar {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-            padding: 1.2rem 2.4rem;
-            display: flex; justify-content: space-between; align-items: center;
-            background: linear-gradient(180deg, rgba(6,6,10,0.85) 0%, rgba(6,6,10,0) 100%);
-        }
-        .topbar-back {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            color: var(--gold);
-            font-family: var(--font-serif);
-            font-size: 0.9rem;
-            letter-spacing: 0.15em;
-            padding: 0.4rem 0;
-            border-bottom: 1px solid transparent;
-            transition: all 0.3s ease;
-        }
-        .topbar-back:hover { border-bottom-color: var(--gold); transform: translateX(-3px); }
-        .topbar-back svg { width: 14px; height: 14px; }
+        
+        
+        
+        
 
         /* ============ Hero ============ */
         .hero {
@@ -696,7 +682,7 @@
             .pledge-card { padding: 2.5rem 1.2rem; }
         }
         @media (max-width: 720px) {
-            .topbar { padding: 1rem 1.2rem; }
+            
             .hero { padding: 5rem 1rem 3rem; min-height: 90vh; }
             .hero-stats { gap: 0.3rem; }
             .hero-stats::before, .hero-stats::after { height: 80px; }
@@ -706,19 +692,63 @@
             .timeline-rail { padding: 2rem 1.5rem 3rem; }
             .relic-card { flex: 0 0 200px; }
         }
-    </style>
+    
+/* ===== Unified Navigation ===== */
+.nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    padding: 1.2rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(201, 169, 98, 0.15);
+}
+.nav-logo {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 1.6rem;
+    color: #c9a962;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+}
+.nav-links { display: flex; list-style: none; gap: 1.8rem; }
+.nav-links a {
+    color: #8a8578;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+    position: relative;
+    padding: 0.4rem 0;
+}
+.nav-links a::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: #c9a962;
+    transition: width 0.3s ease;
+}
+.nav-links a:hover, .nav-links a.active { color: #c9a962; }
+.nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+@media (max-width: 768px) {
+    .nav { padding: 0.8rem 1.2rem; }
+    .nav-logo { font-size: 1.3rem; }
+    .nav-links { gap: 1rem; }
+    .nav-links a { font-size: 0.78rem; }
+}
+
+</style>
 </head>
 <body>
 
-<div class="topbar">
-    <a href="index.html" class="topbar-back">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6"/>
-        </svg>
-        返回首页
-    </a>
-    <span style="font-family: var(--font-display); color: var(--gold); font-size: 1.2rem; letter-spacing: 0.2em;">山河盼归</span>
-</div>
+<nav class="nav">
+    <a href="index.html" class="nav-logo">中华文物</a>
+    <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="heritage-unified.html">文明长卷</a></li>
+            <li><a href="restoration-cover.html">文物修复</a></li>
+            <li><a href="shanhe-pangui.html" class="active">山河盼归</a></li>
+            <li><a href="promotion-cover.html">推广</a></li>
+    </ul>
+</nav>
 
 <!-- ============ Hero ============ -->
 <section class="hero">

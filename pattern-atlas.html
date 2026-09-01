@@ -38,35 +38,11 @@ a { text-decoration: none; color: inherit; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 
 /* ============ 左上角返回按钮 ============ */
-.back-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 9999;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.85rem 1.4rem 0.85rem 1.1rem;
-    color: var(--color-bg-dark);
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    background: linear-gradient(135deg, #f0d488 0%, #d4b46a 50%, #b89548 100%);
-    border: 2px solid #e8c878;
-    border-radius: 999px;
-    box-shadow: 0 4px 18px rgba(201,169,98,0.55), 0 0 28px rgba(201,169,98,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    cursor: pointer;
-}
-.back-btn svg { width: 20px; height: 20px; stroke-width: 2.5; }
-.back-btn:hover {
-    transform: translateX(-3px);
-    box-shadow: 0 6px 24px rgba(201,169,98,0.7), 0 0 36px rgba(201,169,98,0.4), inset 0 1px 0 rgba(255,255,255,0.35);
-}
-.back-btn:active { transform: translateX(-1px) scale(0.98); }
+
+
 @media (max-width: 720px) {
-    .back-btn { top: 14px; left: 14px; padding: 0.7rem 1.1rem 0.7rem 0.9rem; font-size: 0.88rem; }
-    .back-btn svg { width: 17px; height: 17px; }
+    
+    
 }
 
 /* ============ 主舞台 ============ */
@@ -553,18 +529,66 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     .preview-box { aspect-ratio: 4 / 3; }
     .hud { padding: 0 14px; }
 }
+
+/* ===== Unified Navigation ===== */
+.nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    padding: 1.2rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(201, 169, 98, 0.15);
+}
+.nav-logo {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 1.6rem;
+    color: #c9a962;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+}
+.nav-links { display: flex; list-style: none; gap: 1.8rem; }
+.nav-links a {
+    color: #8a8578;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+    position: relative;
+    padding: 0.4rem 0;
+}
+.nav-links a::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: #c9a962;
+    transition: width 0.3s ease;
+}
+.nav-links a:hover, .nav-links a.active { color: #c9a962; }
+.nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+@media (max-width: 768px) {
+    .nav { padding: 0.8rem 1.2rem; }
+    .nav-logo { font-size: 1.3rem; }
+    .nav-links { gap: 1rem; }
+    .nav-links a { font-size: 0.78rem; }
+}
+
+body { padding-top: 4.5rem; }
+
 </style>
 </head>
 <body>
 
 <!-- 左上角大尺寸返回按钮 -->
-<a href="restoration-detail.html" class="back-btn" title="返回修复技术" aria-label="返回修复技术">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H5"/>
-        <path d="M12 19l-7-7 7-7"/>
-    </svg>
-    返回
-</a>
+<nav class="nav">
+    <a href="index.html" class="nav-logo">中华文物</a>
+    <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="heritage-unified.html">文明长卷</a></li>
+            <li><a href="restoration-cover.html" class="active">文物修复</a></li>
+            <li><a href="shanhe-pangui.html">山河盼归</a></li>
+            <li><a href="promotion-cover.html">推广</a></li>
+    </ul>
+</nav>
 
 <main class="stage">
     <div class="container">

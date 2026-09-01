@@ -32,33 +32,14 @@
             line-height: 1.8;
         }
 
-        /* 导航栏 */
-        .nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-            padding: 1.2rem 3rem;
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(10,10,15,0.85);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-        }
-        .nav-logo {
-            font-family: var(--font-display);
-            font-size: 1.6rem; color: var(--color-primary);
-            text-decoration: none; letter-spacing: 0.1em;
-        }
-        .nav-links { display: flex; list-style: none; gap: 1.8rem; }
-        .nav-links a {
-            color: var(--color-text-muted); text-decoration: none;
-            font-size: 0.9rem; transition: color 0.3s ease; position: relative;
-            padding: 0.4rem 0;
-        }
-        .nav-links a::after {
-            content: ''; position: absolute; bottom: 0; left: 0;
-            width: 0; height: 1px; background: var(--color-primary);
-            transition: width 0.3s ease;
-        }
-        .nav-links a:hover, .nav-links a.active { color: var(--color-primary); }
-        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        
+        
+        
+        
+        
+        
+        
+        
 
         /* Hero 三个板块横向并排展示 */
         .hero-unified {
@@ -281,19 +262,8 @@
 
         /* 返回按钮 */
         .back-section { padding: 4rem 2rem; text-align: center; }
-        .back-btn {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            padding: 1rem 2.5rem;
-            background: transparent;
-            border: 1px solid var(--color-primary);
-            color: var(--color-primary); font-size: 1rem;
-            text-decoration: none; border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        .back-btn:hover {
-            background: var(--color-primary);
-            color: var(--color-bg-dark);
-        }
+        
+        
         .footer {
             padding: 2.5rem 2rem; text-align: center;
             border-top: 1px solid var(--glass-border);
@@ -310,8 +280,8 @@
             .detail-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 768px) {
-            .nav { padding: 0.8rem 1.5rem; }
-            .nav-links { display: none; }
+            
+            
             .hero-unified { padding: 80px 1rem 40px; }
             .hero-unified-content { grid-template-columns: 1fr; gap: 1rem; }
             .pillar { aspect-ratio: 16/9; }
@@ -320,20 +290,63 @@
             .theme-num { font-size: 3.5rem; }
             .theme-info h2 { font-size: 2rem; }
         }
-    </style>
+    
+/* ===== Unified Navigation ===== */
+.nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    padding: 1.2rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(201, 169, 98, 0.15);
+}
+.nav-logo {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 1.6rem;
+    color: #c9a962;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+}
+.nav-links { display: flex; list-style: none; gap: 1.8rem; }
+.nav-links a {
+    color: #8a8578;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+    position: relative;
+    padding: 0.4rem 0;
+}
+.nav-links a::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: #c9a962;
+    transition: width 0.3s ease;
+}
+.nav-links a:hover, .nav-links a.active { color: #c9a962; }
+.nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+@media (max-width: 768px) {
+    .nav { padding: 0.8rem 1.2rem; }
+    .nav-logo { font-size: 1.3rem; }
+    .nav-links { gap: 1rem; }
+    .nav-links a { font-size: 0.78rem; }
+}
+
+</style>
 </head>
 <body>
     <!-- 导航栏 -->
     <nav class="nav">
-        <a href="index.html" class="nav-logo">中华文物</a>
-        <ul class="nav-links">
+    <a href="index.html" class="nav-logo">中华文物</a>
+    <ul class="nav-links">
             <li><a href="index.html">首页</a></li>
             <li><a href="heritage-unified.html" class="active">文明长卷</a></li>
             <li><a href="restoration-cover.html">文物修复</a></li>
             <li><a href="shanhe-pangui.html">山河盼归</a></li>
             <li><a href="promotion-cover.html">推广</a></li>
-        </ul>
-    </nav>
+    </ul>
+</nav>
 
     <!-- Hero 三大板块横向并排 -->
     <section class="hero-unified">
