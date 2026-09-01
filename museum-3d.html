@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>指尖博物馆 · 3D文物鉴赏 | 中华文物</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+    <link href="https://fonts.loli.net/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --color-primary: #c9a962;
@@ -671,7 +671,7 @@
         <div class="modal" id="modal">
             <button class="modal-close" id="modalClose">&times;</button>
             <div class="modal-image">
-                <img id="modalImage" src="" alt="">
+                <img id="modalImage" loading="lazy" src="" alt="">
             </div>
             <div class="modal-body">
                 <h2 class="modal-title" id="modalTitle"></h2>
@@ -1031,7 +1031,7 @@
             
             card.innerHTML = `
                 <div class="artifact-img-wrap">
-                    <img src="${imgSrc}" alt="${artifact.name}" onerror="this.src='images/bronze-vessel.jpg'">
+                    <img src="${imgSrc}" alt="${artifact.name}" onerror="this.loading="lazy" src='images/bronze-vessel.jpg'">
                     <span class="badge-3d">3D</span>
                     <div class="artifact-hover-overlay">
                         <span class="hover-text">点击查看3D鉴赏</span>
