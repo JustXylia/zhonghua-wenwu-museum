@@ -129,13 +129,14 @@
         .hero-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            max-width: 880px;
-            margin: 0 auto 4rem;
+            max-width: 1040px;
+            margin: 0 auto 5rem;
             position: relative;
+            gap: 0;
         }
         .hero-stats::before, .hero-stats::after {
             content: ''; position: absolute; top: 50%;
-            width: 1px; height: 70px;
+            width: 1px; height: 110px;
             background: linear-gradient(180deg, transparent, var(--gold-line), transparent);
             transform: translateY(-50%);
         }
@@ -144,21 +145,21 @@
         .stat-item { text-align: center; padding: 0 0.6rem; }
         .stat-num {
             font-family: var(--font-num);
-            font-size: clamp(2.1rem, 3.6vw, 2.8rem);
+            font-size: clamp(3.4rem, 6.5vw, 5rem);
             color: var(--gold);
-            font-weight: 400;
-            line-height: 1.15;
-            margin-bottom: 0.6rem;
-            letter-spacing: 0;
+            font-weight: 500;
+            line-height: 1.05;
+            margin-bottom: 0.9rem;
+            letter-spacing: 0.02em;
             white-space: nowrap;
             text-shadow:
-                0 0 20px rgba(201, 163, 90, 0.25),
-                0 0 40px rgba(201, 163, 90, 0.1);
+                0 0 24px rgba(201, 163, 90, 0.3),
+                0 0 48px rgba(201, 163, 90, 0.12);
         }
-        .stat-num .plus { font-size: 0.7em; margin-left: 0.05em; }
+        .stat-num .plus { font-size: 0.55em; margin-left: 0.05em; }
         .stat-label {
             font-family: var(--font-serif);
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             color: var(--text-mute);
             letter-spacing: 0.3em;
             text-indent: 0.3em;
@@ -698,9 +699,9 @@
             .topbar { padding: 1rem 1.2rem; }
             .hero { padding: 5rem 1rem 3rem; min-height: 90vh; }
             .hero-stats { gap: 0.3rem; }
-            .hero-stats::before, .hero-stats::after { height: 50px; }
-            .stat-num { font-size: 1.5rem; }
-            .stat-label { font-size: 0.7rem; letter-spacing: 0.2em; }
+            .hero-stats::before, .hero-stats::after { height: 80px; }
+            .stat-num { font-size: 2.4rem; }
+            .stat-label { font-size: 0.78rem; letter-spacing: 0.2em; }
             .hero-cta { padding: 0.9rem 2.4rem; font-size: 0.85rem; }
             .timeline-rail { padding: 2rem 1.5rem 3rem; }
             .relic-card { flex: 0 0 200px; }
@@ -737,15 +738,15 @@
 
         <div class="hero-stats">
             <div class="stat-item">
-                <div class="stat-num">M<span class="plus">·万</span></div>
+                <div class="stat-num">1000<span class="plus">万+</span></div>
                 <div class="stat-label">文物流失海外</div>
             </div>
             <div class="stat-item">
-                <div class="stat-num">XLVII<span style="font-size:0.5em;letter-spacing:0.1em;">国</span></div>
+                <div class="stat-num">47<span style="font-size:0.5em;letter-spacing:0.1em;">国</span></div>
                 <div class="stat-label">皆有它们身影</div>
             </div>
             <div class="stat-item">
-                <div class="stat-num">XII</div>
+                <div class="stat-num">12</div>
                 <div class="stat-label">件等你记得</div>
             </div>
         </div>
