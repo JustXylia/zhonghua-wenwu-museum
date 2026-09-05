@@ -1650,8 +1650,11 @@ class HeroTransitionEffect {
 
         for (const [key, url] of Object.entries(imageUrls)) {
             const img = new Image();
-            img.crossOrigin = 'anonymous';
             img.onload = () => {
+                loadedCount++;
+                if (loadedCount === total) this.loaded = true;
+            };
+            img.onerror = () => {
                 loadedCount++;
                 if (loadedCount === total) this.loaded = true;
             };
@@ -2031,8 +2034,14 @@ class StonePeelEffect {
 
         for (const [key, url] of Object.entries(imageUrls)) {
             const img = new Image();
-            img.crossOrigin = 'anonymous';
             img.onload = () => {
+                loadedCount++;
+                if (loadedCount === total) {
+                    this.loaded = true;
+                    this.createPeelMask();
+                }
+            };
+            img.onerror = () => {
                 loadedCount++;
                 if (loadedCount === total) {
                     this.loaded = true;
@@ -2225,8 +2234,11 @@ class HistoryScrollEffect {
 
         for (const url of imageUrls) {
             const img = new Image();
-            img.crossOrigin = 'anonymous';
             img.onload = () => {
+                loadedCount++;
+                if (loadedCount === imageUrls.length) this.loaded = true;
+            };
+            img.onerror = () => {
                 loadedCount++;
                 if (loadedCount === imageUrls.length) this.loaded = true;
             };
